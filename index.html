@@ -14,7 +14,6 @@
 </head>
 <body class="bg-court text-slate-100 min-h-screen">
 
-    <!-- NAVIGATION BAR -->
     <nav class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-yellow-300 bg-clip-text text-transparent">
@@ -32,7 +31,6 @@
         </div>
     </nav>
 
-    <!-- HERO HEADER -->
     <header class="relative overflow-hidden px-6 py-24 text-center border-b border-slate-900">
         <div class="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
@@ -61,8 +59,6 @@
 
     <main class="max-w-6xl mx-auto px-6 py-16 space-y-32">
 
-
-<!-- RUBRIQUE 1 : L'ESPRIT (Mise à jour avec photo illustrative) -->
 <section id="philosophie" class="grid md:grid-cols-2 gap-12 items-center scroll-mt-24">
     <div>
         <span class="text-yellow-400 font-bold text-sm uppercase tracking-wider block mb-2">// L'Expertise</span>
@@ -79,14 +75,10 @@
             </p>
         </div>
     </div>
-    
-    <!-- Bloc photo professionnel -->
     <div class="group relative bg-slate-900 border border-slate-800 rounded-3xl p-2 shadow-2xl overflow-hidden">
-
         <img src="assets/lesprit.png" 
             alt="Analyse de données et Tennis" 
             class="rounded-2xl w-full h-[400px] object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500">
-
         <div class="absolute bottom-4 left-4 right-4 bg-slate-950/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800">
             <h4 class="font-bold text-white text-lg">La précision en héritage</h4>
             <p class="text-sm text-slate-400 mt-1">L'expérience du terrain couplée à la puissance des algorithmes.</p>
@@ -94,152 +86,157 @@
     </div>
 </section>
 
+<section id="pronos" class="scroll-mt-24">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="text-3xl font-extrabold mb-4 text-white">Le Tableau de Bord en Direct</h2>
+        <p class="text-slate-400 text-sm">Généré automatiquement par notre algorithme Python chaque matin à l'aube.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-emerald-500/50 transition">
+            <div class="flex justify-between items-center text-xs text-slate-500 mb-4">
+                <span>ATP - Munich (Terre battue)</span>
+                <span class="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded">Value +14%</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-4">H. Hurkacz vs T. Fritz</h3>
+            <div class="bg-slate-950 rounded-xl p-3 flex justify-between items-center text-sm mb-4">
+                <span class="text-slate-400">Pari conseillé :</span>
+                <span class="font-bold text-yellow-400">Victoire Fritz</span>
+            </div>
+            <div class="flex justify-between text-xs text-slate-500">
+                <span>Indice Confiance : 78%</span>
+                <span>Mise : 2%</span>
+            </div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-emerald-500/50 transition">
+            <div class="flex justify-between items-center text-xs text-slate-500 mb-4">
+                <span>WTA - Madrid (Terre battue)</span>
+                <span class="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded">Value +8%</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-4">A. Sabalenka vs E. Rybakina</h3>
+            <div class="bg-slate-950 rounded-xl p-3 flex justify-between items-center text-sm mb-4">
+                <span class="text-slate-400">Pari conseillé :</span>
+                <span class="font-bold text-yellow-400">Plus de 22.5 jeux</span>
+            </div>
+            <div class="flex justify-between text-xs text-slate-500">
+                <span>Indice Confiance : 64%</span>
+                <span>Mise : 1.5%</span>
+            </div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 opacity-60 relative group overflow-hidden">
+            <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center">
+                <span class="text-2xl mb-2">🔒</span>
+                <h4 class="font-bold text-white text-sm">Match Premium</h4>
+                <p class="text-xs text-slate-400 mt-1">Réservé aux membres du Club VIP</p>
+            </div>
+            <div class="text-xs text-slate-500 mb-4">ATP - Madrid</div>
+            <h3 class="text-lg font-bold text-white mb-4">C. Alcaraz vs J. Sinner</h3>
+        </div>
+    </div>
+</section>
 
-        <!-- RUBRIQUE ADDITIONNELLE : LES PRONOS DU JOUR -->
-        <section id="pronos" class="scroll-mt-24">
-            <div class="text-center max-w-2xl mx-auto mb-12">
-                <h2 class="text-3xl font-extrabold mb-4 text-white">Le Tableau de Bord en Direct</h2>
-                <p class="text-slate-400 text-sm">Généré automatiquement par notre algorithme Python chaque matin à l'aube.</p>
+<section id="tarifs" class="scroll-mt-24">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-emerald-400 font-bold text-sm uppercase tracking-wider block mb-2">// Formules</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-white">Rejoignez le Temple de la Data</h2>
+        <p class="text-slate-400 text-sm mt-3">Pas d'engagement, annulation en un clic. Rentabilisé dès les premières values détectées.</p>
+    </div>
+    <div class="grid md:grid-cols-2 max-w-3xl mx-auto gap-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 relative flex flex-col justify-between">
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">Accès Mensuel</h3>
+                <p class="text-slate-400 text-xs mb-6">Idéal pour tester la puissance de nos outils.</p>
+                <div class="text-4xl font-black text-white mb-6">29€<span class="text-sm font-normal text-slate-500"> / mois</span></div>
+                <ul class="space-y-3 text-slate-300 text-sm">
+                    <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> 100% des alertes automatisées</li>
+                    <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Accès complet au canal de transmission</li>
+                    <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Suivi du bilan en temps réel</li>
+                </ul>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Match Card 1 -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-emerald-500/50 transition">
-                    <div class="flex justify-between items-center text-xs text-slate-500 mb-4">
-                        <span>ATP - Munich (Terre battue)</span>
-                        <span class="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded">Value +14%</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-4">H. Hurkacz vs T. Fritz</h3>
-                    <div class="bg-slate-950 rounded-xl p-3 flex justify-between items-center text-sm mb-4">
-                        <span class="text-slate-400">Pari conseillé :</span>
-                        <span class="font-bold text-yellow-400">Victoire Fritz</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Indice Confiance : 78%</span>
-                        <span>Mise : 2%</span>
-                    </div>
-                </div>
-                <!-- Match Card 2 -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-emerald-500/50 transition">
-                    <div class="flex justify-between items-center text-xs text-slate-500 mb-4">
-                        <span>WTA - Madrid (Terre battue)</span>
-                        <span class="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded">Value +8%</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-4">A. Sabalenka vs E. Rybakina</h3>
-                    <div class="bg-slate-950 rounded-xl p-3 flex justify-between items-center text-sm mb-4">
-                        <span class="text-slate-400">Pari conseillé :</span>
-                        <span class="font-bold text-yellow-400">Plus de 22.5 jeux</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-slate-500">
-                        <span>Indice Confiance : 64%</span>
-                        <span>Mise : 1.5%</span>
-                    </div>
-                </div>
-                <!-- Match Card 3 -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 opacity-60 relative group overflow-hidden">
-                    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center">
-                        <span class="text-2xl mb-2">🔒</span>
-                        <h4 class="font-bold text-white text-sm">Match Premium</h4>
-                        <p class="text-xs text-slate-400 mt-1">Réservé aux membres du Club VIP</p>
-                    </div>
-                    <div class="text-xs text-slate-500 mb-4">ATP - Madrid</div>
-                    <h3 class="text-lg font-bold text-white mb-4">C. Alcaraz vs J. Sinner</h3>
-                </div>
+            <button class="w-full mt-8 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition">
+                Sélectionner la formule
+            </button>
+        </div>
+        <div class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-8 relative flex flex-col justify-between shadow-xl shadow-emerald-950/20">
+            <div class="absolute -top-3.5 right-6 bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full">
+                Meilleur Choix
             </div>
-        </section>
-
-        <!-- RUBRIQUE 2 : SUIVI DU ROI (Performances financières) -->
-        <section id="roi" class="scroll-mt-24">
-            <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 md:p-12">
-                <div class="grid lg:grid-cols-3 gap-12 items-center">
-                    <div class="lg:col-span-1">
-                        <span class="text-emerald-400 font-bold text-sm uppercase tracking-wider block mb-2">// Chiffres Transparents</span>
-                        <h2 class="text-3xl font-extrabold text-white mb-4">Notre Bilan et R.O.I.</h2>
-                        <p class="text-slate-400 text-sm leading-relaxed">
-                            La seule métrique qui compte dans l'investissement sportif est le Return On Investment (ROI). Chaque pari est loggé, audité et mis à jour de manière transparente.
-                        </p>
-                    </div>
-                    <div class="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl text-center">
-                            <span class="text-xs text-slate-500 uppercase block mb-1">R.O.I. Global</span>
-                            <span class="text-4xl font-black text-emerald-400 tracking-tight">+11.4%</span>
-                        </div>
-                        <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl text-center">
-                            <span class="text-xs text-slate-500 uppercase block mb-1">Unités de Profit</span>
-                            <span class="text-4xl font-black text-white tracking-tight">+68.5</span>
-                        </div>
-                        <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl text-center col-span-2 sm:col-span-1">
-                            <span class="text-xs text-slate-500 uppercase block mb-1">Taux de Réussite</span>
-                            <span class="text-4xl font-black text-yellow-400 tracking-tight">56.8%</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Mini graphique fictif stylisé CSS -->
-                <div class="mt-8 bg-slate-950 rounded-2xl p-6 border border-slate-800/60 h-32 flex items-end gap-2">
-                    <div class="w-full bg-slate-800 h-1/4 rounded-t-md"></div>
-                    <div class="w-full bg-slate-800 h-1/3 rounded-t-md"></div>
-                    <div class="w-full bg-slate-800 h-2/5 rounded-t-md"></div>
-                    <div class="w-full bg-emerald-500/40 h-1/2 rounded-t-md"></div>
-                    <div class="w-full bg-emerald-500/60 h-3/5 rounded-t-md"></div>
-                    <div class="w-full bg-emerald-500 h-4/5 rounded-t-md"></div>
-                    <div class="w-full bg-emerald-400 h-full rounded-t-md relative">
-                        <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-slate-950 text-[10px] font-bold px-1.5 py-0.5 rounded">Sommet historique</div>
-                    </div>
-                </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">Pass Saison</h3>
+                <p class="text-slate-400 text-xs mb-6">Pour les investisseurs sérieux sur le long terme.</p>
+                <div class="text-4xl font-black text-yellow-400 mb-6">199€<span class="text-sm font-normal text-slate-500"> / an</span></div>
+                <ul class="space-y-3 text-slate-300 text-sm">
+                    <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Tous les avantages de l'abonnement mensuel</li>
+                    <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Économie équivalente à 4 mois offerts</li>
+                    <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Analyses détaillées des modèles en avant-première</li>
+                </ul>
             </div>
-        </section>
-
-        <!-- RUBRIQUE 3 : TARIFS D'ABONNEMENT -->
-        <section id="tarifs" class="scroll-mt-24">
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <span class="text-emerald-400 font-bold text-sm uppercase tracking-wider block mb-2">// Formules</span>
-                <h2 class="text-3xl md:text-4xl font-extrabold text-white">Rejoignez le Temple de la Data</h2>
-                <p class="text-slate-400 text-sm mt-3">Pas d'engagement, annulation en un clic. Rentabilisé dès les premières values détectées.</p>
-            </div>
-            <div class="grid md:grid-cols-2 max-w-3xl mx-auto gap-8">
-                <!-- Plan 1 -->
-                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 relative flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-2">Accès Mensuel</h3>
-                        <p class="text-slate-400 text-xs mb-6">Idéal pour tester la puissance de nos outils.</p>
-                        <div class="text-4xl font-black text-white mb-6">29€<span class="text-sm font-normal text-slate-500"> / mois</span></div>
-                        <ul class="space-y-3 text-slate-300 text-sm">
-                            <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> 100% des alertes automatisées</li>
-                            <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Accès complet au canal de transmission</li>
-                            <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Suivi du bilan en temps réel</li>
-                        </ul>
-                    </div>
-                    <button class="w-full mt-8 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition">
-                        Sélectionner la formule
-                    </button>
-                </div>
-                <!-- Plan 2 (Premium / Populaire) -->
-                <div class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-8 relative flex flex-col justify-between shadow-xl shadow-emerald-950/20">
-                    <div class="absolute -top-3.5 right-6 bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full">
-                        Meilleur Choix
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-2">Pass Saison</h3>
-                        <p class="text-slate-400 text-xs mb-6">Pour les investisseurs sérieux sur le long terme.</p>
-                        <div class="text-4xl font-black text-yellow-400 mb-6">199€<span class="text-sm font-normal text-slate-500"> / an</span></div>
-                        <ul class="space-y-3 text-slate-300 text-sm">
-                            <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Tous les avantages de l'abonnement mensuel</li>
-                            <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Économie équivalente à 4 mois offerts</li>
-                            <li class="flex items-center gap-2 text-xs"><span class="text-emerald-400">✔</span> Analyses détaillées des modèles en avant-première</li>
-                        </ul>
-                    </div>
-                    <button class="w-full mt-8 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black py-3 px-4 rounded-xl text-sm transition shadow-md shadow-emerald-900/20">
-                        S'abonner à l'Année
-                    </button>
-                </div>
-            </div>
-        </section>
+            <button class="w-full mt-8 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black py-3 px-4 rounded-xl text-sm transition shadow-md shadow-emerald-900/20">
+                S'abonner à l'Année
+            </button>
+        </div>
+    </div>
+</section>
 
     </main>
 
-    <!-- FOOTER -->
     <nav class="border-t border-slate-900 bg-slate-950 mt-32 px-6 py-8 text-center text-xs text-slate-500">
         <p>&copy; 2026 TennisTemple. Tous droits réservés. Jouer comporte des risques, misez uniquement ce que vous pouvez vous permettre de perdre.</p>
     </nav>
 
 </body>
-</html>
+</html<!-- Début de la section Performances -->
+<section id="performances" class="mt-12">
+<h2 class="text-3xl font-bold text-white mb-6">Performances</h2>
+<div id="tableau-contenu" class="overflow-x-auto"><table class="dataframe min-w-full divide-y divide-slate-700">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Tournoi</th>
+      <th>Date du match</th>
+      <th>Match</th>
+      <th>Pari</th>
+      <th>Cote</th>
+      <th>Résultat</th>
+      <th>Gain/Perte</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ATP Wimbledon</td>
+      <td>04/07/2026</td>
+      <td>Karen Khachanov vs Flavio Cobolli</td>
+      <td>Karen Khachanov</td>
+      <td>1.70</td>
+      <td>Perdu</td>
+      <td>-3.56</td>
+    </tr>
+    <tr>
+      <td>ATP Wimbledon</td>
+      <td>04/07/2026</td>
+      <td>Zizou Bergs vs Arthur Fery</td>
+      <td>Arthur Fery</td>
+      <td>3.32</td>
+      <td>Gagne</td>
+      <td>11.60</td>
+    </tr>
+    <tr>
+      <td>ATP Wimbledon</td>
+      <td>04/07/2026</td>
+      <td>Frances Tiafoe vs Alexander Bublik</td>
+      <td>Alexander Bublik</td>
+      <td>1.98</td>
+      <td>Gagne</td>
+      <td>4.90</td>
+    </tr>
+    <tr>
+      <td>ATP Wimbledon</td>
+      <td>04/07/2026</td>
+      <td>Grigor Dimitrov vs Matteo Berrettini</td>
+      <td>Grigor Dimitrov</td>
+      <td>2.30</td>
+      <td>Gagne</td>
+      <td>5.98</td>
+    </tr>
+  </tbody>
+</table></div>
+</section>
+>
