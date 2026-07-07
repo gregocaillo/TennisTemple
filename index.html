@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 22:15</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 22:19</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -352,9 +352,17 @@
     
     <script>
         async function calculerHash() {
-            const msg = new TextEncoder().encode(document.getElementById('input-pari').value + document.getElementById('input-hash').value);
+            // On récupère les valeurs des inputs
+            const pari = document.getElementById('input-pari').value;
+            const hashPrec = document.getElementById('input-hash').value;
+            
+            // On concatène Pari + Hash précédent (ajuste selon ton code Python réel)
+            const chaine = pari + hashPrec; 
+            
+            const msg = new TextEncoder().encode(chaine);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
             const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            
             const divRes = document.getElementById('resultat-hash');
             divRes.textContent = "Résultat calculé : " + hashHex;
             divRes.classList.remove('hidden');
