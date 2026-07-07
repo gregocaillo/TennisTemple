@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:51</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:56</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -279,6 +279,7 @@
     </div>
 
     <!-- Début du registre -->
+
     <div class="max-w-4xl mx-auto overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
         <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">
             [Vérification en cours : Système intègre]
@@ -293,21 +294,21 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-800">
-                <tr>
-                    <td class="px-4 py-3 text-slate-400 text-center text-xs">2026-07-07 19:05:12</td>
-                    <td class="px-4 py-3 text-slate-300 text-xs">Flavio Cobolli @2.0</td>
-                    <td class="px-4 py-3 text-yellow-600 font-mono text-[10px] font-bold">7e334ae155defdd89ecd17581f7261a3e9c580d4b6bf6b1f22bdb08a6fc6bcca</td>
-                    <td class="px-4 py-3 text-emerald-500 text-center">✓</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3 text-slate-400 text-center text-xs">2026-07-07 19:22:47</td>
-                    <td class="px-4 py-3 text-slate-300 text-xs">Frances Tiafoe @4.0</td>
-                    <td class="px-4 py-3 text-yellow-600 font-mono text-[10px] font-bold">0d80af4980242cae0919d62d3bf7a04822f5c49d7cc89a9bdd49d79ed4db2241</td>
-                    <td class="px-4 py-3 text-emerald-500 text-center">✓</td>
-                </tr>
+                
             </tbody>
         </table>
     </div>
+
+    <div class="max-w-4xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
+        <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
+        <ul class="text-slate-400 text-sm space-y-4">
+            <li>- <b>Principe</b> : Chaque pari est scellé dans une chaîne où le Hash est le résultat d'un calcul combinant les données du pari actuel et l'empreinte du pari précédent.</li>
+            <li>- <b>Immutabilité</b> : Si une seule donnée est modifiée dans le passé, le Hash de cette ligne change. Par effet domino, tous les Hashs suivants deviennent invalides, rendant la fraude immédiatement détectable.</li>
+            <li>- <b>Vérifiabilité</b> : Le système est transparent. N'importe qui peut vérifier l'intégrité de la chaîne en recalculant les Hashs ; si une anomalie est détectée, le statut basculera automatiquement en alerte.</li>
+        </ul>
+    </div>
+    
+<!-- Fin du registre -->
 
     <!-- Notice d'explication -->
     <div class="max-w-4xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
