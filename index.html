@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 22:06</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 22:11</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -301,11 +301,11 @@
 
     <div class="max-w-4xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
-        <ul class="text-slate-400 text-sm space-y-4">
-            - <b>Principe</b> : Chaque pari est scellé dans une chaîne où le Hash est le résultat d'un calcul combinant les données du pari actuel et l'empreinte du pari précédent.
-            - <b>Immutabilité</b> : Si une seule donnée est modifiée dans le passé, le Hash de cette ligne change. Par effet domino, tous les Hashs suivants deviennent invalides, rendant la fraude immédiatement détectable.
-            - <b>Vérifiabilité</b> : Le système est transparent. N'importe qui peut vérifier l'intégrité de la chaîne en recalculant les Hashs ; si une anomalie est détectée, le statut basculera automatiquement en alerte.
-        </ul>
+        <div class="text-slate-400 text-sm space-y-4">
+            <p>- <b>Principe</b> : Chaque pari est scellé dans une chaîne où le Hash est le résultat d'un calcul combinant les données du pari actuel et l'empreinte du pari précédent.</p>
+            <p>- <b>Immutabilité</b> : Si une seule donnée est modifiée dans le passé, le Hash de cette ligne change. Par effet domino, tous les Hashs suivants deviennent invalides, rendant la fraude immédiatement détectable.</p>
+            <p>- <b>Vérifiabilité</b> : Le système est transparent. N'importe qui peut vérifier l'intégrité de la chaîne en recalculant les Hashs ; si une anomalie est détectée, le statut basculera automatiquement en alerte.</p>
+        </div>
 
         <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
             <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Simulateur de vérification</h4>
