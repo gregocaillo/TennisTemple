@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 22:00</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 22:05</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -302,11 +302,32 @@
     <div class="max-w-4xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <ul class="text-slate-400 text-sm space-y-4">
-            <li>- <b>Principe</b> : Chaque pari est scellé dans une chaîne où le Hash est le résultat d'un calcul combinant les données du pari actuel et l'empreinte du pari précédent.</li>
-            <li>- <b>Immutabilité</b> : Si une seule donnée est modifiée dans le passé, le Hash de cette ligne change. Par effet domino, tous les Hashs suivants deviennent invalides, rendant la fraude immédiatement détectable.</li>
-            <li>- <b>Vérifiabilité</b> : Le système est transparent. N'importe qui peut vérifier l'intégrité de la chaîne en recalculant les Hashs ; si une anomalie est détectée, le statut basculera automatiquement en alerte.</li>
+            - <b>Principe</b> : Chaque pari est scellé dans une chaîne où le Hash est le résultat d'un calcul combinant les données du pari actuel et l'empreinte du pari précédent.
+            - <b>Immutabilité</b> : Si une seule donnée est modifiée dans le passé, le Hash de cette ligne change. Par effet domino, tous les Hashs suivants deviennent invalides, rendant la fraude immédiatement détectable.
+            - <b>Vérifiabilité</b> : Le système est transparent. N'importe qui peut vérifier l'intégrité de la chaîne en recalculant les Hashs ; si une anomalie est détectée, le statut basculera automatiquement en alerte.
         </ul>
+
+        <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
+            <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Simulateur de vérification</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <input id="input-pari" type="text" placeholder="Pari" class="bg-black border border-slate-700 text-white p-2 rounded text-sm w-full">
+                <input id="input-hash" type="text" placeholder="Hash précédent" class="bg-black border border-slate-700 text-white p-2 rounded text-sm w-full">
+            </div>
+            <button onclick="calculerHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Calculer le Hash</button>
+            <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] text-emerald-500 font-mono break-all hidden"></div>
+        </div>
     </div>
+    
+    <script>
+        async function calculerHash() {
+            const msg = new TextEncoder().encode(document.getElementById('input-pari').value + document.getElementById('input-hash').value);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
+            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            const divRes = document.getElementById('resultat-hash');
+            divRes.textContent = "Résultat calculé : " + hashHex;
+            divRes.classList.remove('hidden');
+        }
+    </script>
     
 <!-- Fin du registre -->
 
