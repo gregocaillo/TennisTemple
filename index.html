@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 22:33</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 22:55</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -334,56 +334,50 @@
     <div class="max-w-10xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
-            <p>- <b>Principe</b> : Chaque pari est scellé dans une chaîne où le Hash est le résultat d'un calcul combinant les données du pari actuel et l'empreinte du pari précédent.</p>
+            <p>- <b>Principe</b> : Chaque pari est scellé dans une chaîne où le Hash est le résultat d'un calcul combinant tout l'historique des paris et l'empreinte du pari précédent.</p>
             <p>- <b>Immutabilité</b> : Si une seule donnée est modifiée dans le passé, le Hash de cette ligne change. Par effet domino, tous les Hashs suivants deviennent invalides, rendant la fraude immédiatement détectable.</p>
-            <p>- <b>Vérifiabilité</b> : Le système est transparent. N'importe qui peut vérifier l'intégrité de la chaîne en recalculant les Hashs ; si une anomalie est détectée, le statut basculera automatiquement en alerte.</p>
+            <p>- <b>Vérifiabilité</b> : Choisissez un pari ci-dessous : le hash est recalculé en direct dans votre navigateur à partir des données réelles publiées, puis comparé au Hash affiché.</p>
         </div>
 
         <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
-            <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Simulateur de vérification</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <input id="input-pari" type="text" placeholder="Pari" class="bg-black border border-slate-700 text-white p-2 rounded text-sm w-full">
-                <input id="input-hash" type="text" placeholder="Hash précédent" class="bg-black border border-slate-700 text-white p-2 rounded text-sm w-full">
-            </div>
-            <button onclick="calculerHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Calculer le Hash</button>
-            <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] text-emerald-500 font-mono break-all hidden"></div>
+            <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
+            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-sm w-full mb-4">
+                <option value="0">2026-07-07 22:12:33 — Flavio Cobolli @2.0</option><option value="1">2026-07-07 22:15:01 — Flavio Cobolli @5.0</option>
+            </select>
+            <button onclick="verifierHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
+            <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
         </div>
     </div>
-    
+
     <script>
-        async function calculerHash() {
-            // On récupère les valeurs des inputs
-            const pari = document.getElementById('input-pari').value;
-            const hashPrec = document.getElementById('input-hash').value;
-            
-            // On concatène Pari + Hash précédent (ajuste selon ton code Python réel)
-            const chaine = pari + hashPrec; 
-            
+        const AUDIT_ROWS_DATA = ["('ATP Wimbledon', '2026-07-04T12:12:00Z', 'Karen Khachanov vs Flavio Cobolli', 'Karen Khachanov', 1.7, 3.5597214285714323, 'Perdu')", "('ATP Wimbledon', '2026-07-04T13:07:00Z', 'Zizou Bergs vs Arthur Fery', 'Arthur Fery', 3.32, 5.0, 'Gagn\u00e9')", "('ATP Wimbledon', '2026-07-04T15:50:00Z', 'Frances Tiafoe vs Alexander Bublik', 'Alexander Bublik', 1.98, 5.0, 'Gagn\u00e9')", "('ATP Wimbledon', '2026-07-04T16:39:00Z', 'Grigor Dimitrov vs Matteo Berrettini', 'Grigor Dimitrov', 2.3, 4.597584615384612, 'Gagn\u00e9')", "('ATP Wimbledon', '2026-07-07', 'Alexander Bublik vs Flavio Cobolli', 'Flavio Cobolli', 2.0, 4.0, 'En cours')", "('ATP Wimbledon', '2026-07-07', 'Alexander Bublik vs Frances Tiafoe', 'Alexander Bublik', 2.0, 2.0, 'En cours')", "('ATP Wimbledon', '2026-07-07', 'Flavio Cobolli vs Alexander Bublik', 'Flavio Cobolli', 2.0, 2.0, 'En cours')", "('ATP Wimbledon', '2026-07-07', 'Alexander Bublik vs Frances Tiafoe', 'Frances Tiafoe', 4.0, 2.0, 'En cours')", "('ATP Wimbledon', '2026-07-07', 'Flavio Cobolli vs Frances Tiafoe', 'Flavio Cobolli', 2.0, 1.54, 'En cours')", "('ATP Wimbledon', '2026-07-07', 'Frances Tiafoe vs Flavio Cobolli', 'Flavio Cobolli', 5.0, 150.0, 'En cours')"];
+        const AUDIT_ENTRIES = [{"date": "2026-07-07 22:12:33", "pari": "Flavio Cobolli @2.0", "hash": "17727194637951b4fdaca26bf5fb1756ccca660dc4dbe3571facef4740dde4c0"}, {"date": "2026-07-07 22:15:01", "pari": "Flavio Cobolli @5.0", "hash": "c5fd127656d5ed3a504727f790a7f3d8ae76353c1cfc49e159d94fe5ace7626c"}];
+
+        async function verifierHash() {
+            const idx = parseInt(document.getElementById('select-verif').value, 10);
+            const subset = AUDIT_ROWS_DATA.slice(0, idx + 1);
+            const prevHash = idx === 0 ? "0" : AUDIT_ENTRIES[idx - 1].hash;
+            const chaine = subset.join('') + prevHash;
+
             const msg = new TextEncoder().encode(chaine);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
-            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-            
+            const hashCalcule = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+            const hashAttendu = AUDIT_ENTRIES[idx].hash;
             const divRes = document.getElementById('resultat-hash');
-            divRes.textContent = "Résultat calculé : " + hashHex;
             divRes.classList.remove('hidden');
+
+            if (hashCalcule === hashAttendu) {
+                divRes.className = "mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all text-emerald-500";
+                divRes.textContent = "✓ Intègre — Hash recalculé : " + hashCalcule;
+            } else {
+                divRes.className = "mt-4 p-3 bg-black border border-red-900 rounded text-[11px] font-mono break-all text-red-500";
+                divRes.textContent = "✗ ANOMALIE DÉTECTÉE — attendu : " + hashAttendu + " / calculé : " + hashCalcule;
+            }
         }
     </script>
     
 <!-- Fin du registre -->
-
-<!-- Logique de calcul interactif -->
-<script>
-    async function calculerHash() {
-        const pari = document.getElementById('input-pari').value;
-        const hashPre = document.getElementById('input-hash').value;
-        const msg = new TextEncoder().encode(pari + hashPre);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
-        const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-        const divRes = document.getElementById('resultat-hash');
-        divRes.textContent = "Résultat calculé : " + hashHex;
-        divRes.classList.remove('hidden');
-    }
-</script>
 
 <section id="tarifs" class="scroll-mt-24">
     <div class="text-center max-w-2xl mx-auto mb-16">
