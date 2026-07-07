@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:17</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:21</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -281,6 +281,9 @@
     <!-- Début du registre -->
 
     <div class="max-w-4xl mx-auto overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
+        <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">
+            [Vérification en cours : Système intègre]
+        </div>
         <table class="min-w-full divide-y divide-slate-700 text-xs">
             <thead class="bg-slate-950">
                 <tr>
@@ -306,6 +309,15 @@
                     </tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="max-w-4xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
+        <h3 class="text-emerald-400 font-bold mb-3">Comment vérifier l'intégrité ?</h3>
+        <ul class="text-slate-400 text-sm space-y-2">
+            <li>- <b>Principe</b> : Chaque ligne contient un Hash (une empreinte numérique unique) qui est le résultat d'un calcul combinant les informations du pari en cours et le hash du pari précédent.</li>
+            <li>- <b>Immutabilité</b> : Si quelqu'un modifie un seul caractère dans un pari passé, le hash de cette ligne change. Par effet domino, tous les hashs des lignes suivantes deviennent immédiatement invalides.</li>
+            <li>- <b>Vérifiabilité</b> : Pour prouver qu'il n'y a pas eu fraude, n'importe qui peut copier l'intégralité de ton registre dans un outil de calcul pour vérifier que chaque ligne valide bien le lien cryptographique avec la précédente.</li>
+        </ul>
     </div>
     
 <!-- Fin du registre -->
