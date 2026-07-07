@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:11</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:17</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -271,22 +271,21 @@
 </section>
 
 <section id="audit" class="scroll-mt-24 mt-32">
-    <div class="text-center max-w-5xl mx-auto mb-12">
+    <div class="text-center max-w-4xl mx-auto mb-12">
         <h2 class="text-3xl font-extrabold text-white">Registre d'Audit (Blockchain)</h2>
         <p class="text-slate-400 text-sm mt-2 px-4 leading-relaxed">
             Chaque pari est scellé cryptographiquement pour garantir l'absence de modification à posteriori.
         </p>
     </div>
 
-    <!-- Ton tableau actuel -->
     <!-- Début du registre -->
 
-    <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
+    <div class="max-w-4xl mx-auto overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
         <table class="min-w-full divide-y divide-slate-700 text-xs">
             <thead class="bg-slate-950">
                 <tr>
                     <th class="px-4 py-3 text-emerald-400 text-center">Date</th>
-                    <th class="px-4 py-3 text-emerald-400">Pari</th>
+                    <th class="px-4 py-3 text-emerald-400 text-center">Pari</th>
                     <th class="px-4 py-3 text-emerald-400 text-center">Hash</th>
                     <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
                 </tr>
@@ -294,14 +293,14 @@
             <tbody class="divide-y divide-slate-800">
                 
                     <tr>
-                        <td class="px-4 py-3 text-slate-400 text-center">2026-07-07 19:05:12</td>
-                        <td class="px-4 py-3 text-slate-300">Flavio Cobolli @2.0</td>
+                        <td class="px-4 py-3 text-slate-400 text-center text-xs">2026-07-07 19:05:12</td>
+                        <td class="px-4 py-3 text-slate-300 text-xs">Flavio Cobolli @2.0</td>
                         <td class="px-4 py-3 text-yellow-600 font-mono text-[10px] font-bold">7e334ae155defdd89ecd17581f7261a3e9c580d4b6bf6b1f22bdb08a6fc6bcca</td>
                         <td class="px-4 py-3 text-emerald-500 text-center">✓</td>
                     </tr>
                     <tr>
-                        <td class="px-4 py-3 text-slate-400 text-center">2026-07-07 19:22:47</td>
-                        <td class="px-4 py-3 text-slate-300">Frances Tiafoe @4.0</td>
+                        <td class="px-4 py-3 text-slate-400 text-center text-xs">2026-07-07 19:22:47</td>
+                        <td class="px-4 py-3 text-slate-300 text-xs">Frances Tiafoe @4.0</td>
                         <td class="px-4 py-3 text-yellow-600 font-mono text-[10px] font-bold">0d80af4980242cae0919d62d3bf7a04822f5c49d7cc89a9bdd49d79ed4db2241</td>
                         <td class="px-4 py-3 text-emerald-500 text-center">✓</td>
                     </tr>
@@ -311,13 +310,13 @@
     
 <!-- Fin du registre -->
 
-    <!-- Ajout de l'explication -->
-    <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
-        <h3 class="text-emerald-400 font-bold mb-3">Comment ça fonctionne ?</h3>
+    <!-- Notice de transparence -->
+    <div class="max-w-4xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
+        <h3 class="text-emerald-400 font-bold mb-3">Comment vérifier l'intégrité ?</h3>
         <ul class="text-slate-400 text-sm space-y-2">
-            <li>- <b>Transparence totale</b> : Chaque hash est généré en incluant les données du pari actuel et l'empreinte du pari précédent.</li>
-            <li>- <b>Immutabilité</b> : Toute modification d'un ancien pari briserait la chaîne de hashs, rendant l'altération immédiatement détectable.</li>
-            <li>- <b>Vérifiabilité</b> : Cette chaîne permet de prouver que les résultats affichés n'ont pas été manipulés après la validation du pronostic.</li>
+            <li>- <b>Principe</b> : Chaque hash lie les données du pari actuel à l'empreinte du pari précédent.</li>
+            <li>- <b>Immutabilité</b> : Toute modification d'un pari passé brise la chaîne mathématique et rend les hashs suivants invalides.</li>
+            <li>- <b>Vérifiabilité</b> : Si une anomalie est détectée lors du calcul, le registre affichera une alerte d'intégrité compromise.</li>
         </ul>
     </div>
 </section>
