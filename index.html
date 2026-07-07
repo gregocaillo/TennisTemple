@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:37</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:48</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -279,7 +279,6 @@
     </div>
 
     <!-- Début du registre -->
-
     <div class="max-w-4xl mx-auto overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
         <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">
             [Vérification en cours : Système intègre]
@@ -294,23 +293,23 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-800">
-                
-                    <tr>
-                        <td class="px-4 py-3 text-slate-400 text-center text-xs">2026-07-07 19:05:12</td>
-                        <td class="px-4 py-3 text-slate-300 text-xs">Flavio Cobolli @2.0</td>
-                        <td class="px-4 py-3 text-yellow-600 font-mono text-[10px] font-bold">7e334ae155defdd89ecd17581f7261a3e9c580d4b6bf6b1f22bdb08a6fc6bcca</td>
-                        <td class="px-4 py-3 text-emerald-500 text-center">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3 text-slate-400 text-center text-xs">2026-07-07 19:22:47</td>
-                        <td class="px-4 py-3 text-slate-300 text-xs">Frances Tiafoe @4.0</td>
-                        <td class="px-4 py-3 text-yellow-600 font-mono text-[10px] font-bold">0d80af4980242cae0919d62d3bf7a04822f5c49d7cc89a9bdd49d79ed4db2241</td>
-                        <td class="px-4 py-3 text-emerald-500 text-center">✓</td>
-                    </tr>
+                <tr>
+                    <td class="px-4 py-3 text-slate-400 text-center text-xs">2026-07-07 19:05:12</td>
+                    <td class="px-4 py-3 text-slate-300 text-xs">Flavio Cobolli @2.0</td>
+                    <td class="px-4 py-3 text-yellow-600 font-mono text-[10px] font-bold">7e334ae155defdd89ecd17581f7261a3e9c580d4b6bf6b1f22bdb08a6fc6bcca</td>
+                    <td class="px-4 py-3 text-emerald-500 text-center">✓</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-3 text-slate-400 text-center text-xs">2026-07-07 19:22:47</td>
+                    <td class="px-4 py-3 text-slate-300 text-xs">Frances Tiafoe @4.0</td>
+                    <td class="px-4 py-3 text-yellow-600 font-mono text-[10px] font-bold">0d80af4980242cae0919d62d3bf7a04822f5c49d7cc89a9bdd49d79ed4db2241</td>
+                    <td class="px-4 py-3 text-emerald-500 text-center">✓</td>
+                </tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Notice d'explication -->
     <div class="max-w-4xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <ul class="text-slate-400 text-sm space-y-4">
@@ -318,29 +317,45 @@
             <li>- <b>Immutabilité</b> : Si une seule donnée est modifiée dans le passé, le Hash de cette ligne change. Par effet domino, tous les Hashs suivants deviennent invalides, rendant la fraude immédiatement détectable.</li>
             <li>- <b>Vérifiabilité</b> : Le système est transparent. N'importe qui peut vérifier l'intégrité de la chaîne en recalculant les Hashs ; si une anomalie est détectée, le statut basculera automatiquement en alerte.</li>
         </ul>
-    </div>
-    
-<!-- Fin du registre -->
 
-<div class="mt-6 p-4 bg-slate-900 border border-emerald-900/50 rounded-lg">
-    <h4 class="text-emerald-400 font-bold text-xs uppercase tracking-widest mb-2">Outil de vérification rapide</h4>
-    <p class="text-slate-400 text-xs mb-3">
-        Vous pouvez vérifier n'importe quelle ligne vous-même avec ce script Python (nécessite la bibliothèque hashlib) :
-    </p>
-    <pre class="bg-black p-3 rounded text-[10px] text-emerald-500 overflow-x-auto">
+        <!-- Outil de vérification interactif -->
+        <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
+            <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Simulateur de vérification</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <input id="input-pari" type="text" placeholder="Pari (ex: Flavio Cobolli @2.0)" class="bg-black border border-slate-700 text-white p-2 rounded text-sm w-full">
+                <input id="input-hash" type="text" placeholder="Hash du pari précédent" class="bg-black border border-slate-700 text-white p-2 rounded text-sm w-full">
+            </div>
+            <button onclick="calculerHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">
+                Calculer le Hash
+            </button>
+            <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] text-emerald-500 font-mono break-all hidden"></div>
+        </div>
+
+        <!-- Script de vérification pour les experts -->
+        <div class="mt-6">
+            <p class="text-slate-500 text-xs mb-2">Ou utilisez votre propre environnement Python :</p>
+            <pre class="bg-black p-3 rounded text-[10px] text-slate-400 overflow-x-auto border border-slate-800">
 import hashlib
-
-def verifier_pari(pari_actuel, hash_precedent):
-    # La chaîne combinée doit correspondre au hash affiché
-    data = f"{pari_actuel}{hash_precedent}".encode('utf-8')
-    return hashlib.sha256(data).hexdigest()
-
-# Exemple : remplacez avec vos données
-print(verifier_pari("Flavio Cobolli @2.0", "LE_HASH_PRECEDENT"))
-    </pre>
-</div>
-
+def verifier(pari, hash_prec):
+    return hashlib.sha256(f"{pari}{hash_prec}".encode()).hexdigest()
+            </pre>
+        </div>
+    </div>
 </section>
+
+<!-- Logique de calcul interactif -->
+<script>
+    async function calculerHash() {
+        const pari = document.getElementById('input-pari').value;
+        const hashPre = document.getElementById('input-hash').value;
+        const msg = new TextEncoder().encode(pari + hashPre);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
+        const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        const divRes = document.getElementById('resultat-hash');
+        divRes.textContent = "Résultat calculé : " + hashHex;
+        divRes.classList.remove('hidden');
+    }
+</script>
 
 <section id="tarifs" class="scroll-mt-24">
     <div class="text-center max-w-2xl mx-auto mb-16">
