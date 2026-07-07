@@ -139,11 +139,28 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-    <!-- Début du bloc métriques -->
-    <div class="mb-12 overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
-        {metrics_html}
-    </div>
-    <!-- Fin du bloc métriques -->
+    <!-- Début des métriques -->
+<div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
+<table class="dataframe min-w-full divide-y divide-slate-700 text-xs">
+  <thead class="bg-slate-950">
+    <tr style="text-align: right;">
+      <th class="px-3 py-2 text-center font-bold text-emerald-400 uppercase tracking-wider whitespace-nowrap">Mois</th>
+      <th class="px-3 py-2 text-center font-bold text-emerald-400 uppercase tracking-wider whitespace-nowrap">Yield</th>
+      <th class="px-3 py-2 text-center font-bold text-emerald-400 uppercase tracking-wider whitespace-nowrap">Cote Moyenne</th>
+      <th class="px-3 py-2 text-center font-bold text-emerald-400 uppercase tracking-wider whitespace-nowrap">Sharpe Ratio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="px-3 py-3 whitespace-nowrap text-slate-300 border-t border-slate-800 text-center">07/2026</td>
+      <td class="px-3 py-3 whitespace-nowrap text-slate-300 border-t border-slate-800 text-center">104.2%</td>
+      <td class="px-3 py-3 whitespace-nowrap text-slate-300 border-t border-slate-800 text-center">2.33</td>
+      <td class="px-3 py-3 whitespace-nowrap text-slate-300 border-t border-slate-800 text-center">10.28</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<!-- Fin des métriques -->
 
     <!-- Début de la section Performances -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
@@ -205,7 +222,6 @@
 </table>
 </div>
 <!-- Fin de la section Performances -->
-
 </section>
 
 <section id="tarifs" class="scroll-mt-24">
