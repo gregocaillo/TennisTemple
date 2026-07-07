@@ -139,7 +139,7 @@
         <h2 class="text-3xl font-extrabold text-white">Performances</h2>
     </div>
 
-<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:32</p>
+<p class="text-xs text-slate-500 mb-2 italic">Dernière mise à jour certifiée (Git) : 07/07/2026 21:37</p>
 
     <!-- Début des métriques -->
 <div class="overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl mb-12">
@@ -321,6 +321,24 @@
     </div>
     
 <!-- Fin du registre -->
+
+<div class="mt-6 p-4 bg-slate-900 border border-emerald-900/50 rounded-lg">
+    <h4 class="text-emerald-400 font-bold text-xs uppercase tracking-widest mb-2">Outil de vérification rapide</h4>
+    <p class="text-slate-400 text-xs mb-3">
+        Vous pouvez vérifier n'importe quelle ligne vous-même avec ce script Python (nécessite la bibliothèque hashlib) :
+    </p>
+    <pre class="bg-black p-3 rounded text-[10px] text-emerald-500 overflow-x-auto">
+import hashlib
+
+def verifier_pari(pari_actuel, hash_precedent):
+    # La chaîne combinée doit correspondre au hash affiché
+    data = f"{pari_actuel}{hash_precedent}".encode('utf-8')
+    return hashlib.sha256(data).hexdigest()
+
+# Exemple : remplacez avec vos données
+print(verifier_pari("Flavio Cobolli @2.0", "LE_HASH_PRECEDENT"))
+    </pre>
+</div>
 
 </section>
 
