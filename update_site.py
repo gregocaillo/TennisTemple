@@ -119,7 +119,7 @@ def generate_stats_mensuelles(df):
         nb_gagnes = int(row['Gagnés'])
         
         rows += f'''
-        <tr class="border-b border-slate-800 text-xs">
+        <tr class="border-b border-slate-800 last:border-b-0 text-xs">
             <td class="px-6 py-3 text-center text-xs text-white">{row['Mois'].strftime('%m/%Y')}</td>
             <td class="px-6 py-3 text-center text-xs text-white">{nb_paris}</td>
             <td class="px-6 py-3 text-center text-xs text-white">{nb_gagnes}</td>
