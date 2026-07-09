@@ -115,11 +115,14 @@ def generate_stats_mensuelles(df):
     
     rows = ""
     for _, row in stats.iterrows():
+        nb_paris = int(row['Nb'])
+        nb_gagnes = int(row['Gagnés'])
+        
         rows += f'''
         <tr class="border-b border-slate-800 text-xs">
             <td class="px-6 py-3">{row['Mois'].strftime('%m/%Y')}</td>
-            <td class="px-6 py-3 text-center">{row['Nb']}</td>
-            <td class="px-6 py-3 text-center">{row['Gagnés']}</td>
+            <td class="px-6 py-3 text-center">{nb_paris}</td>
+            <td class="px-6 py-3 text-center">{nb_gagnes}</td>
             <td class="px-6 py-3 text-center">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
             <td class="px-6 py-3 text-center">{row['Cote_Moy']:.2f}</td>
             <td class="px-6 py-3 text-center">{row['Yield']:.1f}%</td>
