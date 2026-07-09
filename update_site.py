@@ -72,24 +72,24 @@ def generate_perf_table(df):
 
         rows += f'''
         <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
-            <td class="px-6 py-4 text-sm text-white">{date_fmt}</td>
-            <td class="px-6 py-4 text-sm text-white">{row['Match']}</td>
-            <td class="px-6 py-4 text-sm text-yellow-300">{row['Pari']}</td>
-            <td class="px-6 py-4 text-sm text-white">{cote_fmt}</td>
-            <td class="px-6 py-4 text-sm {color_class}">{row['Résultat']}</td>
-            <td class="px-6 py-4 text-sm {color_class}">{gain_fmt}</td>
+            <td class="px-6 py-4 text-center text-sm text-white">{date_fmt}</td>
+            <td class="px-6 py-4 text-center text-sm text-white">{row['Match']}</td>
+            <td class="px-6 py-4 text-center text-sm text-yellow-300">{row['Pari']}</td>
+            <td class="px-6 py-4 text-center text-sm text-white">{cote_fmt}</td>
+            <td class="px-6 py-4 text-center text-sm {color_class}">{row['Résultat']}</td>
+            <td class="px-6 py-4 text-center text-sm {color_class}">{gain_fmt}</td>
         </tr>'''
 
     return f'''
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
-                <th class="px-6 py-4">Date</th>
-                <th class="px-6 py-4">Match</th>
-                <th class="px-6 py-4">Pari</th>
-                <th class="px-6 py-4">Cote</th>
-                <th class="px-6 py-4">Statut</th>
-                <th class="px-6 py-4">Gains/Pertes</th>
+                <th class="px-6 py-4 text-center">Date</th>
+                <th class="px-6 py-4 text-center">Match</th>
+                <th class="px-6 py-4 text-center">Pari</th>
+                <th class="px-6 py-4 text-center">Cote</th>
+                <th class="px-6 py-4 text-center">Statut</th>
+                <th class="px-6 py-4 text-center">Gains/Pertes</th>
             </tr>
         </thead>
         <tbody class="text-slate-300">{rows}</tbody>
