@@ -126,7 +126,7 @@ def generate_stats_mensuelles(df):
             <td class="px-6 py-3 text-center text-xs text-white">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
             <td class="px-6 py-3 text-center text-xs text-white">{row['Cote_Moy']:.2f}</td>
             <td class="px-6 py-3 text-center text-xs text-white">{row['Yield']:.1f}%</td>
-            <td class="px-6 py-3 text-center text-xs {'text-emerald-400' if row['PNL'] >= 0 else 'text-red-400'}">{row['PNL']:.2f} €</td>
+            <td class="px-6 py-3 text-center text-xs {'text-emerald-500' if row['PNL'] >= 0 else 'text-red-500'}">{row['PNL']:.2f} €</td>
         </tr>'''
 
     return f'''
