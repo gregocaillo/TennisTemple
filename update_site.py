@@ -134,13 +134,13 @@ def generate_stats_mensuelles(df):
         <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
             <thead class="bg-slate-950 text-emerald-400 uppercase text-[10px]">
                 <tr>
-                    <th class="px-6 py-4 text-center">Mois</th>
-                    <th class="px-6 py-4 text-center">Paris</th>
-                    <th class="px-6 py-4 text-center">Gagnés</th>
-                    <th class="px-6 py-4 text-center">Réussite</th>
-                    <th class="px-6 py-4 text-center">Cote Moy.</th>
-                    <th class="px-6 py-4 text-center">Yield</th>
-                    <th class="px-6 py-4 text-center">Gains/Pertes</th>
+                    <th class="px-6 py-4 text-center text-sm">Mois</th>
+                    <th class="px-6 py-4 text-center text-sm">Paris</th>
+                    <th class="px-6 py-4 text-center text-sm">Gagnés</th>
+                    <th class="px-6 py-4 text-center text-sm">Réussite</th>
+                    <th class="px-6 py-4 text-center text-sm">Cote Moy.</th>
+                    <th class="px-6 py-4 text-center text-sm">Yield</th>
+                    <th class="px-6 py-4 text-center text-sm">Gains/Pertes</th>
                 </tr>
             </thead>
             <tbody class="text-slate-300 divide-y divide-slate-800">{rows}</tbody>
