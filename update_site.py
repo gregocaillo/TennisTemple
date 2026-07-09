@@ -132,7 +132,7 @@ def generate_stats_mensuelles(df):
     return f'''
     <div class="overflow-x-auto mb-10">
         <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
-            <thead class="bg-slate-950 text-emerald-400 uppercase text-[10px]">
+            <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
                 <tr>
                     <th class="px-6 py-4 text-center text-xs">Mois</th>
                     <th class="px-6 py-4 text-center text-xs">Nombre paris</th>
