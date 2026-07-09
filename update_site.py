@@ -18,7 +18,7 @@ def generate_pronos_html(df):
     html_cards = '<div class="grid grid-cols-1 md:grid-cols-3 gap-6">'
 
     if df_en_cours.empty:
-        html_cards += '<p class="text-slate-500 text-center col-span-full">Aucun prono en cours pour le moment.</p>'
+        html_cards += '<p class="text-slate-500 text-center col-span-full">Aucun prono public aujourd\'hui</p>'
     else:
         for _, row in df_en_cours.iterrows():
             html_cards += f'''
@@ -95,6 +95,54 @@ def generate_perf_table(df):
         <tbody class="text-slate-300">{rows}</tbody>
     </table>'''
 
+def generate_stats_mensuelles(df):
+    """Génère le tableau statistique mensuel."""
+    # Filtrer uniquement les paris terminés
+    df_term = df[df['Résultat'].isin(['Gagné', 'Perdu'])].copy()
+    if df_term.empty:
+        return ""
+
+    df_term['Mois'] = df_term['Date'].dt.to_period('M')
+    stats = df_term.groupby('Mois').apply(lambda x: pd.Series({
+        'Nb': len(x),
+        'Gagnés': len(x[x['Résultat'] == 'Gagné']),
+        'Cote_Moy': x['Cote'].mean(),
+        'Yield': (x['Gain/Perte'].sum() / x['Mise'].sum()) * 100 if x['Mise'].sum() != 0 else 0,
+        'PNL': x['Gain/Perte'].sum()
+    })).reset_index()
+
+    stats = stats.sort_values(by='Mois', ascending=False)
+    
+    rows = ""
+    for _, row in stats.iterrows():
+        rows += f'''
+        <tr class="border-b border-slate-800 text-xs">
+            <td class="px-6 py-3">{row['Mois'].strftime('%m/%Y')}</td>
+            <td class="px-6 py-3 text-center">{row['Nb']}</td>
+            <td class="px-6 py-3 text-center">{row['Gagnés']}</td>
+            <td class="px-6 py-3 text-center">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
+            <td class="px-6 py-3 text-center">{row['Cote_Moy']:.2f}</td>
+            <td class="px-6 py-3 text-center">{row['Yield']:.1f}%</td>
+            <td class="px-6 py-3 text-right font-bold {'text-emerald-400' if row['PNL'] >= 0 else 'text-red-400'}">{row['PNL']:.2f} €</td>
+        </tr>'''
+
+    return f'''
+    <div class="overflow-x-auto mb-10">
+        <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
+            <thead class="bg-slate-950 text-emerald-400 uppercase text-[10px]">
+                <tr>
+                    <th class="px-6 py-4">Mois</th>
+                    <th class="px-6 py-4 text-center">Paris</th>
+                    <th class="px-6 py-4 text-center">Gagnés</th>
+                    <th class="px-6 py-4 text-center">Réussite</th>
+                    <th class="px-6 py-4 text-center">Cote Moy.</th>
+                    <th class="px-6 py-4 text-center">Yield</th>
+                    <th class="px-6 py-4 text-right">P&L</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300 divide-y divide-slate-800">{rows}</tbody>
+        </table>
+    </div>'''
 
 def generate_maj_date():
     """Génère le texte 'Dernière mise à jour' avec la date du jour"""
@@ -211,7 +259,6 @@ def get_audit_html(db_path):
     </script>
     '''
 
-
 def push_to_github(repo_path='.', commit_message=None):
     """Commit et push les changements sur GitHub, uniquement s'il y en a."""
     if commit_message is None:
@@ -234,7 +281,6 @@ def push_to_github(repo_path='.', commit_message=None):
     except subprocess.CalledProcessError as e:
         print(f"Erreur lors du push GitHub : {e}")
 
-
 def mettre_a_jour_site():
     conn = sqlite3.connect(DB_PATH)
     query = """
@@ -248,6 +294,7 @@ def mettre_a_jour_site():
     df['Date'] = pd.to_datetime(df['Date'], format='mixed', utc=True)
 
     pronos_html = generate_pronos_html(df)
+    stats_html = generate_stats_mensuelles(df)
     perf_html = generate_perf_table(df)
     audit_html = get_audit_html(DB_PATH)
     maj_date_html = generate_maj_date()
@@ -257,6 +304,7 @@ def mettre_a_jour_site():
             contenu = f.read()
 
         contenu = re.sub(r'<!-- Début des paris en cours -->.*?<!-- Fin des paris en cours -->', f'<!-- Début des paris en cours -->\n{pronos_html}\n<!-- Fin des paris en cours -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début des statistiques mensuelles -->.*?<!-- Fin des statistiques mensuelles -->', f'<!-- Début des statistiques mensuelles -->\n{stats_html}\n<!-- Fin des statistiques mensuelles -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début des performances -->.*?<!-- Fin des performances -->', f'<!-- Début des performances -->\n{perf_html}\n<!-- Fin des performances -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début du registre -->.*?<!-- Fin du registre -->', f'<!-- Début du registre -->\n{audit_html}\n<!-- Fin du registre -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début date maj -->.*?<!-- Fin date maj -->', f'<!-- Début date maj -->{maj_date_html}<!-- Fin date maj -->', contenu, flags=re.DOTALL)
@@ -265,7 +313,6 @@ def mettre_a_jour_site():
             f.write(contenu)
 
     push_to_github()
-
 
 if __name__ == "__main__":
     mettre_a_jour_site()
