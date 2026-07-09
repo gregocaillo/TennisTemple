@@ -72,24 +72,24 @@ def generate_perf_table(df):
 
         rows += f'''
         <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
-            <td class="px-6 py-4 text-center text-sm text-white">{date_fmt}</td>
-            <td class="px-6 py-4 text-center text-sm text-white">{row['Match']}</td>
-            <td class="px-6 py-4 text-center text-sm text-yellow-300">{row['Pari']}</td>
-            <td class="px-6 py-4 text-center text-sm text-white">{cote_fmt}</td>
-            <td class="px-6 py-4 text-center text-sm {color_class}">{row['Résultat']}</td>
-            <td class="px-6 py-4 text-center text-sm {color_class}">{gain_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs text-white">{date_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs text-white">{row['Match']}</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">{row['Pari']}</td>
+            <td class="px-6 py-4 text-center text-xs text-white">{cote_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs {color_class}">{row['Résultat']}</td>
+            <td class="px-6 py-4 text-center text-xs {color_class}">{gain_fmt}</td>
         </tr>'''
 
     return f'''
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
-                <th class="px-6 py-4 text-center text-sm">Date</th>
-                <th class="px-6 py-4 text-center text-sm">Match</th>
-                <th class="px-6 py-4 text-center text-sm">Pari</th>
-                <th class="px-6 py-4 text-center text-sm">Cote</th>
-                <th class="px-6 py-4 text-center text-sm">Statut</th>
-                <th class="px-6 py-4 text-center text-sm">Gains/Pertes</th>
+                <th class="px-6 py-4 text-center text-xs">Date</th>
+                <th class="px-6 py-4 text-center text-xs">Match</th>
+                <th class="px-6 py-4 text-center text-xs">Pari</th>
+                <th class="px-6 py-4 text-center text-xs">Cote</th>
+                <th class="px-6 py-4 text-center text-xs">Statut</th>
+                <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
             </tr>
         </thead>
         <tbody class="text-slate-300">{rows}</tbody>
@@ -120,13 +120,13 @@ def generate_stats_mensuelles(df):
         
         rows += f'''
         <tr class="border-b border-slate-800 text-xs">
-            <td class="px-6 py-3 text-center">{row['Mois'].strftime('%m/%Y')}</td>
-            <td class="px-6 py-3 text-center">{nb_paris}</td>
-            <td class="px-6 py-3 text-center">{nb_gagnes}</td>
-            <td class="px-6 py-3 text-center">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
-            <td class="px-6 py-3 text-center">{row['Cote_Moy']:.2f}</td>
-            <td class="px-6 py-3 text-center">{row['Yield']:.1f}%</td>
-            <td class="px-6 py-3 text-center font-bold {'text-emerald-400' if row['PNL'] >= 0 else 'text-red-400'}">{row['PNL']:.2f} €</td>
+            <td class="px-6 py-3 text-center text-xs">{row['Mois'].strftime('%m/%Y')}</td>
+            <td class="px-6 py-3 text-center text-xs">{nb_paris}</td>
+            <td class="px-6 py-3 text-center text-xs">{nb_gagnes}</td>
+            <td class="px-6 py-3 text-center text-xs">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
+            <td class="px-6 py-3 text-center text-xs">{row['Cote_Moy']:.2f}</td>
+            <td class="px-6 py-3 text-center text-xs">{row['Yield']:.1f}%</td>
+            <td class="px-6 py-3 text-center text-xs font-bold {'text-emerald-400' if row['PNL'] >= 0 else 'text-red-400'}">{row['PNL']:.2f} €</td>
         </tr>'''
 
     return f'''
@@ -134,13 +134,13 @@ def generate_stats_mensuelles(df):
         <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
             <thead class="bg-slate-950 text-emerald-400 uppercase text-[10px]">
                 <tr>
-                    <th class="px-6 py-4 text-center text-sm">Mois</th>
-                    <th class="px-6 py-4 text-center text-sm">Paris</th>
-                    <th class="px-6 py-4 text-center text-sm">Gagnés</th>
-                    <th class="px-6 py-4 text-center text-sm">Réussite</th>
-                    <th class="px-6 py-4 text-center text-sm">Cote Moy.</th>
-                    <th class="px-6 py-4 text-center text-sm">Yield</th>
-                    <th class="px-6 py-4 text-center text-sm">Gains/Pertes</th>
+                    <th class="px-6 py-4 text-center text-xs">Mois</th>
+                    <th class="px-6 py-4 text-center text-xs">Paris</th>
+                    <th class="px-6 py-4 text-center text-xs">Gagnés</th>
+                    <th class="px-6 py-4 text-center text-xs">Réussite</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Moy.</th>
+                    <th class="px-6 py-4 text-center text-xs">Yield</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
                 </tr>
             </thead>
             <tbody class="text-slate-300 divide-y divide-slate-800">{rows}</tbody>
