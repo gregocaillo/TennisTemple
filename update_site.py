@@ -135,10 +135,10 @@ def generate_stats_mensuelles(df):
             <thead class="bg-slate-950 text-emerald-400 uppercase text-[10px]">
                 <tr>
                     <th class="px-6 py-4 text-center text-xs">Mois</th>
-                    <th class="px-6 py-4 text-center text-xs">Paris</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre de paris</th>
                     <th class="px-6 py-4 text-center text-xs">Gagnés</th>
-                    <th class="px-6 py-4 text-center text-xs">Réussite</th>
-                    <th class="px-6 py-4 text-center text-xs">Cote Moy.</th>
+                    <th class="px-6 py-4 text-center text-xs">Taux de réussite</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Moyenne</th>
                     <th class="px-6 py-4 text-center text-xs">Yield</th>
                     <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
                 </tr>
