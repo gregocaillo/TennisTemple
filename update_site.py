@@ -120,12 +120,12 @@ def generate_stats_mensuelles(df):
         
         rows += f'''
         <tr class="border-b border-slate-800 text-xs">
-            <td class="px-6 py-3 text-center text-xs">{row['Mois'].strftime('%m/%Y')}</td>
-            <td class="px-6 py-3 text-center text-xs">{nb_paris}</td>
-            <td class="px-6 py-3 text-center text-xs">{nb_gagnes}</td>
-            <td class="px-6 py-3 text-center text-xs">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
-            <td class="px-6 py-3 text-center text-xs">{row['Cote_Moy']:.2f}</td>
-            <td class="px-6 py-3 text-center text-xs">{row['Yield']:.1f}%</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{row['Mois'].strftime('%m/%Y')}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{nb_paris}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{nb_gagnes}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{row['Cote_Moy']:.2f}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{row['Yield']:.1f}%</td>
             <td class="px-6 py-3 text-center text-xs font-bold {'text-emerald-400' if row['PNL'] >= 0 else 'text-red-400'}">{row['PNL']:.2f} €</td>
         </tr>'''
 
