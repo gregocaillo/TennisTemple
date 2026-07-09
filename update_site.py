@@ -84,12 +84,12 @@ def generate_perf_table(df):
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
-                <th class="px-6 py-4 text-center">Date</th>
-                <th class="px-6 py-4 text-center">Match</th>
-                <th class="px-6 py-4 text-center">Pari</th>
-                <th class="px-6 py-4 text-center">Cote</th>
-                <th class="px-6 py-4 text-center">Statut</th>
-                <th class="px-6 py-4 text-center">Gains/Pertes</th>
+                <th class="px-6 py-4 text-center text-sm">Date</th>
+                <th class="px-6 py-4 text-center text-sm">Match</th>
+                <th class="px-6 py-4 text-center text-sm">Pari</th>
+                <th class="px-6 py-4 text-center text-sm">Cote</th>
+                <th class="px-6 py-4 text-center text-sm">Statut</th>
+                <th class="px-6 py-4 text-center text-sm">Gains/Pertes</th>
             </tr>
         </thead>
         <tbody class="text-slate-300">{rows}</tbody>
