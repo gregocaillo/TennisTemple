@@ -157,6 +157,27 @@
 
             <!-- Début des paris en cours -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 card-hover">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <span class="text-emerald-400 text-xs font-bold uppercase">wimb</span>
+                    <h3 class="text-sm font-bold mt-1">Jannik Sinner vs Novak Djokovic</h3>
+                </div>
+            </div>
+            
+            <div class="bg-slate-950 rounded-xl p-4 mb-4">
+                <div class="flex justify-between text-xs">
+                    <span class="text-base text-white">Pari :</span>
+                    <span class="text-base font-bold text-yellow-300">Jannik Sinner</span>
+                </div>
+            </div>
+            
+            <div class="flex justify-between text-xs">
+                <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">1.21</span></div>
+                <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">5.00 €</span></div>
+            </div>
+        </div>
+
         <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 flex flex-col justify-center items-center text-center min-h-[148px] card-hover">
             <div class="text-3xl mb-2 opacity-50">🔒</div>
             <h4 class="text-sm font-bold">Match Premium</h4>
@@ -204,7 +225,7 @@
                     <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800"></tbody>
+            <tbody class="divide-y divide-slate-800"><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-10 21:35:30</td><td class="px-4 py-3 text-white text-xs text-center">Jannik Sinner @1.21</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">5a06130ddb937050344b3af94f58dc385cd52e36eb2409a44f05b8fd24faf898</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr></tbody>
         </table>
     </div>
     <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
@@ -216,14 +237,14 @@
         </div>
         <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
             <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
-            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4"></select>
+            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4"><option value="0">2026-07-10 21:35:30 — Jannik Sinner @1.21</option></select>
             <button onclick="verifierHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
             <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
         </div>
     </div>
     <script>
-        const AUDIT_ROWS_DATA = [];
-        const AUDIT_ENTRIES = [];
+        const AUDIT_ROWS_DATA = ["('wimb', '2026-07-10', 'Jannik Sinner vs Novak Djokovic', 'Jannik Sinner', 1.21, 5.0)"];
+        const AUDIT_ENTRIES = [{"date": "2026-07-10 21:35:30", "pari": "Jannik Sinner @1.21", "hash": "5a06130ddb937050344b3af94f58dc385cd52e36eb2409a44f05b8fd24faf898", "nrows": 1}];
         async function verifierHash() {
             const idx = parseInt(document.getElementById('select-verif').value, 10);
             const entry = AUDIT_ENTRIES[idx];
