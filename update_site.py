@@ -10,18 +10,15 @@ DB_PATH = os.path.join('..', 'tennis_stats.db')
 REGISTRE_PATH = os.path.join('..', 'registre_audits.txt')
 HTML_PATH = 'index.html'
 
-
 def generate_pronos_html(df):
     """Génère les cartes des pronostics en cours (grille de 3)"""
     df_en_cours = df[df['Résultat'] == 'En cours'].copy()
 
     html_cards = '<div class="grid grid-cols-1 md:grid-cols-3 gap-6">'
 
-    if df_en_cours.empty:
-        html_cards += '<p class="text-slate-500 text-center col-span-full">Aucun prono public aujourd\'hui</p>'
-    else:
-        for _, row in df_en_cours.iterrows():
-            html_cards += f'''
+    # La condition qui générait le paragraphe a été supprimée
+    for _, row in df_en_cours.iterrows():
+        html_cards += f'''
         <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 card-hover">
             <div class="flex justify-between items-start mb-4">
                 <div>
@@ -53,7 +50,6 @@ def generate_pronos_html(df):
     </div>
 '''
     return html_cards
-
 
 def generate_perf_table(df):
     """Génère le tableau avec une harmonisation complète des polices et tailles."""
