@@ -137,11 +137,14 @@ def mettre_a_jour_resultats_matchs():
                 params={"apiKey": ODDS_API_KEY, "daysFrom": 3}
             )
             if resp.status_code == 200:
-                termines_ce_tournoi = [m for m in resp.json() if m.get("completed")]
-                print(f"  {key} : {len(termines_ce_tournoi)} match(s) terminé(s) trouvé(s) (3 derniers jours)")
+                tous_evenements = resp.json()
+                termines_ce_tournoi = [m for m in tous_evenements if m.get("completed")]
+                print(f"  {key} : {len(tous_evenements)} événement(s) au total, {len(termines_ce_tournoi)} terminé(s)")
+                if key == "tennis_atp_wimbledon" and tous_evenements:
+                    print(f"    Exemple brut : {json.dumps(tous_evenements[0], ensure_ascii=False)[:400]}")
                 matchs_termines.extend(termines_ce_tournoi)
             else:
-                print(f"  ⚠ Erreur API scores pour {key} : {resp.status_code}")
+                print(f"  ⚠ Erreur API scores pour {key} : {resp.status_code} — {resp.text[:200]}")
         except requests.RequestException:
             continue
 
