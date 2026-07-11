@@ -120,9 +120,10 @@ def mettre_a_jour_resultats_matchs():
         return
 
     try:
-        resp_sports = requests.get(f"https://api.the-odds-api.com/v4/sports/?apiKey={ODDS_API_KEY}")
+        resp_sports = requests.get(f"https://api.the-odds-api.com/v4/sports/?apiKey={ODDS_API_KEY}&all=true")
         resp_sports.raise_for_status()
         atp_keys = [s["key"] for s in resp_sports.json() if "tennis_atp" in s["key"]]
+        print(f"Tournoi(s) ATP détecté(s) pour la vérification des résultats : {atp_keys}")
     except requests.RequestException as e:
         print(f"⚠ Erreur lors de la récupération des tournois ATP : {e}")
         conn.close()
@@ -136,7 +137,11 @@ def mettre_a_jour_resultats_matchs():
                 params={"apiKey": ODDS_API_KEY, "daysFrom": 3}
             )
             if resp.status_code == 200:
-                matchs_termines.extend([m for m in resp.json() if m.get("completed")])
+                termines_ce_tournoi = [m for m in resp.json() if m.get("completed")]
+                print(f"  {key} : {len(termines_ce_tournoi)} match(s) terminé(s) trouvé(s) (3 derniers jours)")
+                matchs_termines.extend(termines_ce_tournoi)
+            else:
+                print(f"  ⚠ Erreur API scores pour {key} : {resp.status_code}")
         except requests.RequestException:
             continue
 
