@@ -227,6 +227,24 @@
                 <p class="text-slate-400 mt-4 text-xs">Mises à jour tous les matins ~ 7h</p>
             </div>
 
+            <!-- Début stats pronos -->
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
+            <p class="text-2xl font-bold text-white">1</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
+            <p class="text-2xl font-bold text-white">1</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
+            <p class="text-2xl font-bold text-emerald-400">+12.1%</p>
+        </div>
+    </div>
+<!-- Fin stats pronos -->
+
             <div id="pronos-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
@@ -237,6 +255,12 @@
                 // Le client Supabase global est défini dans le <head> (variable supabaseClient)
 
                 let authMode = 'login'; // 'login' ou 'signup'
+
+                function formaterDateHeure(isoString) {
+                    if (!isoString) return '—';
+                    const d = new Date(isoString);
+                    return d.toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                }
 
                 async function chargerPronos() {
                     const grid = document.getElementById('pronos-grid');
@@ -271,10 +295,13 @@
                                     <span class="text-base font-bold text-yellow-300">${row.pari}</span>
                                 </div>
                             </div>
-                            <div class="flex justify-between text-xs">
+                            <div class="flex justify-between text-xs mb-3">
                                 <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">${Number(row.cote).toFixed(2)}</span></div>
                                 <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">${Number(row.mise).toFixed(2)} €</span></div>
                             </div>
+                            <p class="text-[10px] text-slate-500 border-t border-slate-800 pt-3">
+                                <i class="fa-regular fa-clock mr-1"></i>Mis en ligne le ${formaterDateHeure(row.created_at)}
+                            </p>
                         </div>`).join('');
 
                     verifierPronosNonVus(data);

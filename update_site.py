@@ -11,6 +11,7 @@ import json
 
 DB_PATH = os.path.join('..', 'tennis_stats.db')
 REGISTRE_PATH = os.path.join('..', 'registre_audits.txt')
+MATCHS_JSON_PATH = os.path.join('..', 'matchs_atp_betclic.json')
 HTML_PATH = 'index.html'
 
 # Charge les clés depuis secrets_local.py s'il existe (fichier non versionné, voir .gitignore).
@@ -36,6 +37,50 @@ GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 EMAIL_DESTINATAIRE = os.environ.get("EMAIL_DESTINATAIRE", GMAIL_ADDRESS)
 
 DERNIER_CHECK_PATH = os.path.join('..', 'dernier_check_inscriptions.txt')
+
+
+def lire_nombre_matchs_analyses():
+    """Compte le nombre de matchs présents dans le fichier JSON d'analyse (liste de matchs)."""
+    try:
+        with open(MATCHS_JSON_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return len(data) if isinstance(data, list) else 0
+    except (FileNotFoundError, json.JSONDecodeError):
+        return 0
+
+
+def generate_pronos_stats_banner(df):
+    """Génère le bandeau de stats génériques affiché au-dessus des cartes de pronostics."""
+    nb_matchs_analyses = lire_nombre_matchs_analyses()
+
+    df_en_cours = df[df['Résultat'] == 'En cours'].copy()
+    nb_paris_proposes = len(df_en_cours)
+
+    df_avec_prob = df_en_cours.dropna(subset=['ProbPredite'])
+    if not df_avec_prob.empty:
+        valeurs = (df_avec_prob['Cote'] * df_avec_prob['ProbPredite'] - 1) * 100
+        value_moyenne = valeurs.mean()
+        value_txt = f"+{value_moyenne:.1f}%" if value_moyenne >= 0 else f"{value_moyenne:.1f}%"
+        value_couleur = "text-emerald-400" if value_moyenne >= 0 else "text-red-400"
+    else:
+        value_txt = "—"
+        value_couleur = "text-white"
+
+    return f'''
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
+            <p class="text-2xl font-bold text-white">{nb_matchs_analyses}</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
+            <p class="text-2xl font-bold text-white">{nb_paris_proposes}</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
+            <p class="text-2xl font-bold {value_couleur}">{value_txt}</p>
+        </div>
+    </div>'''
 
 
 def push_pronos_premium(df):
@@ -489,7 +534,7 @@ def mettre_a_jour_site():
     query = """
         SELECT nom_tournoi AS 'Tournoi', date_match AS 'Date', match_intitule AS 'Match', 
                joueur_choisi AS 'Pari', mise AS 'Mise', cote_jouee AS 'Cote', 
-               statut AS 'Résultat', gain_net AS 'Gain/Perte' 
+               statut AS 'Résultat', gain_net AS 'Gain/Perte', prob_predite AS 'ProbPredite'
         FROM Historique_Paris
     """
     df = pd.read_sql_query(query, conn)
@@ -499,6 +544,7 @@ def mettre_a_jour_site():
     # Les pronos "En cours" ne sont plus écrits dans le HTML : ils partent vers Supabase,
     # où seuls les comptes premium authentifiés peuvent les lire (voir index.html).
     push_pronos_premium(df)
+    pronos_stats_html = generate_pronos_stats_banner(df)
 
     # Vérifie si de nouveaux visiteurs se sont inscrits depuis le dernier passage,
     # et vous envoie un email si c'est le cas.
@@ -514,6 +560,7 @@ def mettre_a_jour_site():
         with open(HTML_PATH, 'r', encoding='utf-8') as f:
             contenu = f.read()
 
+        contenu = re.sub(r'<!-- Début stats pronos -->.*?<!-- Fin stats pronos -->', f'<!-- Début stats pronos -->\n{pronos_stats_html}\n<!-- Fin stats pronos -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début bandeau stats -->.*?<!-- Fin bandeau stats -->', f'<!-- Début bandeau stats -->\n{banniere_html}\n<!-- Fin bandeau stats -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début des statistiques mensuelles -->.*?<!-- Fin des statistiques mensuelles -->', f'<!-- Début des statistiques mensuelles -->\n{stats_html}\n<!-- Fin des statistiques mensuelles -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début des performances -->.*?<!-- Fin des performances -->', f'<!-- Début des performances -->\n{perf_html}\n<!-- Fin des performances -->', contenu, flags=re.DOTALL)
