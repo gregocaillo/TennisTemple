@@ -169,20 +169,14 @@
 
                 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+                let authMode = 'login'; // 'login' ou 'signup'
+
                 async function chargerPronos() {
                     const grid = document.getElementById('pronos-grid');
                     const { data: { session } } = await supabaseClient.auth.getSession();
 
                     if (!session) {
-                        grid.innerHTML = `
-                            <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-8 text-center max-w-md mx-auto">
-                                <div class="text-3xl mb-3 opacity-50">🔒</div>
-                                <h4 class="text-sm font-bold mb-4">Pronostics réservés aux membres du Club</h4>
-                                <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                                <input id="pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                                <button onclick="loginSupabase()" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
-                                <a href="#tarifs" class="block text-emerald-400 text-xs mt-4 hover:underline">Pas encore abonné ? Voir les tarifs</a>
-                            </div>`;
+                        renderAuthCard();
                         return;
                     }
 
@@ -217,12 +211,71 @@
                         </div>`).join('');
                 }
 
+                function renderAuthCard(message) {
+                    const grid = document.getElementById('pronos-grid');
+                    const estConnexion = authMode === 'login';
+
+                    grid.innerHTML = `
+                        <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-8 text-center max-w-md mx-auto">
+                            <div class="text-3xl mb-3 opacity-50">🔒</div>
+                            <h4 class="text-sm font-bold mb-4">${estConnexion ? 'Pronostics réservés aux membres du Club' : 'Créer votre compte membre'}</h4>
+
+                            ${message ? `<p class="text-emerald-400 text-xs mb-3">${message}</p>` : ''}
+
+                            <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                            <input id="pass" type="password" placeholder="mot de passe (6 caractères min.)" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+
+                            <button onclick="${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">
+                                ${estConnexion ? 'Se connecter' : 'Créer mon compte'}
+                            </button>
+
+                            <button onclick="switchAuthMode()" class="text-slate-400 text-xs mt-3 hover:underline w-full">
+                                ${estConnexion ? "Pas encore de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
+                            </button>
+
+                            <a href="#tarifs" class="block text-emerald-400 text-xs mt-4 hover:underline">Voir les tarifs d'abonnement</a>
+                        </div>`;
+                }
+
+                function switchAuthMode() {
+                    authMode = authMode === 'login' ? 'signup' : 'login';
+                    renderAuthCard();
+                }
+
                 async function loginSupabase() {
                     const email = document.getElementById('email').value;
                     const password = document.getElementById('pass').value;
                     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) { alert("Identifiants incorrects."); return; }
                     chargerPronos();
+                }
+
+                async function signupSupabase() {
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('pass').value;
+
+                    if (!email || password.length < 6) {
+                        alert("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+
+                    if (error) {
+                        alert("Erreur lors de la création du compte : " + error.message);
+                        return;
+                    }
+
+                    // Si la confirmation par email est désactivée dans Supabase, une session est
+                    // immédiatement renvoyée et l'utilisateur peut voir les pronos (encore vide,
+                    // le temps qu'un admin active son compte premium).
+                    if (data.session) {
+                        authMode = 'login';
+                        chargerPronos();
+                    } else {
+                        authMode = 'login';
+                        renderAuthCard("Compte créé ! Vérifiez votre email pour confirmer votre inscription, puis connectez-vous.");
+                    }
                 }
 
                 chargerPronos();
