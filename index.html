@@ -98,6 +98,7 @@
                     <p id="nav-auth-title-desktop" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
                     <input id="nav-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
                     <input id="nav-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="nav-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
                     <button id="nav-auth-submit-desktop" onclick="navAuthSubmit(false)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
                     <button id="nav-auth-toggle-desktop" onclick="toggleNavAuthMode(false)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
                     <p id="nav-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
@@ -128,6 +129,7 @@
                     <p id="nav-auth-title-mobile" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
                     <input id="mobile-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
                     <input id="mobile-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="mobile-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
                     <button id="nav-auth-submit-mobile" onclick="navAuthSubmit(true)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
                     <button id="nav-auth-toggle-mobile" onclick="toggleNavAuthMode(true)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
                     <p id="mobile-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
@@ -258,6 +260,7 @@
 
                             <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
                             <input id="pass" type="password" placeholder="mot de passe (6 caractères min.)" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                            ${estConnexion ? '' : '<input id="pass-confirm" type="password" placeholder="confirmer le mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">'}
 
                             <button onclick="${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">
                                 ${estConnexion ? 'Se connecter' : 'Créer mon compte'}
@@ -288,9 +291,15 @@
                 async function signupSupabase() {
                     const email = document.getElementById('email').value;
                     const password = document.getElementById('pass').value;
+                    const passwordConfirm = document.getElementById('pass-confirm').value;
 
                     if (!email || password.length < 6) {
                         alert("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                        return;
+                    }
+
+                    if (password !== passwordConfirm) {
+                        alert("Les deux mots de passe ne correspondent pas.");
                         return;
                     }
 
@@ -507,6 +516,7 @@
             const submitBtn = document.getElementById(`nav-auth-submit-${suffix}`);
             const toggleBtn = document.getElementById(`nav-auth-toggle-${suffix}`);
             const errorEl = document.getElementById(mobile ? 'mobile-login-error' : 'nav-login-error');
+            const confirmEl = document.getElementById(mobile ? 'mobile-login-pass-confirm' : 'nav-login-pass-confirm');
 
             errorEl?.classList.add('hidden');
             errorEl?.classList.remove('text-emerald-400');
@@ -516,10 +526,12 @@
                 titleEl.textContent = 'Connexion membre';
                 submitBtn.textContent = 'Se connecter';
                 toggleBtn.textContent = "Pas encore de compte ? S'inscrire";
+                confirmEl?.classList.add('hidden');
             } else {
                 titleEl.textContent = 'Créer un compte';
                 submitBtn.textContent = 'Créer mon compte';
                 toggleBtn.textContent = "Déjà un compte ? Se connecter";
+                confirmEl?.classList.remove('hidden');
             }
         }
 
@@ -541,8 +553,14 @@
                     return;
                 }
             } else {
+                const passwordConfirm = document.getElementById(mobile ? 'mobile-login-pass-confirm' : 'nav-login-pass-confirm').value;
+
                 if (!email || password.length < 6) {
                     alert("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                    return;
+                }
+                if (password !== passwordConfirm) {
+                    alert("Les deux mots de passe ne correspondent pas.");
                     return;
                 }
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
