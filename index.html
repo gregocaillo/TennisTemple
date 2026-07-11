@@ -71,12 +71,17 @@
                 <a href="#roi" class="hover:text-yellow-400 transition-colors">Performances</a>
                 <a href="#audit" class="hover:text-yellow-400 transition-colors">Audit</a>
                 <a href="#tarifs" class="hover:text-yellow-400 transition-colors">Tarifs</a>
+                <a href="admin.html" id="admin-link-desktop" class="hidden text-emerald-400 hover:text-emerald-300 transition-colors"><i class="fa-solid fa-user-shield mr-1"></i>Admin</a>
             </div>
 
-            <a href="#tarifs"
+            <a href="#tarifs" id="cta-tarifs-desktop"
                class="hidden md:block bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold px-6 py-3 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-500/30">
                 Rejoindre le Club
             </a>
+            <button id="logout-btn-desktop" onclick="deconnexionGlobale()"
+               class="hidden md:block border border-slate-600 hover:border-red-400 hover:text-red-400 font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
+                Se déconnecter
+            </button>
 
             <button id="mobile-menu-btn" class="md:hidden text-3xl text-slate-200 hover:text-yellow-400 transition-colors">
                 <i class="fa-solid fa-bars"></i>
@@ -90,9 +95,13 @@
                 <a href="#roi" class="py-2 hover:text-yellow-400 transition-colors">Performances</a>
                 <a href="#audit" class="py-2 hover:text-yellow-400 transition-colors">Audit Blockchain</a>
                 <a href="#tarifs" class="py-2 hover:text-yellow-400 transition-colors">Tarifs</a>
-                <a href="#tarifs" class="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-center py-4 rounded-2xl font-bold text-slate-950">
+                <a href="admin.html" id="admin-link-mobile" class="hidden py-2 text-emerald-400"><i class="fa-solid fa-user-shield mr-1"></i>Admin</a>
+                <a href="#tarifs" id="cta-tarifs-mobile" class="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-center py-4 rounded-2xl font-bold text-slate-950">
                     Rejoindre le Club
                 </a>
+                <button id="logout-btn-mobile" onclick="deconnexionGlobale()" class="hidden mt-4 border border-slate-600 text-center py-4 rounded-2xl font-bold text-slate-300">
+                    Se déconnecter
+                </button>
             </div>
         </div>
     </nav>
@@ -441,6 +450,43 @@
                 }
             });
         });
+
+        // Client Supabase partagé pour la nav (session commune avec le script de la section Pronostics)
+        const navSupabaseClient = window.supabase.createClient(
+            'https://eldkwsoucmfgvofsvshc.supabase.co',
+            'sb_publishable_yR4T32bvVYiH2CNUzSKiJg_eb-Trm3M'
+        );
+
+        async function deconnexionGlobale() {
+            await navSupabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        // Ajuste l'affichage de la nav selon l'état de connexion (bouton déconnexion, lien admin)
+        (async () => {
+            try {
+                const { data: { session } } = await navSupabaseClient.auth.getSession();
+                if (!session) return;
+
+                document.getElementById('cta-tarifs-desktop')?.classList.add('hidden');
+                document.getElementById('logout-btn-desktop')?.classList.remove('hidden');
+                document.getElementById('cta-tarifs-mobile')?.classList.add('hidden');
+                document.getElementById('logout-btn-mobile')?.classList.remove('hidden');
+
+                const { data: profil } = await navSupabaseClient
+                    .from('profiles')
+                    .select('is_admin')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profil && profil.is_admin) {
+                    document.getElementById('admin-link-desktop')?.classList.remove('hidden');
+                    document.getElementById('admin-link-mobile')?.classList.remove('hidden');
+                }
+            } catch (e) {
+                // silencieux : pas grave si la vérification échoue
+            }
+        })();
     </script>
 </body>
 </html>
