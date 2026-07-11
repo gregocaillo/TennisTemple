@@ -13,6 +13,13 @@ DB_PATH = os.path.join('..', 'tennis_stats.db')
 REGISTRE_PATH = os.path.join('..', 'registre_audits.txt')
 HTML_PATH = 'index.html'
 
+# Charge les clés depuis secrets_local.py s'il existe (fichier non versionné, voir .gitignore).
+# Sinon, les variables d'environnement système classiques prennent le relais.
+try:
+    import secrets_local
+except ImportError:
+    pass
+
 # ==== CONFIG SUPABASE ====
 # La clé SERVICE (secret) ne doit JAMAIS être commitée sur GitHub.
 # Définissez-la en variable d'environnement avant de lancer le script :
