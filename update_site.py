@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import re
 import subprocess
+import requests
 from datetime import datetime
 import json
 
@@ -10,46 +11,47 @@ DB_PATH = os.path.join('..', 'tennis_stats.db')
 REGISTRE_PATH = os.path.join('..', 'registre_audits.txt')
 HTML_PATH = 'index.html'
 
-def generate_pronos_html(df):
-    """Génère les cartes des pronostics en cours (grille de 3)"""
-    df_en_cours = df[df['Résultat'] == 'En cours'].copy()
+# ==== CONFIG SUPABASE ====
+# La clé SERVICE (secret) ne doit JAMAIS être commitée sur GitHub.
+# Définissez-la en variable d'environnement avant de lancer le script :
+#   export SUPABASE_URL="https://eldkwsoucmfgvofsvshc.supabase.co"
+#   export SUPABASE_SERVICE_KEY="sb_secret_..."
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://eldkwsoucmfgvofsvshc.supabase.co")
+SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
 
-    html_cards = '<div class="grid grid-cols-1 md:grid-cols-3 gap-6">'
 
-    # La condition qui générait le paragraphe a été supprimée
+def push_pronos_premium(df):
+    """Remplace le contenu de la table pronos_premium sur Supabase par les paris 'En cours' actuels."""
+    if not SUPABASE_SERVICE_KEY:
+        print("⚠ SUPABASE_SERVICE_KEY non définie, envoi des pronos premium ignoré.")
+        return
+
+    headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    # On vide la table avant de repousser l'état actuel (évite les doublons / paris clôturés qui traînent)
+    del_resp = requests.delete(f"{SUPABASE_URL}/rest/v1/pronos_premium?id=gt.0", headers=headers)
+    if del_resp.status_code >= 300:
+        print(f"⚠ Erreur lors du vidage de pronos_premium : {del_resp.status_code} {del_resp.text}")
+
+    df_en_cours = df[df['Résultat'] == 'En cours']
     for _, row in df_en_cours.iterrows():
-        html_cards += f'''
-        <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 card-hover">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <span class="text-emerald-400 text-xs font-bold uppercase">{row['Tournoi']}</span>
-                    <h3 class="text-sm font-bold mt-1">{row['Match']}</h3>
-                </div>
-            </div>
-            
-            <div class="bg-slate-950 rounded-xl p-4 mb-4">
-                <div class="flex justify-between text-xs">
-                    <span class="text-base text-white">Pari :</span>
-                    <span class="text-base font-bold text-yellow-300">{row['Pari']}</span>
-                </div>
-            </div>
-            
-            <div class="flex justify-between text-xs">
-                <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">{row['Cote']:.2f}</span></div>
-                <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">{row['Mise']:.2f} €</span></div>
-            </div>
-        </div>
-'''
+        payload = {
+            "tournoi": row['Tournoi'],
+            "match_intitule": row['Match'],
+            "pari": row['Pari'],
+            "cote": float(row['Cote']),
+            "mise": float(row['Mise'])
+        }
+        resp = requests.post(f"{SUPABASE_URL}/rest/v1/pronos_premium", json=payload, headers=headers)
+        if resp.status_code >= 300:
+            print(f"⚠ Erreur lors de l'envoi d'un prono premium : {resp.status_code} {resp.text}")
 
-    html_cards += '''
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 flex flex-col justify-center items-center text-center min-h-[148px] card-hover">
-            <div class="text-3xl mb-2 opacity-50">🔒</div>
-            <h4 class="text-sm font-bold">Match Premium</h4>
-            <p class="text-slate-500 text-[10px]">Réservé aux membres du Club</p>
-        </div>
-    </div>
-'''
-    return html_cards
+    print(f"{len(df_en_cours)} prono(s) premium envoyé(s) à Supabase.")
+
 
 def generate_perf_table(df):
     """Génère le tableau avec une harmonisation complète des polices et tailles."""
@@ -292,7 +294,10 @@ def mettre_a_jour_site():
     conn.close()
     df['Date'] = pd.to_datetime(df['Date'], format='mixed', utc=True)
 
-    pronos_html = generate_pronos_html(df)
+    # Les pronos "En cours" ne sont plus écrits dans le HTML : ils partent vers Supabase,
+    # où seuls les comptes premium authentifiés peuvent les lire (voir index.html).
+    push_pronos_premium(df)
+
     stats_html = generate_stats_mensuelles(df)
     perf_html = generate_perf_table(df)
     audit_html = get_audit_html(DB_PATH)
@@ -302,7 +307,6 @@ def mettre_a_jour_site():
         with open(HTML_PATH, 'r', encoding='utf-8') as f:
             contenu = f.read()
 
-        contenu = re.sub(r'<!-- Début des paris en cours -->.*?<!-- Fin des paris en cours -->', f'<!-- Début des paris en cours -->\n{pronos_html}\n<!-- Fin des paris en cours -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début des statistiques mensuelles -->.*?<!-- Fin des statistiques mensuelles -->', f'<!-- Début des statistiques mensuelles -->\n{stats_html}\n<!-- Fin des statistiques mensuelles -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début des performances -->.*?<!-- Fin des performances -->', f'<!-- Début des performances -->\n{perf_html}\n<!-- Fin des performances -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début du registre -->.*?<!-- Fin du registre -->', f'<!-- Début du registre -->\n{audit_html}\n<!-- Fin du registre -->', contenu, flags=re.DOTALL)

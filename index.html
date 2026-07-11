@@ -9,6 +9,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -155,38 +156,76 @@
                 <p class="text-slate-400 mt-4 text-xs">Mises à jour tous les matins ~ 7h</p>
             </div>
 
-            <!-- Début des paris en cours -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 card-hover">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <span class="text-emerald-400 text-xs font-bold uppercase">wimb</span>
-                    <h3 class="text-sm font-bold mt-1">Jannik Sinner vs Novak Djokovic</h3>
-                </div>
+            <div id="pronos-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="col-span-full text-center text-slate-500 text-xs py-8">Chargement...</div>
             </div>
-            
-            <div class="bg-slate-950 rounded-xl p-4 mb-4">
-                <div class="flex justify-between text-xs">
-                    <span class="text-base text-white">Pari :</span>
-                    <span class="text-base font-bold text-yellow-300">Jannik Sinner</span>
-                </div>
-            </div>
-            
-            <div class="flex justify-between text-xs">
-                <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">1.21</span></div>
-                <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">5.00 €</span></div>
-            </div>
-        </div>
 
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 flex flex-col justify-center items-center text-center min-h-[148px] card-hover">
-            <div class="text-3xl mb-2 opacity-50">🔒</div>
-            <h4 class="text-sm font-bold">Match Premium</h4>
-            <p class="text-slate-500 text-[10px]">Réservé aux membres du Club</p>
-        </div>
-    </div>
+            <script>
+                // ==== CONFIG SUPABASE ====
+                // Clé publique (safe à exposer publiquement) : collez-la ci-dessous, entre les guillemets.
+                const SUPABASE_URL = 'https://eldkwsoucmfgvofsvshc.supabase.co';
+                const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yR4T32bvVYiH2CNUzSKiJg_eb-Trm3M';
 
-<!-- Fin des paris en cours -->
+                const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+                async function chargerPronos() {
+                    const grid = document.getElementById('pronos-grid');
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+
+                    if (!session) {
+                        grid.innerHTML = `
+                            <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-8 text-center max-w-md mx-auto">
+                                <div class="text-3xl mb-3 opacity-50">🔒</div>
+                                <h4 class="text-sm font-bold mb-4">Pronostics réservés aux membres du Club</h4>
+                                <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                                <input id="pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                                <button onclick="loginSupabase()" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                                <a href="#tarifs" class="block text-emerald-400 text-xs mt-4 hover:underline">Pas encore abonné ? Voir les tarifs</a>
+                            </div>`;
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('pronos_premium')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error || !data || data.length === 0) {
+                        grid.innerHTML = `<p class="col-span-full text-center text-slate-500 text-xs py-8">Aucun accès premium actif sur ce compte, ou aucun pari en cours.</p>`;
+                        return;
+                    }
+
+                    grid.innerHTML = data.map(row => `
+                        <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 card-hover">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-emerald-400 text-xs font-bold uppercase">${row.tournoi}</span>
+                                    <h3 class="text-sm font-bold mt-1">${row.match_intitule}</h3>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 rounded-xl p-4 mb-4">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-base text-white">Pari :</span>
+                                    <span class="text-base font-bold text-yellow-300">${row.pari}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">${Number(row.cote).toFixed(2)}</span></div>
+                                <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">${Number(row.mise).toFixed(2)} €</span></div>
+                            </div>
+                        </div>`).join('');
+                }
+
+                async function loginSupabase() {
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('pass').value;
+                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) { alert("Identifiants incorrects."); return; }
+                    chargerPronos();
+                }
+
+                chargerPronos();
+            </script>
         </section>
 
 <section id="roi" class="scroll-mt-20">
