@@ -11,6 +11,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Client Supabase unique, partagé par toute la page (nav + section pronos)
+        const SUPABASE_URL = 'https://eldkwsoucmfgvofsvshc.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yR4T32bvVYiH2CNUzSKiJg_eb-Trm3M';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    </script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -74,7 +80,11 @@
                 <a href="admin.html" id="admin-link-desktop" class="hidden text-emerald-400 hover:text-emerald-300 transition-colors"><i class="fa-solid fa-user-shield mr-1"></i>Admin</a>
             </div>
 
-            <div class="hidden md:block">
+            <div class="hidden md:flex items-center gap-3 relative">
+                <button id="nav-login-btn-desktop" onclick="toggleNavLoginPanel()"
+                   class="border border-slate-600 hover:border-emerald-400 hover:text-emerald-400 font-semibold px-5 py-3 rounded-2xl transition-all active:scale-95 text-sm">
+                    Se connecter
+                </button>
                 <a href="#tarifs" id="cta-tarifs-desktop"
                    class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold px-6 py-3 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-500/30">
                     Rejoindre le Club
@@ -83,6 +93,14 @@
                    class="hidden border border-slate-600 hover:border-red-400 hover:text-red-400 font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
                     Se déconnecter
                 </button>
+
+                <div id="nav-login-panel" class="hidden absolute right-0 top-full mt-3 w-72 bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl z-50 text-left">
+                    <p class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
+                    <input id="nav-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="nav-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <button onclick="navLoginSubmit(false)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <p id="nav-login-error" class="text-red-400 text-xs mt-2 hidden">Identifiants incorrects.</p>
+                </div>
             </div>
 
             <button id="mobile-menu-btn" class="md:hidden text-3xl text-slate-200 hover:text-yellow-400 transition-colors">
@@ -104,6 +122,14 @@
                 <button id="logout-btn-mobile" onclick="deconnexionGlobale()" class="hidden mt-4 border border-slate-600 text-center py-4 rounded-2xl font-bold text-slate-300">
                     Se déconnecter
                 </button>
+
+                <div id="nav-login-block-mobile" class="mt-2 bg-slate-900 border border-slate-700 rounded-2xl p-4">
+                    <p class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
+                    <input id="mobile-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="mobile-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <button onclick="navLoginSubmit(true)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <p id="mobile-login-error" class="text-red-400 text-xs mt-2 hidden">Identifiants incorrects.</p>
+                </div>
             </div>
         </div>
     </nav>
@@ -173,12 +199,7 @@
             </div>
 
             <script>
-                // ==== CONFIG SUPABASE ====
-                // Clé publique (safe à exposer publiquement) : collez-la ci-dessous, entre les guillemets.
-                const SUPABASE_URL = 'https://eldkwsoucmfgvofsvshc.supabase.co';
-                const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yR4T32bvVYiH2CNUzSKiJg_eb-Trm3M';
-
-                const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+                // Le client Supabase global est défini dans le <head> (variable supabaseClient)
 
                 let authMode = 'login'; // 'login' ou 'signup'
 
@@ -259,6 +280,7 @@
                     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) { alert("Identifiants incorrects."); return; }
                     chargerPronos();
+                    if (typeof updateNavState === 'function') updateNavState();
                 }
 
                 async function signupSupabase() {
@@ -283,6 +305,7 @@
                     if (data.session) {
                         authMode = 'login';
                         chargerPronos();
+                        if (typeof updateNavState === 'function') updateNavState();
                     } else {
                         authMode = 'login';
                         renderAuthCard("Compte créé ! Vérifiez votre email pour confirmer votre inscription, puis connectez-vous.");
@@ -453,42 +476,90 @@
             });
         });
 
-        // Client Supabase partagé pour la nav (session commune avec le script de la section Pronostics)
-        const navSupabaseClient = window.supabase.createClient(
-            'https://eldkwsoucmfgvofsvshc.supabase.co',
-            'sb_publishable_yR4T32bvVYiH2CNUzSKiJg_eb-Trm3M'
-        );
-
         async function deconnexionGlobale() {
-            await navSupabaseClient.auth.signOut();
-            window.location.reload();
+            await supabaseClient.auth.signOut();
+            updateNavState();
+            if (typeof chargerPronos === 'function') chargerPronos();
+        }
+
+        function toggleNavLoginPanel() {
+            document.getElementById('nav-login-panel')?.classList.toggle('hidden');
+        }
+
+        async function navLoginSubmit(mobile) {
+            const emailId = mobile ? 'mobile-login-email' : 'nav-login-email';
+            const passId = mobile ? 'mobile-login-pass' : 'nav-login-pass';
+            const errorId = mobile ? 'mobile-login-error' : 'nav-login-error';
+
+            const email = document.getElementById(emailId).value;
+            const password = document.getElementById(passId).value;
+            document.getElementById(errorId)?.classList.add('hidden');
+
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                document.getElementById(errorId)?.classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('nav-login-panel')?.classList.add('hidden');
+            updateNavState();
+            if (typeof chargerPronos === 'function') chargerPronos();
         }
 
         // Ajuste l'affichage de la nav selon l'état de connexion (bouton déconnexion, lien admin)
-        (async () => {
+        async function updateNavState() {
+            const ctaDesktop = document.getElementById('cta-tarifs-desktop');
+            const logoutDesktop = document.getElementById('logout-btn-desktop');
+            const loginBtnDesktop = document.getElementById('nav-login-btn-desktop');
+            const loginPanel = document.getElementById('nav-login-panel');
+            const ctaMobile = document.getElementById('cta-tarifs-mobile');
+            const logoutMobile = document.getElementById('logout-btn-mobile');
+            const loginBlockMobile = document.getElementById('nav-login-block-mobile');
+            const adminDesktop = document.getElementById('admin-link-desktop');
+            const adminMobile = document.getElementById('admin-link-mobile');
+
             try {
-                const { data: { session } } = await navSupabaseClient.auth.getSession();
-                if (!session) return;
+                const { data: { session } } = await supabaseClient.auth.getSession();
 
-                document.getElementById('cta-tarifs-desktop')?.classList.add('hidden');
-                document.getElementById('logout-btn-desktop')?.classList.remove('hidden');
-                document.getElementById('cta-tarifs-mobile')?.classList.add('hidden');
-                document.getElementById('logout-btn-mobile')?.classList.remove('hidden');
+                if (!session) {
+                    ctaDesktop?.classList.remove('hidden');
+                    logoutDesktop?.classList.add('hidden');
+                    loginBtnDesktop?.classList.remove('hidden');
+                    ctaMobile?.classList.remove('hidden');
+                    logoutMobile?.classList.add('hidden');
+                    loginBlockMobile?.classList.remove('hidden');
+                    adminDesktop?.classList.add('hidden');
+                    adminMobile?.classList.add('hidden');
+                    return;
+                }
 
-                const { data: profil } = await navSupabaseClient
+                ctaDesktop?.classList.add('hidden');
+                logoutDesktop?.classList.remove('hidden');
+                loginBtnDesktop?.classList.add('hidden');
+                loginPanel?.classList.add('hidden');
+                ctaMobile?.classList.add('hidden');
+                logoutMobile?.classList.remove('hidden');
+                loginBlockMobile?.classList.add('hidden');
+
+                const { data: profil } = await supabaseClient
                     .from('profiles')
                     .select('is_admin')
                     .eq('id', session.user.id)
                     .single();
 
                 if (profil && profil.is_admin) {
-                    document.getElementById('admin-link-desktop')?.classList.remove('hidden');
-                    document.getElementById('admin-link-mobile')?.classList.remove('hidden');
+                    adminDesktop?.classList.remove('hidden');
+                    adminMobile?.classList.remove('hidden');
+                } else {
+                    adminDesktop?.classList.add('hidden');
+                    adminMobile?.classList.add('hidden');
                 }
             } catch (e) {
                 // silencieux : pas grave si la vérification échoue
             }
-        })();
+        }
+
+        updateNavState();
     </script>
 </body>
 </html>
