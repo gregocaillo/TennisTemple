@@ -95,11 +95,12 @@
                 </button>
 
                 <div id="nav-login-panel" class="hidden absolute right-0 top-full mt-3 w-72 bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl z-50 text-left">
-                    <p class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
+                    <p id="nav-auth-title-desktop" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
                     <input id="nav-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
                     <input id="nav-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                    <button onclick="navLoginSubmit(false)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
-                    <p id="nav-login-error" class="text-red-400 text-xs mt-2 hidden">Identifiants incorrects.</p>
+                    <button id="nav-auth-submit-desktop" onclick="navAuthSubmit(false)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <button id="nav-auth-toggle-desktop" onclick="toggleNavAuthMode(false)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
+                    <p id="nav-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
                 </div>
             </div>
 
@@ -124,11 +125,12 @@
                 </button>
 
                 <div id="nav-login-block-mobile" class="mt-2 bg-slate-900 border border-slate-700 rounded-2xl p-4">
-                    <p class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
+                    <p id="nav-auth-title-mobile" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
                     <input id="mobile-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
                     <input id="mobile-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                    <button onclick="navLoginSubmit(true)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
-                    <p id="mobile-login-error" class="text-red-400 text-xs mt-2 hidden">Identifiants incorrects.</p>
+                    <button id="nav-auth-submit-mobile" onclick="navAuthSubmit(true)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <button id="nav-auth-toggle-mobile" onclick="toggleNavAuthMode(true)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
+                    <p id="mobile-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
                 </div>
             </div>
         </div>
@@ -478,6 +480,10 @@
 
         async function deconnexionGlobale() {
             await supabaseClient.auth.signOut();
+            navAuthModeState.desktop = 'login';
+            navAuthModeState.mobile = 'login';
+            renderNavAuthMode(false);
+            renderNavAuthMode(true);
             updateNavState();
             if (typeof chargerPronos === 'function') chargerPronos();
         }
@@ -486,19 +492,74 @@
             document.getElementById('nav-login-panel')?.classList.toggle('hidden');
         }
 
-        async function navLoginSubmit(mobile) {
+        const navAuthModeState = { desktop: 'login', mobile: 'login' };
+
+        function toggleNavAuthMode(mobile) {
+            const key = mobile ? 'mobile' : 'desktop';
+            navAuthModeState[key] = navAuthModeState[key] === 'login' ? 'signup' : 'login';
+            renderNavAuthMode(mobile);
+        }
+
+        function renderNavAuthMode(mobile) {
+            const suffix = mobile ? 'mobile' : 'desktop';
+            const mode = navAuthModeState[suffix];
+            const titleEl = document.getElementById(`nav-auth-title-${suffix}`);
+            const submitBtn = document.getElementById(`nav-auth-submit-${suffix}`);
+            const toggleBtn = document.getElementById(`nav-auth-toggle-${suffix}`);
+            const errorEl = document.getElementById(mobile ? 'mobile-login-error' : 'nav-login-error');
+
+            errorEl?.classList.add('hidden');
+            errorEl?.classList.remove('text-emerald-400');
+            errorEl?.classList.add('text-red-400');
+
+            if (mode === 'login') {
+                titleEl.textContent = 'Connexion membre';
+                submitBtn.textContent = 'Se connecter';
+                toggleBtn.textContent = "Pas encore de compte ? S'inscrire";
+            } else {
+                titleEl.textContent = 'Créer un compte';
+                submitBtn.textContent = 'Créer mon compte';
+                toggleBtn.textContent = "Déjà un compte ? Se connecter";
+            }
+        }
+
+        async function navAuthSubmit(mobile) {
+            const suffix = mobile ? 'mobile' : 'desktop';
+            const mode = navAuthModeState[suffix];
             const emailId = mobile ? 'mobile-login-email' : 'nav-login-email';
             const passId = mobile ? 'mobile-login-pass' : 'nav-login-pass';
-            const errorId = mobile ? 'mobile-login-error' : 'nav-login-error';
+            const errorEl = document.getElementById(mobile ? 'mobile-login-error' : 'nav-login-error');
 
             const email = document.getElementById(emailId).value;
             const password = document.getElementById(passId).value;
-            document.getElementById(errorId)?.classList.add('hidden');
+            errorEl?.classList.add('hidden');
 
-            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) {
-                document.getElementById(errorId)?.classList.remove('hidden');
-                return;
+            if (mode === 'login') {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) {
+                    if (errorEl) { errorEl.textContent = "Identifiants incorrects."; errorEl.classList.remove('hidden'); }
+                    return;
+                }
+            } else {
+                if (!email || password.length < 6) {
+                    alert("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                    return;
+                }
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) {
+                    if (errorEl) { errorEl.textContent = error.message; errorEl.classList.remove('hidden'); }
+                    return;
+                }
+                if (!data.session) {
+                    navAuthModeState[suffix] = 'login';
+                    renderNavAuthMode(mobile);
+                    if (errorEl) {
+                        errorEl.textContent = "Compte créé ! Vérifiez votre email pour confirmer, puis connectez-vous.";
+                        errorEl.classList.remove('hidden', 'text-red-400');
+                        errorEl.classList.add('text-emerald-400');
+                    }
+                    return;
+                }
             }
 
             document.getElementById('nav-login-panel')?.classList.add('hidden');

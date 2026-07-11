@@ -4,7 +4,9 @@ import os
 import re
 import subprocess
 import requests
-from datetime import datetime
+import smtplib
+from email.mime.text import MIMEText
+from datetime import datetime, timezone
 import json
 
 DB_PATH = os.path.join('..', 'tennis_stats.db')
@@ -18,6 +20,15 @@ HTML_PATH = 'index.html'
 #   export SUPABASE_SERVICE_KEY="sb_secret_..."
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://eldkwsoucmfgvofsvshc.supabase.co")
 SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
+
+# ==== CONFIG NOTIFICATION EMAIL (nouvelles inscriptions) ====
+# Compte Gmail utilisé pour ENVOYER l'email (nécessite un "mot de passe d'application" Gmail,
+# pas votre mot de passe habituel — voir instructions fournies séparément).
+GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
+GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
+EMAIL_DESTINATAIRE = os.environ.get("EMAIL_DESTINATAIRE", GMAIL_ADDRESS)
+
+DERNIER_CHECK_PATH = os.path.join('..', 'dernier_check_inscriptions.txt')
 
 
 def push_pronos_premium(df):
@@ -260,6 +271,80 @@ def get_audit_html(db_path):
     </script>
     '''
 
+def lire_dernier_check():
+    """Lit la date du dernier passage. Si le fichier n'existe pas, on part de maintenant
+    (pour ne pas spammer avec tous les comptes déjà existants au premier lancement)."""
+    if os.path.exists(DERNIER_CHECK_PATH):
+        with open(DERNIER_CHECK_PATH, 'r') as f:
+            return f.read().strip()
+    return datetime.now(timezone.utc).isoformat()
+
+
+def ecrire_dernier_check(horodatage):
+    with open(DERNIER_CHECK_PATH, 'w') as f:
+        f.write(horodatage)
+
+
+def envoyer_email_notification(nouveaux_emails):
+    if not GMAIL_ADDRESS or not GMAIL_APP_PASSWORD:
+        print("⚠ GMAIL_ADDRESS / GMAIL_APP_PASSWORD non définis, notification email ignorée.")
+        return
+
+    corps = "Nouvelle(s) inscription(s) sur TennisTemple :\n\n" + "\n".join(f"- {e}" for e in nouveaux_emails)
+    corps += "\n\nActivez leur accès premium (après paiement) depuis /admin.html"
+
+    msg = MIMEText(corps)
+    msg['Subject'] = f"TennisTemple : {len(nouveaux_emails)} nouvelle(s) inscription(s)"
+    msg['From'] = GMAIL_ADDRESS
+    msg['To'] = EMAIL_DESTINATAIRE
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as serveur:
+            serveur.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+            serveur.send_message(msg)
+        print(f"Email de notification envoyé ({len(nouveaux_emails)} inscription(s)).")
+    except Exception as e:
+        print(f"⚠ Erreur lors de l'envoi de l'email : {e}")
+
+
+def verifier_nouvelles_inscriptions():
+    """Interroge Supabase pour les comptes créés depuis le dernier passage du script,
+    et envoie un email si des nouveaux comptes sont trouvés."""
+    if not SUPABASE_SERVICE_KEY:
+        print("⚠ SUPABASE_SERVICE_KEY non définie, vérification des inscriptions ignorée.")
+        return
+
+    dernier_check = lire_dernier_check()
+    maintenant = datetime.now(timezone.utc).isoformat()
+
+    headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+    }
+    params = {
+        "select": "email,created_at",
+        "created_at": f"gt.{dernier_check}",
+        "order": "created_at.asc"
+    }
+
+    resp = requests.get(f"{SUPABASE_URL}/rest/v1/profiles", headers=headers, params=params)
+
+    if resp.status_code >= 300:
+        print(f"⚠ Erreur lors de la vérification des inscriptions : {resp.status_code} {resp.text}")
+        return
+
+    nouveaux = resp.json()
+
+    if nouveaux:
+        emails = [p['email'] for p in nouveaux]
+        print(f"{len(emails)} nouvelle(s) inscription(s) détectée(s) : {', '.join(emails)}")
+        envoyer_email_notification(emails)
+    else:
+        print("Aucune nouvelle inscription depuis le dernier passage.")
+
+    ecrire_dernier_check(maintenant)
+
+
 def push_to_github(repo_path='.', commit_message=None):
     """Commit et push les changements sur GitHub, uniquement s'il y en a."""
     if commit_message is None:
@@ -297,6 +382,10 @@ def mettre_a_jour_site():
     # Les pronos "En cours" ne sont plus écrits dans le HTML : ils partent vers Supabase,
     # où seuls les comptes premium authentifiés peuvent les lire (voir index.html).
     push_pronos_premium(df)
+
+    # Vérifie si de nouveaux visiteurs se sont inscrits depuis le dernier passage,
+    # et vous envoie un email si c'est le cas.
+    verifier_nouvelles_inscriptions()
 
     stats_html = generate_stats_mensuelles(df)
     perf_html = generate_perf_table(df)
