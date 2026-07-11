@@ -5,7 +5,6 @@ import re
 import subprocess
 import requests
 import smtplib
-import unicodedata
 from email.mime.text import MIMEText
 from datetime import datetime, timezone
 import json
@@ -38,11 +37,6 @@ GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 EMAIL_DESTINATAIRE = os.environ.get("EMAIL_DESTINATAIRE", GMAIL_ADDRESS)
 
 DERNIER_CHECK_PATH = os.path.join('..', 'dernier_check_inscriptions.txt')
-
-# ==== CONFIG THE ODDS API (mise à jour automatique des résultats) ====
-# Même clé que celle utilisée par votre script de récupération des cotes.
-# À définir dans secrets_local.py (recommandé) ou en variable d'environnement.
-ODDS_API_KEY = os.environ.get("ODDS_API_KEY")
 
 
 def lire_nombre_matchs_analyses():
@@ -87,108 +81,6 @@ def generate_pronos_stats_banner(df):
             <p class="text-2xl font-bold {value_couleur}">{value_txt}</p>
         </div>
     </div>'''
-
-
-def _normaliser(texte):
-    """Normalise un nom (accents retirés, minuscules) pour comparer les noms de joueurs
-    entre votre base et l'API, même en cas de légère différence d'écriture."""
-    if not texte:
-        return ""
-    texte = unicodedata.normalize('NFKD', texte).encode('ascii', 'ignore').decode('ascii')
-    return texte.lower().strip()
-
-
-def mettre_a_jour_resultats_matchs():
-    """Interroge The Odds API pour connaître le résultat des matchs 'En cours' dans la base,
-    et met à jour automatiquement leur statut (Gagné/Perdu) et leur gain net."""
-    if not ODDS_API_KEY:
-        print("⚠ ODDS_API_KEY non définie, mise à jour automatique des résultats ignorée.")
-        return
-
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT id, match_intitule, joueur_choisi, mise, cote_jouee
-        FROM Historique_Paris
-        WHERE statut = 'En cours'
-    """)
-    paris_en_cours = cursor.fetchall()
-
-    if not paris_en_cours:
-        conn.close()
-        print("Aucun pari 'En cours' à vérifier.")
-        return
-
-    try:
-        resp_sports = requests.get(f"https://api.the-odds-api.com/v4/sports/?apiKey={ODDS_API_KEY}&all=true")
-        resp_sports.raise_for_status()
-        atp_keys = [s["key"] for s in resp_sports.json() if "tennis_atp" in s["key"]]
-        print(f"Tournoi(s) ATP détecté(s) pour la vérification des résultats : {atp_keys}")
-    except requests.RequestException as e:
-        print(f"⚠ Erreur lors de la récupération des tournois ATP : {e}")
-        conn.close()
-        return
-
-    matchs_termines = []
-    for key in atp_keys:
-        try:
-            resp = requests.get(
-                f"https://api.the-odds-api.com/v4/sports/{key}/scores/",
-                params={"apiKey": ODDS_API_KEY, "daysFrom": 3}
-            )
-            if resp.status_code == 200:
-                tous_evenements = resp.json()
-                termines_ce_tournoi = [m for m in tous_evenements if m.get("completed")]
-                print(f"  {key} : {len(tous_evenements)} événement(s) au total, {len(termines_ce_tournoi)} terminé(s)")
-                if key == "tennis_atp_wimbledon" and tous_evenements:
-                    print(f"    Exemple brut : {json.dumps(tous_evenements[0], ensure_ascii=False)[:400]}")
-                matchs_termines.extend(termines_ce_tournoi)
-            else:
-                print(f"  ⚠ Erreur API scores pour {key} : {resp.status_code} — {resp.text[:200]}")
-        except requests.RequestException:
-            continue
-
-    nb_maj = 0
-    for pari_id, match_intitule, joueur_choisi, mise, cote in paris_en_cours:
-        joueurs_pari = [_normaliser(j) for j in match_intitule.split(" vs ")]
-        if len(joueurs_pari) != 2:
-            continue
-
-        match_trouve = None
-        for m in matchs_termines:
-            noms_api = {_normaliser(m.get("home_team", "")), _normaliser(m.get("away_team", ""))}
-            if set(joueurs_pari) == noms_api:
-                match_trouve = m
-                break
-
-        if not match_trouve or not match_trouve.get("scores"):
-            continue
-
-        try:
-            scores = match_trouve["scores"]
-            vainqueur = max(scores, key=lambda s: int(s["score"]))
-            nom_vainqueur = _normaliser(vainqueur["name"])
-        except (KeyError, ValueError, TypeError):
-            continue
-
-        a_gagne = _normaliser(joueur_choisi) == nom_vainqueur
-        nouveau_statut = "Gagné" if a_gagne else "Perdu"
-        nouveau_gain = round(mise * (cote - 1), 2) if a_gagne else -mise
-
-        cursor.execute(
-            "UPDATE Historique_Paris SET statut = ?, gain_net = ? WHERE id = ?",
-            (nouveau_statut, nouveau_gain, pari_id)
-        )
-        nb_maj += 1
-        print(f"Résultat détecté : {match_intitule} → {nouveau_statut} ({nouveau_gain:+.2f} €)")
-
-    conn.commit()
-    conn.close()
-
-    if nb_maj:
-        print(f"{nb_maj} pari(s) mis à jour automatiquement suite à un résultat détecté.")
-    else:
-        print("Aucun résultat de match terminé trouvé pour les paris en cours.")
 
 
 def push_pronos_premium(df):
@@ -638,10 +530,6 @@ def push_to_github(repo_path='.', commit_message=None):
         print(f"Erreur lors du push GitHub : {e}")
 
 def mettre_a_jour_site():
-    # Vérifie d'abord si des matchs "En cours" sont terminés, et met à jour leur résultat
-    # avant de régénérer quoi que ce soit (pour que toutes les stats soient à jour).
-    mettre_a_jour_resultats_matchs()
-
     conn = sqlite3.connect(DB_PATH)
     query = """
         SELECT nom_tournoi AS 'Tournoi', date_match AS 'Date', match_intitule AS 'Match', 
