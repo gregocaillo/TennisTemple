@@ -6,9 +6,17 @@
     <meta name="description" content="TennisTemple - Value bets ATP basées sur modélisation mathématique et expérience terrain. Pronostics data-driven.">
     <meta name="theme-color" content="#0f172a">
     <title>TennisTemple | Value Bets & Data Tennis</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Client Supabase unique, partagé par toute la page (nav + section pronos)
+        const SUPABASE_URL = 'https://eldkwsoucmfgvofsvshc.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yR4T32bvVYiH2CNUzSKiJg_eb-Trm3M';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    </script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -69,12 +77,33 @@
                 <a href="#roi" class="hover:text-yellow-400 transition-colors">Performances</a>
                 <a href="#audit" class="hover:text-yellow-400 transition-colors">Audit</a>
                 <a href="#tarifs" class="hover:text-yellow-400 transition-colors">Tarifs</a>
+                <a href="admin.html" id="admin-link-desktop" class="hidden text-emerald-400 hover:text-emerald-300 transition-colors"><i class="fa-solid fa-user-shield mr-1"></i>Admin</a>
             </div>
 
-            <a href="#tarifs"
-               class="hidden md:block bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold px-6 py-3 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-500/30">
-                Rejoindre le Club
-            </a>
+            <div class="hidden md:flex items-center gap-3 relative">
+                <button id="nav-login-btn-desktop" onclick="toggleNavLoginPanel()"
+                   class="border border-slate-600 hover:border-emerald-400 hover:text-emerald-400 font-semibold px-5 py-3 rounded-2xl transition-all active:scale-95 text-sm">
+                    Se connecter
+                </button>
+                <a href="#tarifs" id="cta-tarifs-desktop"
+                   class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold px-6 py-3 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-500/30">
+                    Rejoindre le Club
+                </a>
+                <button id="logout-btn-desktop" onclick="deconnexionGlobale()"
+                   class="hidden border border-slate-600 hover:border-red-400 hover:text-red-400 font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
+                    Se déconnecter
+                </button>
+
+                <div id="nav-login-panel" class="hidden absolute right-0 top-full mt-3 w-72 bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl z-50 text-left">
+                    <p id="nav-auth-title-desktop" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
+                    <input id="nav-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="nav-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="nav-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <button id="nav-auth-submit-desktop" onclick="navAuthSubmit(false)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <button id="nav-auth-toggle-desktop" onclick="toggleNavAuthMode(false)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
+                    <p id="nav-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
+                </div>
+            </div>
 
             <button id="mobile-menu-btn" class="md:hidden text-3xl text-slate-200 hover:text-yellow-400 transition-colors">
                 <i class="fa-solid fa-bars"></i>
@@ -88,9 +117,23 @@
                 <a href="#roi" class="py-2 hover:text-yellow-400 transition-colors">Performances</a>
                 <a href="#audit" class="py-2 hover:text-yellow-400 transition-colors">Audit Blockchain</a>
                 <a href="#tarifs" class="py-2 hover:text-yellow-400 transition-colors">Tarifs</a>
-                <a href="#tarifs" class="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-center py-4 rounded-2xl font-bold text-slate-950">
+                <a href="admin.html" id="admin-link-mobile" class="hidden py-2 text-emerald-400"><i class="fa-solid fa-user-shield mr-1"></i>Admin</a>
+                <a href="#tarifs" id="cta-tarifs-mobile" class="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-center py-4 rounded-2xl font-bold text-slate-950">
                     Rejoindre le Club
                 </a>
+                <button id="logout-btn-mobile" onclick="deconnexionGlobale()" class="hidden mt-4 border border-slate-600 text-center py-4 rounded-2xl font-bold text-slate-300">
+                    Se déconnecter
+                </button>
+
+                <div id="nav-login-block-mobile" class="mt-2 bg-slate-900 border border-slate-700 rounded-2xl p-4">
+                    <p id="nav-auth-title-mobile" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
+                    <input id="mobile-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="mobile-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="mobile-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <button id="nav-auth-submit-mobile" onclick="navAuthSubmit(true)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <button id="nav-auth-toggle-mobile" onclick="toggleNavAuthMode(true)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
+                    <p id="mobile-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
+                </div>
             </div>
         </div>
     </nav>
@@ -155,38 +198,133 @@
                 <p class="text-slate-400 mt-4 text-xs">Mises à jour tous les matins ~ 7h</p>
             </div>
 
-            <!-- Début des paris en cours -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 card-hover">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <span class="text-emerald-400 text-xs font-bold uppercase">wimb</span>
-                    <h3 class="text-sm font-bold mt-1">Jannik Sinner vs Novak Djokovic</h3>
-                </div>
+            <div id="pronos-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="col-span-full text-center text-slate-500 text-xs py-8">Chargement...</div>
             </div>
-            
-            <div class="bg-slate-950 rounded-xl p-4 mb-4">
-                <div class="flex justify-between text-xs">
-                    <span class="text-base text-white">Pari :</span>
-                    <span class="text-base font-bold text-yellow-300">Jannik Sinner</span>
-                </div>
-            </div>
-            
-            <div class="flex justify-between text-xs">
-                <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">1.21</span></div>
-                <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">5.00 €</span></div>
-            </div>
-        </div>
 
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 flex flex-col justify-center items-center text-center min-h-[148px] card-hover">
-            <div class="text-3xl mb-2 opacity-50">🔒</div>
-            <h4 class="text-sm font-bold">Match Premium</h4>
-            <p class="text-slate-500 text-[10px]">Réservé aux membres du Club</p>
-        </div>
-    </div>
+            <script>
+                // Le client Supabase global est défini dans le <head> (variable supabaseClient)
 
-<!-- Fin des paris en cours -->
+                let authMode = 'login'; // 'login' ou 'signup'
 
+                async function chargerPronos() {
+                    const grid = document.getElementById('pronos-grid');
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+
+                    if (!session) {
+                        renderAuthCard();
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('pronos_premium')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error || !data || data.length === 0) {
+                        grid.innerHTML = `<p class="col-span-full text-center text-slate-500 text-xs py-8">Aucun accès premium actif sur ce compte, ou aucun pari en cours.</p>`;
+                        return;
+                    }
+
+                    grid.innerHTML = data.map(row => `
+                        <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 card-hover">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-emerald-400 text-xs font-bold uppercase">${row.tournoi}</span>
+                                    <h3 class="text-sm font-bold mt-1">${row.match_intitule}</h3>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 rounded-xl p-4 mb-4">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-base text-white">Pari :</span>
+                                    <span class="text-base font-bold text-yellow-300">${row.pari}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">${Number(row.cote).toFixed(2)}</span></div>
+                                <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">${Number(row.mise).toFixed(2)} €</span></div>
+                            </div>
+                        </div>`).join('');
+                }
+
+                function renderAuthCard(message) {
+                    const grid = document.getElementById('pronos-grid');
+                    const estConnexion = authMode === 'login';
+
+                    grid.innerHTML = `
+                        <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-8 text-center max-w-md mx-auto">
+                            <div class="text-3xl mb-3 opacity-50">🔒</div>
+                            <h4 class="text-sm font-bold mb-4">${estConnexion ? 'Pronostics réservés aux membres du Club' : 'Créer votre compte membre'}</h4>
+
+                            ${message ? `<p class="text-emerald-400 text-xs mb-3">${message}</p>` : ''}
+
+                            <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                            <input id="pass" type="password" placeholder="mot de passe (6 caractères min.)" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                            ${estConnexion ? '' : '<input id="pass-confirm" type="password" placeholder="confirmer le mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">'}
+
+                            <button onclick="${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">
+                                ${estConnexion ? 'Se connecter' : 'Créer mon compte'}
+                            </button>
+
+                            <button onclick="switchAuthMode()" class="text-slate-400 text-xs mt-3 hover:underline w-full">
+                                ${estConnexion ? "Pas encore de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
+                            </button>
+
+                            <a href="#tarifs" class="block text-emerald-400 text-xs mt-4 hover:underline">Voir les tarifs d'abonnement</a>
+                        </div>`;
+                }
+
+                function switchAuthMode() {
+                    authMode = authMode === 'login' ? 'signup' : 'login';
+                    renderAuthCard();
+                }
+
+                async function loginSupabase() {
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('pass').value;
+                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) { alert("Identifiants incorrects."); return; }
+                    chargerPronos();
+                    if (typeof updateNavState === 'function') updateNavState();
+                }
+
+                async function signupSupabase() {
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('pass').value;
+                    const passwordConfirm = document.getElementById('pass-confirm').value;
+
+                    if (!email || password.length < 6) {
+                        alert("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                        return;
+                    }
+
+                    if (password !== passwordConfirm) {
+                        alert("Les deux mots de passe ne correspondent pas.");
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+
+                    if (error) {
+                        alert("Erreur lors de la création du compte : " + error.message);
+                        return;
+                    }
+
+                    // Si la confirmation par email est désactivée dans Supabase, une session est
+                    // immédiatement renvoyée et l'utilisateur peut voir les pronos (encore vide,
+                    // le temps qu'un admin active son compte premium).
+                    if (data.session) {
+                        authMode = 'login';
+                        chargerPronos();
+                        if (typeof updateNavState === 'function') updateNavState();
+                    } else {
+                        authMode = 'login';
+                        renderAuthCard("Compte créé ! Vérifiez votre email pour confirmer votre inscription, puis connectez-vous.");
+                    }
+                }
+
+                chargerPronos();
+            </script>
         </section>
 
 <section id="roi" class="scroll-mt-20">
@@ -348,6 +486,159 @@
                 }
             });
         });
+
+        async function deconnexionGlobale() {
+            await supabaseClient.auth.signOut();
+            navAuthModeState.desktop = 'login';
+            navAuthModeState.mobile = 'login';
+            renderNavAuthMode(false);
+            renderNavAuthMode(true);
+            updateNavState();
+            if (typeof chargerPronos === 'function') chargerPronos();
+        }
+
+        function toggleNavLoginPanel() {
+            document.getElementById('nav-login-panel')?.classList.toggle('hidden');
+        }
+
+        const navAuthModeState = { desktop: 'login', mobile: 'login' };
+
+        function toggleNavAuthMode(mobile) {
+            const key = mobile ? 'mobile' : 'desktop';
+            navAuthModeState[key] = navAuthModeState[key] === 'login' ? 'signup' : 'login';
+            renderNavAuthMode(mobile);
+        }
+
+        function renderNavAuthMode(mobile) {
+            const suffix = mobile ? 'mobile' : 'desktop';
+            const mode = navAuthModeState[suffix];
+            const titleEl = document.getElementById(`nav-auth-title-${suffix}`);
+            const submitBtn = document.getElementById(`nav-auth-submit-${suffix}`);
+            const toggleBtn = document.getElementById(`nav-auth-toggle-${suffix}`);
+            const errorEl = document.getElementById(mobile ? 'mobile-login-error' : 'nav-login-error');
+            const confirmEl = document.getElementById(mobile ? 'mobile-login-pass-confirm' : 'nav-login-pass-confirm');
+
+            errorEl?.classList.add('hidden');
+            errorEl?.classList.remove('text-emerald-400');
+            errorEl?.classList.add('text-red-400');
+
+            if (mode === 'login') {
+                titleEl.textContent = 'Connexion membre';
+                submitBtn.textContent = 'Se connecter';
+                toggleBtn.textContent = "Pas encore de compte ? S'inscrire";
+                confirmEl?.classList.add('hidden');
+            } else {
+                titleEl.textContent = 'Créer un compte';
+                submitBtn.textContent = 'Créer mon compte';
+                toggleBtn.textContent = "Déjà un compte ? Se connecter";
+                confirmEl?.classList.remove('hidden');
+            }
+        }
+
+        async function navAuthSubmit(mobile) {
+            const suffix = mobile ? 'mobile' : 'desktop';
+            const mode = navAuthModeState[suffix];
+            const emailId = mobile ? 'mobile-login-email' : 'nav-login-email';
+            const passId = mobile ? 'mobile-login-pass' : 'nav-login-pass';
+            const errorEl = document.getElementById(mobile ? 'mobile-login-error' : 'nav-login-error');
+
+            const email = document.getElementById(emailId).value;
+            const password = document.getElementById(passId).value;
+            errorEl?.classList.add('hidden');
+
+            if (mode === 'login') {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) {
+                    if (errorEl) { errorEl.textContent = "Identifiants incorrects."; errorEl.classList.remove('hidden'); }
+                    return;
+                }
+            } else {
+                const passwordConfirm = document.getElementById(mobile ? 'mobile-login-pass-confirm' : 'nav-login-pass-confirm').value;
+
+                if (!email || password.length < 6) {
+                    alert("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                    return;
+                }
+                if (password !== passwordConfirm) {
+                    alert("Les deux mots de passe ne correspondent pas.");
+                    return;
+                }
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) {
+                    if (errorEl) { errorEl.textContent = error.message; errorEl.classList.remove('hidden'); }
+                    return;
+                }
+                if (!data.session) {
+                    navAuthModeState[suffix] = 'login';
+                    renderNavAuthMode(mobile);
+                    if (errorEl) {
+                        errorEl.textContent = "Compte créé ! Vérifiez votre email pour confirmer, puis connectez-vous.";
+                        errorEl.classList.remove('hidden', 'text-red-400');
+                        errorEl.classList.add('text-emerald-400');
+                    }
+                    return;
+                }
+            }
+
+            document.getElementById('nav-login-panel')?.classList.add('hidden');
+            updateNavState();
+            if (typeof chargerPronos === 'function') chargerPronos();
+        }
+
+        // Ajuste l'affichage de la nav selon l'état de connexion (bouton déconnexion, lien admin)
+        async function updateNavState() {
+            const ctaDesktop = document.getElementById('cta-tarifs-desktop');
+            const logoutDesktop = document.getElementById('logout-btn-desktop');
+            const loginBtnDesktop = document.getElementById('nav-login-btn-desktop');
+            const loginPanel = document.getElementById('nav-login-panel');
+            const ctaMobile = document.getElementById('cta-tarifs-mobile');
+            const logoutMobile = document.getElementById('logout-btn-mobile');
+            const loginBlockMobile = document.getElementById('nav-login-block-mobile');
+            const adminDesktop = document.getElementById('admin-link-desktop');
+            const adminMobile = document.getElementById('admin-link-mobile');
+
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+
+                if (!session) {
+                    ctaDesktop?.classList.remove('hidden');
+                    logoutDesktop?.classList.add('hidden');
+                    loginBtnDesktop?.classList.remove('hidden');
+                    ctaMobile?.classList.remove('hidden');
+                    logoutMobile?.classList.add('hidden');
+                    loginBlockMobile?.classList.remove('hidden');
+                    adminDesktop?.classList.add('hidden');
+                    adminMobile?.classList.add('hidden');
+                    return;
+                }
+
+                ctaDesktop?.classList.add('hidden');
+                logoutDesktop?.classList.remove('hidden');
+                loginBtnDesktop?.classList.add('hidden');
+                loginPanel?.classList.add('hidden');
+                ctaMobile?.classList.add('hidden');
+                logoutMobile?.classList.remove('hidden');
+                loginBlockMobile?.classList.add('hidden');
+
+                const { data: profil } = await supabaseClient
+                    .from('profiles')
+                    .select('is_admin')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profil && profil.is_admin) {
+                    adminDesktop?.classList.remove('hidden');
+                    adminMobile?.classList.remove('hidden');
+                } else {
+                    adminDesktop?.classList.add('hidden');
+                    adminMobile?.classList.add('hidden');
+                }
+            } catch (e) {
+                // silencieux : pas grave si la vérification échoue
+            }
+        }
+
+        updateNavState();
     </script>
 </body>
 </html>

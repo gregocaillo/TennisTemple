@@ -16,6 +16,33 @@
         const SUPABASE_URL = 'https://eldkwsoucmfgvofsvshc.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yR4T32bvVYiH2CNUzSKiJg_eb-Trm3M';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+        // Notifications discrètes (remplace les alert() du navigateur)
+        function showToast(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            if (!container) { alert(message); return; }
+
+            const styles = {
+                error: 'bg-red-950/95 border-red-800 text-red-200',
+                success: 'bg-emerald-950/95 border-emerald-800 text-emerald-200',
+                info: 'bg-slate-900/95 border-slate-700 text-slate-200'
+            };
+            const icons = { error: 'fa-circle-exclamation', success: 'fa-circle-check', info: 'fa-circle-info' };
+
+            const toast = document.createElement('div');
+            toast.className = `${styles[type] || styles.info} border rounded-xl px-4 py-3 text-xs shadow-2xl flex items-start gap-2 transition-all duration-300 opacity-0 translate-x-4`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} mt-0.5"></i><span>${message}</span>`;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-x-4');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
     </script>
 
     <style>
@@ -60,6 +87,8 @@
     </style>
 </head>
 <body class="bg-court text-slate-100 min-h-screen">
+    <div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-2 w-72 max-w-[90vw]"></div>
+
     <div class="bg-slate-950 border-b border-emerald-900/50 text-center px-4 py-2.5 text-xs text-emerald-200/90">
         <strong class="text-emerald-400">18+</strong> — Jouer comporte des risques d’addiction.
         <a href="tel:0974751313" class="underline hover:text-emerald-300 transition-colors">Joueurs Info Service : 09 74 75 13 13</a>
@@ -73,7 +102,7 @@
 
             <div class="hidden md:flex items-center space-x-9 text-sm font-medium">
                 <a href="#philosophie" class="hover:text-yellow-400 transition-colors">L’Esprit</a>
-                <a href="#pronos" class="hover:text-yellow-400 transition-colors">Pronostics</a>
+                <a href="#pronos" class="relative hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-desktop" class="hidden absolute -top-1 -right-2.5 w-2 h-2 bg-red-500 rounded-full"></span></a>
                 <a href="#roi" class="hover:text-yellow-400 transition-colors">Performances</a>
                 <a href="#audit" class="hover:text-yellow-400 transition-colors">Audit</a>
                 <a href="#tarifs" class="hover:text-yellow-400 transition-colors">Tarifs</a>
@@ -113,7 +142,7 @@
         <div id="mobile-menu" class="hidden md:hidden bg-slate-950 border-t border-slate-800 py-4">
             <div class="flex flex-col px-6 space-y-4 text-base font-medium">
                 <a href="#philosophie" class="py-2 hover:text-yellow-400 transition-colors">L’Esprit</a>
-                <a href="#pronos" class="py-2 hover:text-yellow-400 transition-colors">Pronostics</a>
+                <a href="#pronos" class="relative py-2 hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-mobile" class="hidden ml-2 w-2 h-2 bg-red-500 rounded-full inline-block"></span></a>
                 <a href="#roi" class="py-2 hover:text-yellow-400 transition-colors">Performances</a>
                 <a href="#audit" class="py-2 hover:text-yellow-400 transition-colors">Audit Blockchain</a>
                 <a href="#tarifs" class="py-2 hover:text-yellow-400 transition-colors">Tarifs</a>
@@ -199,7 +228,9 @@
             </div>
 
             <div id="pronos-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="col-span-full text-center text-slate-500 text-xs py-8">Chargement...</div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
             </div>
 
             <script>
@@ -245,6 +276,29 @@
                                 <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">${Number(row.mise).toFixed(2)} €</span></div>
                             </div>
                         </div>`).join('');
+
+                    verifierPronosNonVus(data);
+                }
+
+                // Affiche un point rouge sur "Pronostics" dans la nav si de nouveaux pronos
+                // sont arrivés depuis la dernière visite (mémorisé dans ce navigateur uniquement).
+                function verifierPronosNonVus(data) {
+                    const signature = data.map(p => p.id).sort().join(',');
+                    const dernierVu = localStorage.getItem('tennistemple_pronos_vus') || '';
+
+                    const badges = [document.getElementById('pronos-badge-desktop'), document.getElementById('pronos-badge-mobile')];
+                    if (signature && signature !== dernierVu) {
+                        badges.forEach(b => b?.classList.remove('hidden'));
+                    } else {
+                        badges.forEach(b => b?.classList.add('hidden'));
+                    }
+
+                    document.querySelectorAll('a[href="#pronos"]').forEach(link => {
+                        link.addEventListener('click', () => {
+                            localStorage.setItem('tennistemple_pronos_vus', signature);
+                            badges.forEach(b => b?.classList.add('hidden'));
+                        });
+                    });
                 }
 
                 function renderAuthCard(message) {
@@ -283,7 +337,8 @@
                     const email = document.getElementById('email').value;
                     const password = document.getElementById('pass').value;
                     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                    if (error) { alert("Identifiants incorrects."); return; }
+                    if (error) { showToast("Identifiants incorrects."); return; }
+                    showToast("Connexion réussie.", 'success');
                     chargerPronos();
                     if (typeof updateNavState === 'function') updateNavState();
                 }
@@ -294,19 +349,19 @@
                     const passwordConfirm = document.getElementById('pass-confirm').value;
 
                     if (!email || password.length < 6) {
-                        alert("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                        showToast("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
                         return;
                     }
 
                     if (password !== passwordConfirm) {
-                        alert("Les deux mots de passe ne correspondent pas.");
+                        showToast("Les deux mots de passe ne correspondent pas.");
                         return;
                     }
 
                     const { data, error } = await supabaseClient.auth.signUp({ email, password });
 
                     if (error) {
-                        alert("Erreur lors de la création du compte : " + error.message);
+                        showToast("Erreur lors de la création du compte : " + error.message);
                         return;
                     }
 
@@ -315,6 +370,7 @@
                     // le temps qu'un admin active son compte premium).
                     if (data.session) {
                         authMode = 'login';
+                        showToast("Compte créé, bienvenue !", 'success');
                         chargerPronos();
                         if (typeof updateNavState === 'function') updateNavState();
                     } else {
@@ -332,6 +388,10 @@
         <h2 class="section-title text-4xl font-extrabold">Performances</h2>
         <p class="text-xs text-slate-500 mt-4"><!-- Début date maj -->Dernière mise à jour : 11/07/2026<!-- Fin date maj --></p>
     </div>
+
+    <!-- Début bandeau stats -->
+
+<!-- Fin bandeau stats -->
 
     <!-- Début des statistiques mensuelles -->
 
@@ -556,11 +616,11 @@
                 const passwordConfirm = document.getElementById(mobile ? 'mobile-login-pass-confirm' : 'nav-login-pass-confirm').value;
 
                 if (!email || password.length < 6) {
-                    alert("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                    showToast("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
                     return;
                 }
                 if (password !== passwordConfirm) {
-                    alert("Les deux mots de passe ne correspondent pas.");
+                    showToast("Les deux mots de passe ne correspondent pas.");
                     return;
                 }
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
@@ -581,6 +641,7 @@
             }
 
             document.getElementById('nav-login-panel')?.classList.add('hidden');
+            showToast(mode === 'login' ? "Connexion réussie." : "Compte créé, bienvenue !", 'success');
             updateNavState();
             if (typeof chargerPronos === 'function') chargerPronos();
         }

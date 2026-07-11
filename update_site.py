@@ -72,19 +72,27 @@ def push_pronos_premium(df):
 
 
 def generate_perf_table(df):
-    """Génère le tableau avec une harmonisation complète des polices et tailles."""
+    """Génère le tableau desktop + la vue en cartes mobile, avec pastilles de statut."""
     df_terminees = df[df['Résultat'].isin(['Gagné', 'Perdu', 'Annulé'])].sort_values(by='Date', ascending=False)
 
     if df_terminees.empty:
         return '<p class="text-slate-500 text-center py-10">Aucun historique disponible.</p>'
 
+    def badge_statut(resultat):
+        if resultat == 'Gagné':
+            return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>'
+        if resultat == 'Perdu':
+            return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>'
+        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-700/40 text-slate-400"><i class="fa-solid fa-minus text-[9px]"></i>Annulé</span>'
+
     rows = ""
+    cards = ""
     for _, row in df_terminees.iterrows():
         color_class = "text-emerald-500" if row['Résultat'] == 'Gagné' else ("text-red-500" if row['Résultat'] == 'Perdu' else "text-slate-400")
-
         date_fmt = row['Date'].strftime('%d/%m/%Y')
         cote_fmt = f"{row['Cote']:.2f}"
         gain_fmt = f"{row['Gain/Perte']:.2f} €"
+        badge = badge_statut(row['Résultat'])
 
         rows += f'''
         <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
@@ -92,24 +100,38 @@ def generate_perf_table(df):
             <td class="px-6 py-4 text-center text-xs text-white">{row['Match']}</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">{row['Pari']}</td>
             <td class="px-6 py-4 text-center text-xs text-white">{cote_fmt}</td>
-            <td class="px-6 py-4 text-center text-xs {color_class}">{row['Résultat']}</td>
+            <td class="px-6 py-4 text-center text-xs">{badge}</td>
             <td class="px-6 py-4 text-center text-xs {color_class}">{gain_fmt}</td>
         </tr>'''
 
+        cards += f'''
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">{date_fmt}</span>
+                {badge}
+            </div>
+            <p class="text-sm font-bold text-white mb-1">{row['Match']}</p>
+            <p class="text-xs text-yellow-300 mb-3">{row['Pari']} <span class="text-slate-500">@ {cote_fmt}</span></p>
+            <p class="text-sm font-bold {color_class}">{gain_fmt}</p>
+        </div>'''
+
     return f'''
-    <table class="w-full text-left border-collapse">
-        <thead>
-            <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
-                <th class="px-6 py-4 text-center text-xs">Date</th>
-                <th class="px-6 py-4 text-center text-xs">Match</th>
-                <th class="px-6 py-4 text-center text-xs">Pari</th>
-                <th class="px-6 py-4 text-center text-xs">Cote</th>
-                <th class="px-6 py-4 text-center text-xs">Statut</th>
-                <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
-            </tr>
-        </thead>
-        <tbody class="text-slate-300">{rows}</tbody>
-    </table>'''
+    <div class="hidden md:block">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                    <th class="px-6 py-4 text-center text-xs">Date</th>
+                    <th class="px-6 py-4 text-center text-xs">Match</th>
+                    <th class="px-6 py-4 text-center text-xs">Pari</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote</th>
+                    <th class="px-6 py-4 text-center text-xs">Statut</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300">{rows}</tbody>
+        </table>
+    </div>
+    <div class="md:hidden space-y-3">{cards}</div>'''
 
 def generate_stats_mensuelles(df):
     """Génère le tableau statistique mensuel."""
@@ -162,6 +184,94 @@ def generate_stats_mensuelles(df):
             <tbody class="text-slate-300 divide-y divide-slate-800">{rows}</tbody>
         </table>
     </div>'''
+
+def generate_sparkline_svg(valeurs):
+    """Génère un mini graphique SVG (sparkline) à partir d'une liste de valeurs cumulées."""
+    if len(valeurs) < 2:
+        return ''
+
+    largeur, hauteur, marge = 300, 60, 6
+    v_min, v_max = min(valeurs), max(valeurs)
+    if v_max == v_min:
+        v_max += 1
+
+    n = len(valeurs)
+    points = []
+    for i, v in enumerate(valeurs):
+        x = marge + (i / (n - 1)) * (largeur - 2 * marge)
+        y = hauteur - marge - ((v - v_min) / (v_max - v_min)) * (hauteur - 2 * marge)
+        points.append(f"{x:.1f},{y:.1f}")
+
+    couleur = "#34d399" if valeurs[-1] >= valeurs[0] else "#f87171"
+    polyline = " ".join(points)
+    zero_y = hauteur - marge - ((0 - v_min) / (v_max - v_min)) * (hauteur - 2 * marge) if v_min <= 0 <= v_max else None
+    ligne_zero = f'<line x1="{marge}" y1="{zero_y:.1f}" x2="{largeur - marge}" y2="{zero_y:.1f}" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>' if zero_y is not None else ''
+
+    return f'''
+    <svg viewBox="0 0 {largeur} {hauteur}" class="w-full h-16">
+        {ligne_zero}
+        <polyline points="{polyline}" fill="none" stroke="{couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>'''
+
+
+def generate_stats_banner(df):
+    """Génère le bandeau de statistiques clés (taux de réussite, série, PnL, cote moyenne) + sparkline."""
+    df_term = df[df['Résultat'].isin(['Gagné', 'Perdu'])].sort_values(by='Date', ascending=True).copy()
+
+    if df_term.empty:
+        return ''
+
+    total = len(df_term)
+    gagnes = len(df_term[df_term['Résultat'] == 'Gagné'])
+    taux_reussite = (gagnes / total) * 100 if total else 0
+    cote_moyenne = df_term['Cote'].mean()
+
+    df_pnl = df[df['Résultat'].isin(['Gagné', 'Perdu', 'Annulé'])].sort_values(by='Date', ascending=True)
+    pnl_total = df_pnl['Gain/Perte'].sum()
+
+    # Série en cours : on part du pari le plus récent et on compte tant que le résultat est identique
+    df_recent_first = df_term.sort_values(by='Date', ascending=False)
+    serie_resultat = df_recent_first.iloc[0]['Résultat']
+    serie_longueur = 0
+    for _, row in df_recent_first.iterrows():
+        if row['Résultat'] == serie_resultat:
+            serie_longueur += 1
+        else:
+            break
+    serie_texte = f"{serie_longueur} {'gagné' if serie_resultat == 'Gagné' else 'perdu'}{'s' if serie_longueur > 1 else ''} d'affilée"
+    serie_emoji = "🔥" if serie_resultat == 'Gagné' and serie_longueur >= 2 else ("❄️" if serie_resultat == 'Perdu' and serie_longueur >= 2 else "")
+    serie_couleur = "text-emerald-400" if serie_resultat == 'Gagné' else "text-red-400"
+
+    # Sparkline sur les 30 derniers paris (ou moins si l'historique est plus court)
+    cumul = df_pnl['Gain/Perte'].cumsum().tolist()[-30:]
+    sparkline = generate_sparkline_svg(cumul)
+
+    pnl_couleur = "text-emerald-400" if pnl_total >= 0 else "text-red-400"
+
+    return f'''
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Taux de réussite</p>
+            <p class="text-2xl font-bold text-white">{taux_reussite:.1f}%</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Série en cours</p>
+            <p class="text-2xl font-bold {serie_couleur}">{serie_emoji} {serie_texte}</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
+            <p class="text-2xl font-bold {pnl_couleur}">{pnl_total:.2f} €</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Cote moyenne</p>
+            <p class="text-2xl font-bold text-white">{cote_moyenne:.2f}</p>
+        </div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-10">
+        <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
+        {sparkline}
+    </div>'''
+
 
 def generate_maj_date():
     """Génère le texte 'Dernière mise à jour' avec la date du jour"""
@@ -395,6 +505,7 @@ def mettre_a_jour_site():
     verifier_nouvelles_inscriptions()
 
     stats_html = generate_stats_mensuelles(df)
+    banniere_html = generate_stats_banner(df)
     perf_html = generate_perf_table(df)
     audit_html = get_audit_html(DB_PATH)
     maj_date_html = generate_maj_date()
@@ -403,6 +514,7 @@ def mettre_a_jour_site():
         with open(HTML_PATH, 'r', encoding='utf-8') as f:
             contenu = f.read()
 
+        contenu = re.sub(r'<!-- Début bandeau stats -->.*?<!-- Fin bandeau stats -->', f'<!-- Début bandeau stats -->\n{banniere_html}\n<!-- Fin bandeau stats -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début des statistiques mensuelles -->.*?<!-- Fin des statistiques mensuelles -->', f'<!-- Début des statistiques mensuelles -->\n{stats_html}\n<!-- Fin des statistiques mensuelles -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début des performances -->.*?<!-- Fin des performances -->', f'<!-- Début des performances -->\n{perf_html}\n<!-- Fin des performances -->', contenu, flags=re.DOTALL)
         contenu = re.sub(r'<!-- Début du registre -->.*?<!-- Fin du registre -->', f'<!-- Début du registre -->\n{audit_html}\n<!-- Fin du registre -->', contenu, flags=re.DOTALL)
