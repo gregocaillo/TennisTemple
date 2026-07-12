@@ -122,16 +122,51 @@
 
         async function logout() {
             await supabaseClient.auth.signOut();
-            window.location.replace("index.html");
+            init();
         }
 
         async function renderAdmin() {
             const app = document.getElementById('app-abonnes');
+            // Génération des cartes pour mobile
+            const cartesMobile = data.map(p => `
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-3 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-slate-300 font-bold">${p.email || '—'}</p>
+                        <div class="mt-1">
+                            <span class="text-[10px] font-bold ${p.is_premium ? 'text-emerald-400' : 'text-slate-500'}">
+                                ${p.is_premium ? '● PREMIUM' : '○ GRATUIT'}
+                            </span>
+                        </div>
+                    </div>
+                    <button onclick="togglePremium('${p.id}', ${!p.is_premium})"
+                            class="text-[10px] px-3 py-2 rounded-lg font-bold transition ${p.is_premium ? 'bg-red-900/50 text-red-300' : 'bg-emerald-600 text-slate-950'}">
+                        ${p.is_premium ? 'Désactiver' : 'Activer'}
+                    </button>
+                </div>
+            `).join('');
+
+            // Mise à jour de l'affichage avec bascule responsive
             app.innerHTML = `
-                <div class="space-y-2">
-                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>
+                <p class="text-slate-500 text-xs mb-3">${data.length} compte(s) enregistré(s)</p>
+                
+                <!-- Vue mobile (Cartes) -->
+                <div class="block md:hidden">
+                    ${cartesMobile}
+                </div>
+
+                <!-- Vue desktop (Tableau) -->
+                <div class="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-slate-950">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-[10px] uppercase text-slate-500">Email</th>
+                                <th class="px-4 py-3 text-center text-[10px] uppercase text-slate-500">Statut</th>
+                                <th class="px-4 py-3 text-center text-[10px] uppercase text-slate-500">Admin</th>
+                                <th class="px-4 py-3 text-center text-[10px] uppercase text-slate-500">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
                 </div>`;
 
             const { data, error } = await supabaseClient
