@@ -125,11 +125,12 @@
 
                 <div id="nav-login-panel" class="hidden absolute right-0 top-full mt-3 w-72 bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl z-50 text-left">
                     <p id="nav-auth-title-desktop" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
-                    <input id="nav-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                    <input id="nav-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                    <input id="nav-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="nav-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(false)">
+                    <input id="nav-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(false)">
+                    <input id="nav-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(false)">
                     <button id="nav-auth-submit-desktop" onclick="navAuthSubmit(false)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
                     <button id="nav-auth-toggle-desktop" onclick="toggleNavAuthMode(false)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
+                    <button id="nav-forgot-desktop" onclick="demanderReinitialisation('nav-login-email')" class="text-slate-500 text-[11px] mt-1 hover:underline w-full bg-transparent">Mot de passe oublié ?</button>
                     <p id="nav-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
                 </div>
             </div>
@@ -156,11 +157,12 @@
 
                 <div id="nav-login-block-mobile" class="mt-2 bg-slate-900 border border-slate-700 rounded-2xl p-4">
                     <p id="nav-auth-title-mobile" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
-                    <input id="mobile-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                    <input id="mobile-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                    <input id="mobile-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="mobile-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(true)">
+                    <input id="mobile-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(true)">
+                    <input id="mobile-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(true)">
                     <button id="nav-auth-submit-mobile" onclick="navAuthSubmit(true)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
                     <button id="nav-auth-toggle-mobile" onclick="toggleNavAuthMode(true)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
+                    <button id="nav-forgot-mobile" onclick="demanderReinitialisation('mobile-login-email')" class="text-slate-500 text-[11px] mt-1 hover:underline w-full bg-transparent">Mot de passe oublié ?</button>
                     <p id="mobile-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
                 </div>
             </div>
@@ -339,13 +341,15 @@
 
                             ${message ? `<p class="text-emerald-400 text-xs mb-3">${message}</p>` : ''}
 
-                            <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                            <input id="pass" type="password" placeholder="mot de passe (6 caractères min.)" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                            ${estConnexion ? '' : '<input id="pass-confirm" type="password" placeholder="confirmer le mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">'}
+                            <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') ${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}">
+                            <input id="pass" type="password" placeholder="mot de passe (6 caractères min.)" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') ${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}">
+                            ${estConnexion ? '' : `<input id="pass-confirm" type="password" placeholder="confirmer le mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') signupSupabase()">`}
 
                             <button onclick="${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">
                                 ${estConnexion ? 'Se connecter' : 'Créer mon compte'}
                             </button>
+
+                            ${estConnexion ? `<button onclick="demanderReinitialisation('email')" class="text-slate-500 text-[11px] mt-2 hover:underline w-full bg-transparent">Mot de passe oublié ?</button>` : ''}
 
                             <button onclick="switchAuthMode()" class="text-slate-400 text-xs mt-3 hover:underline w-full">
                                 ${estConnexion ? "Pas encore de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
@@ -358,6 +362,21 @@
                 function switchAuthMode() {
                     authMode = authMode === 'login' ? 'signup' : 'login';
                     renderAuthCard();
+                }
+
+                async function demanderReinitialisation(emailInputId) {
+                    const email = document.getElementById(emailInputId)?.value;
+                    if (!email) {
+                        showToast("Renseignez d'abord votre email ci-dessus.");
+                        return;
+                    }
+                    const redirectUrl = new URL('reset-password.html', window.location.href).href;
+                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
+                    if (error) {
+                        showToast("Erreur : " + error.message);
+                        return;
+                    }
+                    showToast("Si ce compte existe, un email de réinitialisation vient d'être envoyé.", 'success');
                 }
 
                 async function loginSupabase() {
@@ -604,6 +623,7 @@
             const toggleBtn = document.getElementById(`nav-auth-toggle-${suffix}`);
             const errorEl = document.getElementById(mobile ? 'mobile-login-error' : 'nav-login-error');
             const confirmEl = document.getElementById(mobile ? 'mobile-login-pass-confirm' : 'nav-login-pass-confirm');
+            const forgotEl = document.getElementById(`nav-forgot-${suffix}`);
 
             errorEl?.classList.add('hidden');
             errorEl?.classList.remove('text-emerald-400');
@@ -614,11 +634,13 @@
                 submitBtn.textContent = 'Se connecter';
                 toggleBtn.textContent = "Pas encore de compte ? S'inscrire";
                 confirmEl?.classList.add('hidden');
+                forgotEl?.classList.remove('hidden');
             } else {
                 titleEl.textContent = 'Créer un compte';
                 submitBtn.textContent = 'Créer mon compte';
                 toggleBtn.textContent = "Déjà un compte ? Se connecter";
                 confirmEl?.classList.remove('hidden');
+                forgotEl?.classList.add('hidden');
             }
         }
 

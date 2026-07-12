@@ -102,9 +102,10 @@
             document.getElementById('app').innerHTML = `
                 <div class="bg-slate-900 border border-slate-700 rounded-2xl p-8 max-w-sm">
                     <h4 class="text-sm font-bold mb-4">Connexion administrateur</h4>
-                    <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
-                    <input id="pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white">
+                    <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') login()">
+                    <input id="pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') login()">
                     <button onclick="login()" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <button onclick="demanderReinitialisation()" class="text-slate-500 text-[11px] mt-2 hover:underline w-full bg-transparent">Mot de passe oublié ?</button>
                     <p id="login-error" class="text-red-400 text-xs mt-3 hidden">Identifiants incorrects.</p>
                 </div>`;
         }
@@ -120,8 +121,23 @@
             init();
         }
 
+        async function demanderReinitialisation() {
+            const email = document.getElementById('email')?.value;
+            if (!email) {
+                showToast("Renseignez d'abord votre email ci-dessus.");
+                return;
+            }
+            const redirectUrl = new URL('reset-password.html', window.location.href).href;
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
+            if (error) {
+                showToast("Erreur : " + error.message);
+                return;
+            }
+            showToast("Si ce compte existe, un email de réinitialisation vient d'être envoyé.", 'success');
+        }
+
         async function logout() {
-            await supabaseClient.auth.signOut();
+            try { await supabaseClient.auth.signOut(); } catch (e) { /* on redirige quoi qu'il arrive */ }
             window.location.href = 'index.html';
         }
 
