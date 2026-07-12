@@ -125,18 +125,46 @@
             init();
         }
 
-        async function renderAdmin() {
+async function renderAdmin() {
             const app = document.getElementById('app-abonnes');
-            // Génération des cartes pour mobile
+            app.innerHTML = `<p class="text-slate-500 text-xs">Chargement des comptes...</p>`;
+
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .order('email', { ascending: true });
+
+            if (error) {
+                app.innerHTML = `<p class="text-red-400 text-xs">Erreur : ${error.message}</p>`;
+                return;
+            }
+
+            // Génération des lignes du tableau (Desktop)
+            const rows = data.map(p => `
+                <tr class="border-b border-slate-800">
+                    <td class="px-4 py-3 text-xs text-white">${p.email || '—'}</td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="px-2 py-1 rounded-full text-[10px] font-bold ${p.is_premium ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700/50 text-slate-400'}">
+                            ${p.is_premium ? 'PREMIUM' : 'GRATUIT'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-center text-slate-400">${p.is_admin ? '✓' : ''}</td>
+                    <td class="px-4 py-3 text-center">
+                        <button onclick="togglePremium('${p.id}', ${!p.is_premium})"
+                                class="text-xs px-3 py-1.5 rounded-lg font-bold transition ${p.is_premium ? 'bg-red-900/50 text-red-300' : 'bg-emerald-600 text-slate-950'}">
+                            ${p.is_premium ? 'Désactiver' : 'Activer'}
+                        </button>
+                    </td>
+                </tr>`).join('');
+
+            // Génération des cartes (Mobile)
             const cartesMobile = data.map(p => `
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-3 flex justify-between items-center">
                     <div>
                         <p class="text-xs text-slate-300 font-bold">${p.email || '—'}</p>
-                        <div class="mt-1">
-                            <span class="text-[10px] font-bold ${p.is_premium ? 'text-emerald-400' : 'text-slate-500'}">
-                                ${p.is_premium ? '● PREMIUM' : '○ GRATUIT'}
-                            </span>
-                        </div>
+                        <p class="text-[10px] ${p.is_premium ? 'text-emerald-400' : 'text-slate-500'} font-bold mt-1">
+                            ${p.is_premium ? '● PREMIUM' : '○ GRATUIT'}
+                        </p>
                     </div>
                     <button onclick="togglePremium('${p.id}', ${!p.is_premium})"
                             class="text-[10px] px-3 py-2 rounded-lg font-bold transition ${p.is_premium ? 'bg-red-900/50 text-red-300' : 'bg-emerald-600 text-slate-950'}">
@@ -145,60 +173,15 @@
                 </div>
             `).join('');
 
-            // Mise à jour de l'affichage avec bascule responsive
+            // Rendu final
             app.innerHTML = `
                 <p class="text-slate-500 text-xs mb-3">${data.length} compte(s) enregistré(s)</p>
                 
-                <!-- Vue mobile (Cartes) -->
                 <div class="block md:hidden">
                     ${cartesMobile}
                 </div>
 
-                <!-- Vue desktop (Tableau) -->
                 <div class="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-                    <table class="w-full">
-                        <thead class="bg-slate-950">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-[10px] uppercase text-slate-500">Email</th>
-                                <th class="px-4 py-3 text-center text-[10px] uppercase text-slate-500">Statut</th>
-                                <th class="px-4 py-3 text-center text-[10px] uppercase text-slate-500">Admin</th>
-                                <th class="px-4 py-3 text-center text-[10px] uppercase text-slate-500">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>`;
-
-            const { data, error } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .order('email', { ascending: true });
-
-            if (error) {
-                app.innerHTML = `<p class="text-red-400 text-xs">Erreur de chargement : ${error.message}</p>`;
-                return;
-            }
-
-            const rows = data.map(p => `
-                <tr class="border-b border-slate-800">
-                    <td class="px-4 py-3 text-xs text-white">${p.email || '—'}</td>
-                    <td class="px-4 py-3 text-xs text-center">
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold ${p.is_premium ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700/50 text-slate-400'}">
-                            ${p.is_premium ? 'PREMIUM' : 'GRATUIT'}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 text-xs text-center text-slate-400">${p.is_admin ? '✓' : ''}</td>
-                    <td class="px-4 py-3 text-center">
-                        <button onclick="togglePremium('${p.id}', ${!p.is_premium})"
-                                class="text-xs px-3 py-1.5 rounded-lg font-bold transition ${p.is_premium ? 'bg-red-900/50 hover:bg-red-900 text-red-300' : 'bg-emerald-600 hover:bg-emerald-500 text-slate-950'}">
-                            ${p.is_premium ? 'Désactiver' : 'Activer'}
-                        </button>
-                    </td>
-                </tr>`).join('');
-
-            app.innerHTML = `
-                <p class="text-slate-500 text-xs mb-3">${data.length} compte(s) enregistré(s)</p>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
                     <table class="w-full">
                         <thead class="bg-slate-950">
                             <tr>
