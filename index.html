@@ -238,11 +238,11 @@
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
-            <p class="text-2xl font-bold text-white">1</p>
+            <p class="text-2xl font-bold text-white">0</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="text-2xl font-bold text-emerald-400">+12.1%</p>
+            <p class="text-2xl font-bold text-white">—</p>
         </div>
     </div>
 <!-- Fin stats pronos -->
@@ -437,14 +437,94 @@
 
     <!-- Début bandeau stats -->
 
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Taux de réussite</p>
+            <p class="text-2xl font-bold text-white">100.0%</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Série en cours</p>
+            <p class="text-2xl font-bold text-emerald-400"> 1 gagné d'affilée</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
+            <p class="text-2xl font-bold text-emerald-400">1.05 €</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Cote moyenne</p>
+            <p class="text-2xl font-bold text-white">1.21</p>
+        </div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-10">
+        <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
+        
+    </div>
 <!-- Fin bandeau stats -->
 
     <!-- Début des statistiques mensuelles -->
 
+    <div class="overflow-x-auto mb-10">
+        <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
+            <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                <tr>
+                    <th class="px-6 py-4 text-center text-xs">Mois</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre paris</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre gagnés</th>
+                    <th class="px-6 py-4 text-center text-xs">Taux de réussite</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Moyenne</th>
+                    <th class="px-6 py-4 text-center text-xs">Yield</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300 divide-y divide-slate-800">
+        <tr class="border-b border-slate-800 last:border-b-0 text-xs">
+            <td class="px-6 py-3 text-center text-xs text-white">07/2026</td>
+            <td class="px-6 py-3 text-center text-xs text-white">1</td>
+            <td class="px-6 py-3 text-center text-xs text-white">1</td>
+            <td class="px-6 py-3 text-center text-xs text-white">100.0%</td>
+            <td class="px-6 py-3 text-center text-xs text-white">1.21</td>
+            <td class="px-6 py-3 text-center text-xs text-white">21.0%</td>
+            <td class="px-6 py-3 text-center text-xs text-emerald-500">1.05 €</td>
+        </tr></tbody>
+        </table>
+    </div>
 <!-- Fin des statistiques mensuelles -->
 
             <!-- Début des performances -->
-<p class="text-slate-500 text-center py-10">Aucun historique disponible.</p>
+
+    <div class="hidden md:block">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                    <th class="px-6 py-4 text-center text-xs">Date</th>
+                    <th class="px-6 py-4 text-center text-xs">Match</th>
+                    <th class="px-6 py-4 text-center text-xs">Pari</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote</th>
+                    <th class="px-6 py-4 text-center text-xs">Statut</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300">
+        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">10/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Jannik Sinner vs Novak Djokovic</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Jannik Sinner</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.21</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">1.05 €</td>
+        </tr></tbody>
+        </table>
+    </div>
+    <div class="md:hidden space-y-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">10/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Jannik Sinner vs Novak Djokovic</p>
+            <p class="text-xs text-yellow-300 mb-3">Jannik Sinner <span class="text-slate-500">@ 1.21</span></p>
+            <p class="text-sm font-bold text-emerald-500">1.05 €</p>
+        </div></div>
 <!-- Fin des performances -->
 
         </section>
