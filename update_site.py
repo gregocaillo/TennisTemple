@@ -344,24 +344,24 @@ def generate_stats_banner(df):
     return f'''
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Taux de réussite</p>
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
             <p class="text-2xl font-bold text-white">{taux_reussite:.1f}%</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Série en cours</p>
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Série en cours</p>
             <p class="text-2xl font-bold {serie_couleur}">{serie_emoji} {serie_texte}</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
             <p class="text-2xl font-bold {pnl_couleur}">{pnl_total:.2f} €</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Cote moyenne</p>
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote moyenne</p>
             <p class="text-2xl font-bold text-white">{cote_moyenne:.2f}</p>
         </div>
     </div>
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-10">
-        <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
+        <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
         {sparkline}
     </div>'''
 
