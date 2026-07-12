@@ -331,7 +331,7 @@ def generate_stats_banner(df):
             serie_longueur += 1
         else:
             break
-    serie_texte = f"{serie_longueur} {'gagné' if serie_resultat == 'Gagné' else 'perdu'}{'s' if serie_longueur > 1 else ''}"
+    serie_texte = f"{serie_longueur} {'Gagné' if serie_resultat == 'Gagné' else 'Perdu'}{'s' if serie_longueur > 1 else ''}"
     serie_emoji = "🔥" if serie_resultat == 'Gagné' and serie_longueur >= 2 else ("❄️" if serie_resultat == 'Perdu' and serie_longueur >= 2 else "")
     serie_couleur = "text-emerald-400" if serie_resultat == 'Gagné' else "text-red-400"
 
