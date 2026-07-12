@@ -83,6 +83,53 @@ def generate_pronos_stats_banner(df):
     </div>'''
 
 
+def appliquer_clotures_admin():
+    """Récupère les clôtures de paris décidées depuis /admin.html (statut Gagné/Perdu/Annulé)
+    et les applique à la base SQLite locale, qui reste la source de vérité."""
+    if not SUPABASE_SERVICE_KEY:
+        print("⚠ SUPABASE_SERVICE_KEY non définie, synchronisation des clôtures admin ignorée.")
+        return
+
+    headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+    }
+
+    resp = requests.get(f"{SUPABASE_URL}/rest/v1/resultats_clotures", headers=headers, params={"select": "*"})
+    if resp.status_code >= 300:
+        print(f"⚠ Erreur lors de la récupération des clôtures admin : {resp.status_code} {resp.text}")
+        return
+
+    clotures = resp.json()
+    if not clotures:
+        print("Aucune clôture en attente depuis l'espace admin.")
+        return
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    ids_traites = []
+
+    for c in clotures:
+        cursor.execute(
+            "UPDATE Historique_Paris SET statut = ?, gain_net = ? WHERE id = ?",
+            (c['statut'], c['gain_net'], c['paris_id'])
+        )
+        ids_traites.append(c['id'])
+        print(f"Clôture admin appliquée : pari #{c['paris_id']} → {c['statut']} ({c['gain_net']:+.2f} €)")
+
+    conn.commit()
+    conn.close()
+
+    # Nettoie la table de staging une fois les clôtures appliquées localement,
+    # pour ne pas les réappliquer au prochain passage.
+    for cid in ids_traites:
+        del_resp = requests.delete(f"{SUPABASE_URL}/rest/v1/resultats_clotures?id=eq.{cid}", headers=headers)
+        if del_resp.status_code >= 300:
+            print(f"⚠ Erreur lors du nettoyage de la clôture #{cid} : {del_resp.status_code}")
+
+    print(f"{len(ids_traites)} clôture(s) admin appliquée(s) et synchronisée(s) avec la base locale.")
+
+
 def push_pronos_premium(df):
     """Remplace le contenu de la table pronos_premium sur Supabase par les paris 'En cours' actuels."""
     if not SUPABASE_SERVICE_KEY:
@@ -103,6 +150,7 @@ def push_pronos_premium(df):
     df_en_cours = df[df['Résultat'] == 'En cours']
     for _, row in df_en_cours.iterrows():
         payload = {
+            "paris_id": int(row['ID']),
             "tournoi": row['Tournoi'],
             "match_intitule": row['Match'],
             "pari": row['Pari'],
@@ -530,9 +578,13 @@ def push_to_github(repo_path='.', commit_message=None):
         print(f"Erreur lors du push GitHub : {e}")
 
 def mettre_a_jour_site():
+    # Applique d'abord les clôtures de paris décidées depuis /admin.html, avant
+    # de régénérer quoi que ce soit à partir de la base (qui doit être à jour).
+    appliquer_clotures_admin()
+
     conn = sqlite3.connect(DB_PATH)
     query = """
-        SELECT nom_tournoi AS 'Tournoi', date_match AS 'Date', match_intitule AS 'Match', 
+        SELECT id AS 'ID', nom_tournoi AS 'Tournoi', date_match AS 'Date', match_intitule AS 'Match', 
                joueur_choisi AS 'Pari', mise AS 'Mise', cote_jouee AS 'Cote', 
                statut AS 'Résultat', gain_net AS 'Gain/Perte', prob_predite AS 'ProbPredite'
         FROM Historique_Paris

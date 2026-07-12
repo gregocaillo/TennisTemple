@@ -78,7 +78,24 @@
                 return;
             }
 
+            document.getElementById('app').innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <p class="text-slate-400 text-xs">Espace administrateur</p>
+                    <button onclick="logout()" class="text-xs text-slate-500 hover:text-emerald-400">Se déconnecter</button>
+                </div>
+
+                <h3 class="text-sm font-bold mb-3 text-slate-300"><i class="fa-solid fa-flag-checkered mr-2 text-emerald-400"></i>Paris en cours à clôturer</h3>
+                <div id="app-clotures" class="mb-10">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>
+                </div>
+
+                <h3 class="text-sm font-bold mb-3 text-slate-300"><i class="fa-solid fa-users mr-2 text-emerald-400"></i>Abonnés</h3>
+                <div id="app-abonnes">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>
+                </div>`;
+
             renderAdmin();
+            renderClotures();
         }
 
         function renderLogin() {
@@ -109,7 +126,7 @@
         }
 
         async function renderAdmin() {
-            const app = document.getElementById('app');
+            const app = document.getElementById('app-abonnes');
             app.innerHTML = `
                 <div class="space-y-2">
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>
@@ -145,10 +162,7 @@
                 </tr>`).join('');
 
             app.innerHTML = `
-                <div class="flex justify-between items-center mb-6">
-                    <p class="text-slate-400 text-xs">${data.length} compte(s) enregistré(s)</p>
-                    <button onclick="logout()" class="text-xs text-slate-500 hover:text-emerald-400">Se déconnecter</button>
-                </div>
+                <p class="text-slate-500 text-xs mb-3">${data.length} compte(s) enregistré(s)</p>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
                     <table class="w-full">
                         <thead class="bg-slate-950">
@@ -162,6 +176,73 @@
                         <tbody>${rows}</tbody>
                     </table>
                 </div>`;
+        }
+
+        async function renderClotures() {
+            const app = document.getElementById('app-clotures');
+            app.innerHTML = `<div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>`;
+
+            const { data, error } = await supabaseClient
+                .from('pronos_premium')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                app.innerHTML = `<p class="text-red-400 text-xs">Erreur de chargement : ${error.message}</p>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                app.innerHTML = `<p class="text-slate-500 text-xs">Aucun pari en cours pour le moment.</p>`;
+                return;
+            }
+
+            const cartes = data.map(p => `
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="text-emerald-400 text-[10px] font-bold uppercase">${p.tournoi}</span>
+                            <h4 class="text-sm font-bold">${p.match_intitule}</h4>
+                            <p class="text-xs text-slate-400 mt-1">${p.pari} @ ${Number(p.cote).toFixed(2)} — mise ${Number(p.mise).toFixed(2)} €</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="cloturePari(${p.id}, ${p.paris_id}, 'Gagné', ${p.cote}, ${p.mise})" class="flex-1 text-xs px-3 py-2 rounded-lg font-bold bg-emerald-600 hover:bg-emerald-500 text-slate-950">Gagné</button>
+                        <button onclick="cloturePari(${p.id}, ${p.paris_id}, 'Perdu', ${p.cote}, ${p.mise})" class="flex-1 text-xs px-3 py-2 rounded-lg font-bold bg-red-900/60 hover:bg-red-900 text-red-200">Perdu</button>
+                        <button onclick="cloturePari(${p.id}, ${p.paris_id}, 'Annulé', ${p.cote}, ${p.mise})" class="flex-1 text-xs px-3 py-2 rounded-lg font-bold bg-slate-700 hover:bg-slate-600 text-slate-200">Annulé</button>
+                    </div>
+                </div>`).join('');
+
+            app.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${cartes}</div>`;
+        }
+
+        async function cloturePari(pronosId, parisId, statut, cote, mise) {
+            let gainNet;
+            if (statut === 'Gagné') gainNet = Math.round((mise * cote - mise) * 100) / 100;
+            else if (statut === 'Perdu') gainNet = -mise;
+            else gainNet = 0;
+
+            const { error: errInsert } = await supabaseClient
+                .from('resultats_clotures')
+                .insert({ paris_id: parisId, statut, gain_net: gainNet });
+
+            if (errInsert) {
+                showToast("Erreur lors de l'enregistrement de la clôture : " + errInsert.message);
+                return;
+            }
+
+            const { error: errDelete } = await supabaseClient
+                .from('pronos_premium')
+                .delete()
+                .eq('id', pronosId);
+
+            if (errDelete) {
+                showToast("Clôture enregistrée, mais le retrait de la carte a échoué : " + errDelete.message);
+            } else {
+                showToast(`Pari clôturé : ${statut} (${gainNet >= 0 ? '+' : ''}${gainNet.toFixed(2)} €)`, 'success');
+            }
+
+            renderClotures();
         }
 
         async function togglePremium(userId, nouvelleValeur) {
