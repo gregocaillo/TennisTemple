@@ -309,13 +309,27 @@
                     verifierPronosNonVus(data);
                 }
 
+                // Signature des pronos actuellement chargés + badges nav, mémorisés pour être
+                // accessibles à la fois par le clic sur "Pronostics" et par l'observateur de scroll.
+                let pronosSignatureActuelle = '';
+                const pronosBadges = () => [document.getElementById('pronos-badge-desktop'), document.getElementById('pronos-badge-mobile')];
+
+                function marquerPronosVus() {
+                    if (!pronosSignatureActuelle) return;
+                    localStorage.setItem('tennistemple_pronos_vus', pronosSignatureActuelle);
+                    pronosBadges().forEach(b => b?.classList.add('hidden'));
+                }
+
                 // Affiche un point rouge sur "Pronostics" dans la nav si de nouveaux pronos
                 // sont arrivés depuis la dernière visite (mémorisé dans ce navigateur uniquement).
+                // Le point s'efface soit au clic sur le lien "Pronostics", soit dès que la section
+                // devient visible au scroll (voir l'IntersectionObserver plus bas).
                 function verifierPronosNonVus(data) {
                     const signature = data.map(p => p.id).sort().join(',');
                     const dernierVu = localStorage.getItem('tennistemple_pronos_vus') || '';
+                    pronosSignatureActuelle = signature;
 
-                    const badges = [document.getElementById('pronos-badge-desktop'), document.getElementById('pronos-badge-mobile')];
+                    const badges = pronosBadges();
                     if (signature && signature !== dernierVu) {
                         badges.forEach(b => b?.classList.remove('hidden'));
                     } else {
@@ -323,11 +337,22 @@
                     }
 
                     document.querySelectorAll('a[href="#pronos"]').forEach(link => {
-                        link.addEventListener('click', () => {
-                            localStorage.setItem('tennistemple_pronos_vus', signature);
-                            badges.forEach(b => b?.classList.add('hidden'));
-                        });
+                        link.addEventListener('click', marquerPronosVus);
                     });
+                }
+
+                // Marque les pronos comme vus dès que la section #pronos est bien visible au scroll
+                // (pas juste effleurée en bord d'écran), sans attendre un clic sur le lien de nav.
+                const pronosSectionEl = document.getElementById('pronos');
+                if (pronosSectionEl && 'IntersectionObserver' in window) {
+                    const pronosObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                marquerPronosVus();
+                            }
+                        });
+                    }, { threshold: 0.35 });
+                    pronosObserver.observe(pronosSectionEl);
                 }
 
                 function renderAuthCard(message) {
