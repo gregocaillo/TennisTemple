@@ -184,6 +184,7 @@ def generate_perf_table(df):
         color_class = "text-emerald-500" if row['Résultat'] == 'Gagné' else ("text-red-500" if row['Résultat'] == 'Perdu' else "text-slate-400")
         date_fmt = row['Date'].strftime('%d/%m/%Y')
         cote_fmt = f"{row['Cote']:.2f}"
+        cote_prematch_fmt = f"{row['CotePrematch']:.2f}" if pd.notna(row['CotePrematch']) else "—"
         gain_fmt = f"{row['Gain/Perte']:.2f} €"
         badge = badge_statut(row['Résultat'])
 
@@ -193,6 +194,7 @@ def generate_perf_table(df):
             <td class="px-6 py-4 text-center text-xs text-white">{row['Match']}</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">{row['Pari']}</td>
             <td class="px-6 py-4 text-center text-xs text-white">{cote_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">{cote_prematch_fmt}</td>
             <td class="px-6 py-4 text-center text-xs">{badge}</td>
             <td class="px-6 py-4 text-center text-xs {color_class}">{gain_fmt}</td>
         </tr>'''
@@ -204,7 +206,7 @@ def generate_perf_table(df):
                 {badge}
             </div>
             <p class="text-sm font-bold text-white mb-1">{row['Match']}</p>
-            <p class="text-xs text-yellow-300 mb-3">{row['Pari']} <span class="text-slate-500">@ {cote_fmt}</span></p>
+            <p class="text-xs text-yellow-300 mb-3">{row['Pari']} <span class="text-slate-500">@ {cote_fmt} (pré-match {cote_prematch_fmt})</span></p>
             <p class="text-sm font-bold {color_class}">{gain_fmt}</p>
         </div>'''
 
@@ -216,7 +218,8 @@ def generate_perf_table(df):
                     <th class="px-6 py-4 text-center text-xs">Date</th>
                     <th class="px-6 py-4 text-center text-xs">Match</th>
                     <th class="px-6 py-4 text-center text-xs">Pari</th>
-                    <th class="px-6 py-4 text-center text-xs">Cote</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Jouée</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Pré-match</th>
                     <th class="px-6 py-4 text-center text-xs">Statut</th>
                     <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
                 </tr>
@@ -238,6 +241,7 @@ def generate_stats_mensuelles(df):
         'Nb': len(x),
         'Gagnés': len(x[x['Résultat'] == 'Gagné']),
         'Cote_Moy': x['Cote'].mean(),
+        'CLV_Moy': x['CLV'].dropna().mean() if x['CLV'].dropna().shape[0] > 0 else None,
         'Yield': (x['Gain/Perte'].sum() / x['Mise'].sum()) * 100 if x['Mise'].sum() != 0 else 0,
         'PNL': x['Gain/Perte'].sum()
     })).reset_index()
@@ -248,7 +252,13 @@ def generate_stats_mensuelles(df):
     for _, row in stats.iterrows():
         nb_paris = int(row['Nb'])
         nb_gagnes = int(row['Gagnés'])
-        
+        if pd.notna(row['CLV_Moy']):
+            clv_txt = f"+{row['CLV_Moy']:.1f}%" if row['CLV_Moy'] >= 0 else f"{row['CLV_Moy']:.1f}%"
+            clv_color = 'text-emerald-500' if row['CLV_Moy'] >= 0 else 'text-red-500'
+        else:
+            clv_txt = "—"
+            clv_color = 'text-slate-500'
+
         rows += f'''
         <tr class="border-b border-slate-800 last:border-b-0 text-xs">
             <td class="px-6 py-3 text-center text-xs text-white">{row['Mois'].strftime('%m/%Y')}</td>
@@ -256,6 +266,7 @@ def generate_stats_mensuelles(df):
             <td class="px-6 py-3 text-center text-xs text-white">{nb_gagnes}</td>
             <td class="px-6 py-3 text-center text-xs text-white">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
             <td class="px-6 py-3 text-center text-xs text-white">{row['Cote_Moy']:.2f}</td>
+            <td class="px-6 py-3 text-center text-xs {clv_color}">{clv_txt}</td>
             <td class="px-6 py-3 text-center text-xs text-white">{row['Yield']:.1f}%</td>
             <td class="px-6 py-3 text-center text-xs {'text-emerald-500' if row['PNL'] >= 0 else 'text-red-500'}">{row['PNL']:.2f} €</td>
         </tr>'''
@@ -269,7 +280,8 @@ def generate_stats_mensuelles(df):
                     <th class="px-6 py-4 text-center text-xs">Nombre paris</th>
                     <th class="px-6 py-4 text-center text-xs">Nombre gagnés</th>
                     <th class="px-6 py-4 text-center text-xs">Taux de réussite</th>
-                    <th class="px-6 py-4 text-center text-xs">Cote Moyenne</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Jouée Moyenne</th>
+                    <th class="px-6 py-4 text-center text-xs" title="Closing Line Value : écart moyen (%) entre la cote jouée et la cote pré-match. Positif = vous avez obtenu une meilleure cote que le marché.">CLV Moyen</th>
                     <th class="px-6 py-4 text-center text-xs">Yield</th>
                     <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
                 </tr>
@@ -308,7 +320,7 @@ def generate_sparkline_svg(valeurs):
 
 
 def generate_stats_banner(df):
-    """Génère le bandeau de statistiques clés (taux de réussite, série, PnL, cote moyenne) + sparkline."""
+    """Génère le bandeau de statistiques clés (taux de réussite, série, CLV, PnL, cote moyenne) + sparkline."""
     df_term = df[df['Résultat'].isin(['Gagné', 'Perdu'])].sort_values(by='Date', ascending=True).copy()
 
     if df_term.empty:
@@ -318,6 +330,15 @@ def generate_stats_banner(df):
     gagnes = len(df_term[df_term['Résultat'] == 'Gagné'])
     taux_reussite = (gagnes / total) * 100 if total else 0
     cote_moyenne = df_term['Cote'].mean()
+
+    clv_valides = df_term['CLV'].dropna()
+    if not clv_valides.empty:
+        clv_moyen = clv_valides.mean()
+        clv_txt = f"+{clv_moyen:.1f}%" if clv_moyen >= 0 else f"{clv_moyen:.1f}%"
+        clv_couleur = "text-emerald-400" if clv_moyen >= 0 else "text-red-400"
+    else:
+        clv_txt = "—"
+        clv_couleur = "text-white"
 
     df_pnl = df[df['Résultat'].isin(['Gagné', 'Perdu', 'Annulé'])].sort_values(by='Date', ascending=True)
     pnl_total = df_pnl['Gain/Perte'].sum()
@@ -341,8 +362,15 @@ def generate_stats_banner(df):
 
     pnl_couleur = "text-emerald-400" if pnl_total >= 0 else "text-red-400"
 
+    clv_explication = (
+        "Closing Line Value : écart en % entre la cote à laquelle vous avez parié et la cote "
+        "pré-match (utilisée comme référence du marché juste avant le match). "
+        "Un CLV positif signifie que vous avez obtenu une meilleure cote que le marché — "
+        "c'est un indicateur de la qualité de votre timing/valeur, indépendant du résultat du match."
+    )
+
     return f'''
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
             <p class="text-2xl font-bold text-center text-white">{taux_reussite:.1f}%</p>
@@ -352,11 +380,15 @@ def generate_stats_banner(df):
             <p class="text-2xl font-bold text-center {serie_couleur}">{serie_emoji} {serie_texte}</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1" title="{clv_explication}">CLV Moyen <i class="fa-solid fa-circle-info text-[9px]"></i></p>
+            <p class="text-2xl font-bold text-center {clv_couleur}">{clv_txt}</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
             <p class="text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote moyenne</p>
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
             <p class="text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
         </div>
     </div>
@@ -585,13 +617,19 @@ def mettre_a_jour_site():
     conn = sqlite3.connect(DB_PATH)
     query = """
         SELECT id AS 'ID', nom_tournoi AS 'Tournoi', date_match AS 'Date', match_intitule AS 'Match', 
-               joueur_choisi AS 'Pari', mise AS 'Mise', cote_jouee AS 'Cote', 
+               joueur_choisi AS 'Pari', mise AS 'Mise', cote_jouee AS 'Cote', cote_prematch AS 'CotePrematch',
                statut AS 'Résultat', gain_net AS 'Gain/Perte', prob_predite AS 'ProbPredite'
         FROM Historique_Paris
     """
     df = pd.read_sql_query(query, conn)
     conn.close()
     df['Date'] = pd.to_datetime(df['Date'], format='mixed', utc=True)
+
+    # CLV (Closing Line Value) : écart en % entre la cote jouée et la cote pré-match
+    # (utilisée comme proxy de la "closing line"). Positif = meilleure cote que le marché.
+    df['CLV'] = None
+    mask_clv = df['CotePrematch'].notna() & (df['CotePrematch'] != 0)
+    df.loc[mask_clv, 'CLV'] = (df.loc[mask_clv, 'Cote'] / df.loc[mask_clv, 'CotePrematch'] - 1) * 100
 
     # Les pronos "En cours" ne sont plus écrits dans le HTML : ils partent vers Supabase,
     # où seuls les comptes premium authentifiés peuvent les lire (voir index.html).
