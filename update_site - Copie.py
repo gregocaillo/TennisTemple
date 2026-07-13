@@ -1,0 +1,628 @@
+import sqlite3
+import pandas as pd
+import os
+import re
+import subprocess
+import requests
+import smtplib
+from email.mime.text import MIMEText
+from datetime import datetime, timezone
+import json
+
+DB_PATH = os.path.join('..', 'tennis_stats.db')
+REGISTRE_PATH = os.path.join('..', 'registre_audits.txt')
+MATCHS_JSON_PATH = os.path.join('..', 'matchs_atp_betclic.json')
+HTML_PATH = 'index.html'
+
+# Charge les clés depuis secrets_local.py s'il existe (fichier non versionné, voir .gitignore).
+# Sinon, les variables d'environnement système classiques prennent le relais.
+try:
+    import secrets_local
+except ImportError:
+    pass
+
+# ==== CONFIG SUPABASE ====
+# La clé SERVICE (secret) ne doit JAMAIS être commitée sur GitHub.
+# Définissez-la en variable d'environnement avant de lancer le script :
+#   export SUPABASE_URL="https://eldkwsoucmfgvofsvshc.supabase.co"
+#   export SUPABASE_SERVICE_KEY="sb_secret_..."
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://eldkwsoucmfgvofsvshc.supabase.co")
+SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
+
+# ==== CONFIG NOTIFICATION EMAIL (nouvelles inscriptions) ====
+# Compte Gmail utilisé pour ENVOYER l'email (nécessite un "mot de passe d'application" Gmail,
+# pas votre mot de passe habituel — voir instructions fournies séparément).
+GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
+GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
+EMAIL_DESTINATAIRE = os.environ.get("EMAIL_DESTINATAIRE", GMAIL_ADDRESS)
+
+DERNIER_CHECK_PATH = os.path.join('..', 'dernier_check_inscriptions.txt')
+
+
+def lire_nombre_matchs_analyses():
+    """Compte le nombre de matchs présents dans le fichier JSON d'analyse (liste de matchs)."""
+    try:
+        with open(MATCHS_JSON_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return len(data) if isinstance(data, list) else 0
+    except (FileNotFoundError, json.JSONDecodeError):
+        return 0
+
+
+def generate_pronos_stats_banner(df):
+    """Génère le bandeau de stats génériques affiché au-dessus des cartes de pronostics."""
+    nb_matchs_analyses = lire_nombre_matchs_analyses()
+
+    df_en_cours = df[df['Résultat'] == 'En cours'].copy()
+    nb_paris_proposes = len(df_en_cours)
+
+    df_avec_prob = df_en_cours.dropna(subset=['ProbPredite'])
+    if not df_avec_prob.empty:
+        valeurs = (df_avec_prob['Cote'] * df_avec_prob['ProbPredite'] - 1) * 100
+        value_moyenne = valeurs.mean()
+        value_txt = f"+{value_moyenne:.1f}%" if value_moyenne >= 0 else f"{value_moyenne:.1f}%"
+        value_couleur = "text-emerald-400" if value_moyenne >= 0 else "text-red-400"
+    else:
+        value_txt = "—"
+        value_couleur = "text-white"
+
+    return f'''
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
+            <p class="text-2xl font-bold text-white">{nb_matchs_analyses}</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
+            <p class="text-2xl font-bold text-white">{nb_paris_proposes}</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
+            <p class="text-2xl font-bold {value_couleur}">{value_txt}</p>
+        </div>
+    </div>'''
+
+
+def appliquer_clotures_admin():
+    """Récupère les clôtures de paris décidées depuis /admin.html (statut Gagné/Perdu/Annulé)
+    et les applique à la base SQLite locale, qui reste la source de vérité."""
+    if not SUPABASE_SERVICE_KEY:
+        print("⚠ SUPABASE_SERVICE_KEY non définie, synchronisation des clôtures admin ignorée.")
+        return
+
+    headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+    }
+
+    resp = requests.get(f"{SUPABASE_URL}/rest/v1/resultats_clotures", headers=headers, params={"select": "*"})
+    if resp.status_code >= 300:
+        print(f"⚠ Erreur lors de la récupération des clôtures admin : {resp.status_code} {resp.text}")
+        return
+
+    clotures = resp.json()
+    if not clotures:
+        print("Aucune clôture en attente depuis l'espace admin.")
+        return
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    ids_traites = []
+
+    for c in clotures:
+        cursor.execute(
+            "UPDATE Historique_Paris SET statut = ?, gain_net = ? WHERE id = ?",
+            (c['statut'], c['gain_net'], c['paris_id'])
+        )
+        ids_traites.append(c['id'])
+        print(f"Clôture admin appliquée : pari #{c['paris_id']} → {c['statut']} ({c['gain_net']:+.2f} €)")
+
+    conn.commit()
+    conn.close()
+
+    # Nettoie la table de staging une fois les clôtures appliquées localement,
+    # pour ne pas les réappliquer au prochain passage.
+    for cid in ids_traites:
+        del_resp = requests.delete(f"{SUPABASE_URL}/rest/v1/resultats_clotures?id=eq.{cid}", headers=headers)
+        if del_resp.status_code >= 300:
+            print(f"⚠ Erreur lors du nettoyage de la clôture #{cid} : {del_resp.status_code}")
+
+    print(f"{len(ids_traites)} clôture(s) admin appliquée(s) et synchronisée(s) avec la base locale.")
+
+
+def push_pronos_premium(df):
+    """Remplace le contenu de la table pronos_premium sur Supabase par les paris 'En cours' actuels."""
+    if not SUPABASE_SERVICE_KEY:
+        print("⚠ SUPABASE_SERVICE_KEY non définie, envoi des pronos premium ignoré.")
+        return
+
+    headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    # On vide la table avant de repousser l'état actuel (évite les doublons / paris clôturés qui traînent)
+    del_resp = requests.delete(f"{SUPABASE_URL}/rest/v1/pronos_premium?id=gt.0", headers=headers)
+    if del_resp.status_code >= 300:
+        print(f"⚠ Erreur lors du vidage de pronos_premium : {del_resp.status_code} {del_resp.text}")
+
+    df_en_cours = df[df['Résultat'] == 'En cours']
+    for _, row in df_en_cours.iterrows():
+        payload = {
+            "paris_id": int(row['ID']),
+            "tournoi": row['Tournoi'],
+            "match_intitule": row['Match'],
+            "pari": row['Pari'],
+            "cote": float(row['Cote']),
+            "mise": float(row['Mise'])
+        }
+        resp = requests.post(f"{SUPABASE_URL}/rest/v1/pronos_premium", json=payload, headers=headers)
+        if resp.status_code >= 300:
+            print(f"⚠ Erreur lors de l'envoi d'un prono premium : {resp.status_code} {resp.text}")
+
+    print(f"{len(df_en_cours)} prono(s) premium envoyé(s) à Supabase.")
+
+
+def generate_perf_table(df):
+    """Génère le tableau desktop + la vue en cartes mobile, avec pastilles de statut."""
+    df_terminees = df[df['Résultat'].isin(['Gagné', 'Perdu', 'Annulé'])].sort_values(by='Date', ascending=False)
+
+    if df_terminees.empty:
+        return '<p class="text-slate-500 text-center py-10">Aucun historique disponible.</p>'
+
+    def badge_statut(resultat):
+        if resultat == 'Gagné':
+            return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>'
+        if resultat == 'Perdu':
+            return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>'
+        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-700/40 text-slate-400"><i class="fa-solid fa-minus text-[9px]"></i>Annulé</span>'
+
+    rows = ""
+    cards = ""
+    for _, row in df_terminees.iterrows():
+        color_class = "text-emerald-500" if row['Résultat'] == 'Gagné' else ("text-red-500" if row['Résultat'] == 'Perdu' else "text-slate-400")
+        date_fmt = row['Date'].strftime('%d/%m/%Y')
+        cote_fmt = f"{row['Cote']:.2f}"
+        gain_fmt = f"{row['Gain/Perte']:.2f} €"
+        badge = badge_statut(row['Résultat'])
+
+        rows += f'''
+        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">{date_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs text-white">{row['Match']}</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">{row['Pari']}</td>
+            <td class="px-6 py-4 text-center text-xs text-white">{cote_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs">{badge}</td>
+            <td class="px-6 py-4 text-center text-xs {color_class}">{gain_fmt}</td>
+        </tr>'''
+
+        cards += f'''
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">{date_fmt}</span>
+                {badge}
+            </div>
+            <p class="text-sm font-bold text-white mb-1">{row['Match']}</p>
+            <p class="text-xs text-yellow-300 mb-3">{row['Pari']} <span class="text-slate-500">@ {cote_fmt}</span></p>
+            <p class="text-sm font-bold {color_class}">{gain_fmt}</p>
+        </div>'''
+
+    return f'''
+    <div class="hidden md:block">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                    <th class="px-6 py-4 text-center text-xs">Date</th>
+                    <th class="px-6 py-4 text-center text-xs">Match</th>
+                    <th class="px-6 py-4 text-center text-xs">Pari</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote</th>
+                    <th class="px-6 py-4 text-center text-xs">Statut</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300">{rows}</tbody>
+        </table>
+    </div>
+    <div class="md:hidden space-y-3">{cards}</div>'''
+
+def generate_stats_mensuelles(df):
+    """Génère le tableau statistique mensuel."""
+    # Filtrer uniquement les paris terminés
+    df_term = df[df['Résultat'].isin(['Gagné', 'Perdu'])].copy()
+    if df_term.empty:
+        return ""
+
+    df_term['Mois'] = df_term['Date'].dt.to_period('M')
+    stats = df_term.groupby('Mois').apply(lambda x: pd.Series({
+        'Nb': len(x),
+        'Gagnés': len(x[x['Résultat'] == 'Gagné']),
+        'Cote_Moy': x['Cote'].mean(),
+        'Yield': (x['Gain/Perte'].sum() / x['Mise'].sum()) * 100 if x['Mise'].sum() != 0 else 0,
+        'PNL': x['Gain/Perte'].sum()
+    })).reset_index()
+
+    stats = stats.sort_values(by='Mois', ascending=False)
+    
+    rows = ""
+    for _, row in stats.iterrows():
+        nb_paris = int(row['Nb'])
+        nb_gagnes = int(row['Gagnés'])
+        
+        rows += f'''
+        <tr class="border-b border-slate-800 last:border-b-0 text-xs">
+            <td class="px-6 py-3 text-center text-xs text-white">{row['Mois'].strftime('%m/%Y')}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{nb_paris}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{nb_gagnes}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{row['Cote_Moy']:.2f}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{row['Yield']:.1f}%</td>
+            <td class="px-6 py-3 text-center text-xs {'text-emerald-500' if row['PNL'] >= 0 else 'text-red-500'}">{row['PNL']:.2f} €</td>
+        </tr>'''
+
+    return f'''
+    <div class="overflow-x-auto mb-10">
+        <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
+            <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                <tr>
+                    <th class="px-6 py-4 text-center text-xs">Mois</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre paris</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre gagnés</th>
+                    <th class="px-6 py-4 text-center text-xs">Taux de réussite</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Moyenne</th>
+                    <th class="px-6 py-4 text-center text-xs">Yield</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300 divide-y divide-slate-800">{rows}</tbody>
+        </table>
+    </div>'''
+
+def generate_sparkline_svg(valeurs):
+    """Génère un mini graphique SVG (sparkline) à partir d'une liste de valeurs cumulées."""
+    if len(valeurs) < 2:
+        return ''
+
+    largeur, hauteur, marge = 300, 60, 6
+    v_min, v_max = min(valeurs), max(valeurs)
+    if v_max == v_min:
+        v_max += 1
+
+    n = len(valeurs)
+    points = []
+    for i, v in enumerate(valeurs):
+        x = marge + (i / (n - 1)) * (largeur - 2 * marge)
+        y = hauteur - marge - ((v - v_min) / (v_max - v_min)) * (hauteur - 2 * marge)
+        points.append(f"{x:.1f},{y:.1f}")
+
+    couleur = "#34d399" if valeurs[-1] >= valeurs[0] else "#f87171"
+    polyline = " ".join(points)
+    zero_y = hauteur - marge - ((0 - v_min) / (v_max - v_min)) * (hauteur - 2 * marge) if v_min <= 0 <= v_max else None
+    ligne_zero = f'<line x1="{marge}" y1="{zero_y:.1f}" x2="{largeur - marge}" y2="{zero_y:.1f}" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>' if zero_y is not None else ''
+
+    return f'''
+    <svg viewBox="0 0 {largeur} {hauteur}" class="w-full h-16">
+        {ligne_zero}
+        <polyline points="{polyline}" fill="none" stroke="{couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>'''
+
+
+def generate_stats_banner(df):
+    """Génère le bandeau de statistiques clés (taux de réussite, série, PnL, cote moyenne) + sparkline."""
+    df_term = df[df['Résultat'].isin(['Gagné', 'Perdu'])].sort_values(by='Date', ascending=True).copy()
+
+    if df_term.empty:
+        return ''
+
+    total = len(df_term)
+    gagnes = len(df_term[df_term['Résultat'] == 'Gagné'])
+    taux_reussite = (gagnes / total) * 100 if total else 0
+    cote_moyenne = df_term['Cote'].mean()
+
+    df_pnl = df[df['Résultat'].isin(['Gagné', 'Perdu', 'Annulé'])].sort_values(by='Date', ascending=True)
+    pnl_total = df_pnl['Gain/Perte'].sum()
+
+    # Série en cours : on part du pari le plus récent et on compte tant que le résultat est identique
+    df_recent_first = df_term.sort_values(by='Date', ascending=False)
+    serie_resultat = df_recent_first.iloc[0]['Résultat']
+    serie_longueur = 0
+    for _, row in df_recent_first.iterrows():
+        if row['Résultat'] == serie_resultat:
+            serie_longueur += 1
+        else:
+            break
+    serie_texte = f"{serie_longueur} {'Gagné' if serie_resultat == 'Gagné' else 'Perdu'}{'s' if serie_longueur > 1 else ''}"
+    serie_emoji = "🔥" if serie_resultat == 'Gagné' and serie_longueur >= 2 else ("❄️" if serie_resultat == 'Perdu' and serie_longueur >= 2 else "")
+    serie_couleur = "text-emerald-400" if serie_resultat == 'Gagné' else "text-red-400"
+
+    # Sparkline sur les 30 derniers paris (ou moins si l'historique est plus court)
+    cumul = df_pnl['Gain/Perte'].cumsum().tolist()[-30:]
+    sparkline = generate_sparkline_svg(cumul)
+
+    pnl_couleur = "text-emerald-400" if pnl_total >= 0 else "text-red-400"
+
+    return f'''
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
+            <p class="text-2xl font-bold text-center text-white">{taux_reussite:.1f}%</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Série en cours</p>
+            <p class="text-2xl font-bold text-center {serie_couleur}">{serie_emoji} {serie_texte}</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
+            <p class="text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote moyenne</p>
+            <p class="text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
+        </div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-10">
+        <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
+        {sparkline}
+    </div>'''
+
+
+def generate_maj_date():
+    """Génère le texte 'Dernière mise à jour' avec la date du jour"""
+    return f"Dernière mise à jour : {datetime.now().strftime('%d/%m/%Y')}"
+
+
+def get_verification_data(db_path):
+    """Récupère les données brutes des paris pour la vérification du hash"""
+    conn = sqlite3.connect(db_path)
+    # On récupère les données dans le même ordre que lors de la création du hash
+    query = "SELECT nom_tournoi, date_match, match_intitule, joueur_choisi, cote_jouee, mise FROM Historique_Paris ORDER BY rowid ASC"
+    cursor = conn.execute(query)
+    data = [str(row) for row in cursor.fetchall()]
+    conn.close()
+    return data
+
+
+def get_audit_html(db_path):
+    """Génère la section complète du registre d'audit"""
+    audit_rows = []
+    audit_entries = []
+
+    try:
+        with open(REGISTRE_PATH, 'r', encoding='utf-8') as f:
+            for line in f:
+                if not line.strip():
+                    continue
+                parts = [p.strip() for p in line.split('|')]
+                if len(parts) >= 3:
+                    d = parts[0].replace('Date: ', '')
+                    p = parts[1].replace('Pari: ', '')
+                    h = parts[2].replace('Hash: ', '')
+                    nrows = None
+                    if len(parts) >= 4 and parts[3].startswith('Lignes: '):
+                        try:
+                            nrows = int(parts[3].replace('Lignes: ', ''))
+                        except ValueError:
+                            nrows = None
+
+                    audit_entries.append({'date': d, 'pari': p, 'hash': h, 'nrows': nrows})
+                    audit_rows.append(
+                        f'<tr><td class="px-4 py-3 text-white text-center text-xs">{d}</td>'
+                        f'<td class="px-4 py-3 text-white text-xs text-center">{p}</td>'
+                        f'<td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">{h}</td>'
+                        f'<td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr>'
+                    )
+    except FileNotFoundError:
+        return '<tr><td colspan="4" class="text-center py-4 text-slate-500">Registre introuvable.</td></tr>'
+
+    row_data = get_verification_data(db_path)
+    row_data_json = json.dumps(row_data, ensure_ascii=True)
+    audit_entries_json = json.dumps(audit_entries, ensure_ascii=True)
+
+    options_html = "".join([
+        f'<option value="{i}">{e["date"]} — {e["pari"]}</option>'
+        for i, e in enumerate(audit_entries)
+    ])
+
+    return f'''
+    <div class="max-w-6xl mx-auto overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
+        <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
+        <table class="min-w-full divide-y divide-slate-700 text-xs">
+            <thead class="bg-slate-950">
+                <tr>
+                    <th class="px-4 py-3 text-emerald-400 text-center">Date</th>
+                    <th class="px-4 py-3 text-emerald-400 text-center">Pari</th>
+                    <th class="px-4 py-3 text-emerald-400 text-center">Hash</th>
+                    <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">{"".join(audit_rows)}</tbody>
+        </table>
+    </div>
+    <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
+        <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
+        <div class="text-slate-400 text-sm space-y-4">
+            <p>- <b>Principe</b> : chaque pari est scellé dans une chaîne où le Hash résulte d'un calcul combinant tout l'historique des paris et l'empreinte du pari précédent</p>
+            <p>- <b>Immutabilité</b> : si une seule donnée est modifiée dans le passé, le Hash de cette ligne change</p>
+            <p>- <b>Vérifiabilité</b> : choisissez un pari ci-dessous pour vérifier l'intégrité en direct</p>
+        </div>
+        <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
+            <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
+            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4">{options_html}</select>
+            <button onclick="verifierHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
+            <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
+        </div>
+    </div>
+    <script>
+        const AUDIT_ROWS_DATA = {row_data_json};
+        const AUDIT_ENTRIES = {audit_entries_json};
+        async function verifierHash() {{
+            const idx = parseInt(document.getElementById('select-verif').value, 10);
+            const entry = AUDIT_ENTRIES[idx];
+            const divRes = document.getElementById('resultat-hash');
+            divRes.classList.remove('hidden');
+            if (entry.nrows === null) {{ 
+                divRes.textContent = "⚠ Vérification impossible."; 
+                return; 
+            }}
+            const subset = AUDIT_ROWS_DATA.slice(0, entry.nrows);
+            const prevHash = idx === 0 ? "0" : AUDIT_ENTRIES[idx - 1].hash;
+            const chaine = subset.join('') + prevHash;
+            const msg = new TextEncoder().encode(chaine);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
+            const hashCalcule = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            if (hashCalcule === entry.hash) {{ 
+                divRes.className = "mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all text-emerald-500"; 
+                divRes.textContent = "✓ Intègre : " + hashCalcule; 
+            }} else {{ 
+                divRes.className = "mt-4 p-3 bg-black border border-red-900 rounded text-[11px] font-mono break-all text-red-500"; 
+                divRes.textContent = "✗ ANOMALIE : " + hashCalcule; 
+            }}
+        }}
+    </script>
+    '''
+
+def lire_dernier_check():
+    """Lit la date du dernier passage. Si le fichier n'existe pas, on part de maintenant
+    (pour ne pas spammer avec tous les comptes déjà existants au premier lancement)."""
+    if os.path.exists(DERNIER_CHECK_PATH):
+        with open(DERNIER_CHECK_PATH, 'r') as f:
+            return f.read().strip()
+    return datetime.now(timezone.utc).isoformat()
+
+
+def ecrire_dernier_check(horodatage):
+    with open(DERNIER_CHECK_PATH, 'w') as f:
+        f.write(horodatage)
+
+
+def envoyer_email_notification(nouveaux_emails):
+    if not GMAIL_ADDRESS or not GMAIL_APP_PASSWORD:
+        print("⚠ GMAIL_ADDRESS / GMAIL_APP_PASSWORD non définis, notification email ignorée.")
+        return
+
+    corps = "Nouvelle(s) inscription(s) sur TennisTemple :\n\n" + "\n".join(f"- {e}" for e in nouveaux_emails)
+    corps += "\n\nActivez leur accès premium (après paiement) depuis /admin.html"
+
+    msg = MIMEText(corps)
+    msg['Subject'] = f"TennisTemple : {len(nouveaux_emails)} nouvelle(s) inscription(s)"
+    msg['From'] = GMAIL_ADDRESS
+    msg['To'] = EMAIL_DESTINATAIRE
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as serveur:
+            serveur.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+            serveur.send_message(msg)
+        print(f"Email de notification envoyé ({len(nouveaux_emails)} inscription(s)).")
+    except Exception as e:
+        print(f"⚠ Erreur lors de l'envoi de l'email : {e}")
+
+
+def verifier_nouvelles_inscriptions():
+    """Interroge Supabase pour les comptes créés depuis le dernier passage du script,
+    et envoie un email si des nouveaux comptes sont trouvés."""
+    if not SUPABASE_SERVICE_KEY:
+        print("⚠ SUPABASE_SERVICE_KEY non définie, vérification des inscriptions ignorée.")
+        return
+
+    dernier_check = lire_dernier_check()
+    maintenant = datetime.now(timezone.utc).isoformat()
+
+    headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+    }
+    params = {
+        "select": "email,created_at",
+        "created_at": f"gt.{dernier_check}",
+        "order": "created_at.asc"
+    }
+
+    resp = requests.get(f"{SUPABASE_URL}/rest/v1/profiles", headers=headers, params=params)
+
+    if resp.status_code >= 300:
+        print(f"⚠ Erreur lors de la vérification des inscriptions : {resp.status_code} {resp.text}")
+        return
+
+    nouveaux = resp.json()
+
+    if nouveaux:
+        emails = [p['email'] for p in nouveaux]
+        print(f"{len(emails)} nouvelle(s) inscription(s) détectée(s) : {', '.join(emails)}")
+        envoyer_email_notification(emails)
+    else:
+        print("Aucune nouvelle inscription depuis le dernier passage.")
+
+    ecrire_dernier_check(maintenant)
+
+
+def push_to_github(repo_path='.', commit_message=None):
+    """Commit et push les changements sur GitHub, uniquement s'il y en a."""
+    if commit_message is None:
+        commit_message = f"Mise à jour auto - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+
+    try:
+        subprocess.run(['git', 'add', '.'], cwd=repo_path, check=True)
+
+        status = subprocess.run(
+            ['git', 'status', '--porcelain'],
+            cwd=repo_path, capture_output=True, text=True, check=True
+        )
+        if not status.stdout.strip():
+            print("Aucun changement à pousser.")
+            return
+
+        subprocess.run(['git', 'commit', '-m', commit_message], cwd=repo_path, check=True)
+        subprocess.run(['git', 'push'], cwd=repo_path, check=True)
+        print("Mise à jour poussée sur GitHub avec succès.")
+    except subprocess.CalledProcessError as e:
+        print(f"Erreur lors du push GitHub : {e}")
+
+def mettre_a_jour_site():
+    # Applique d'abord les clôtures de paris décidées depuis /admin.html, avant
+    # de régénérer quoi que ce soit à partir de la base (qui doit être à jour).
+    appliquer_clotures_admin()
+
+    conn = sqlite3.connect(DB_PATH)
+    query = """
+        SELECT id AS 'ID', nom_tournoi AS 'Tournoi', date_match AS 'Date', match_intitule AS 'Match', 
+               joueur_choisi AS 'Pari', mise AS 'Mise', cote_jouee AS 'Cote', 
+               statut AS 'Résultat', gain_net AS 'Gain/Perte', prob_predite AS 'ProbPredite'
+        FROM Historique_Paris
+    """
+    df = pd.read_sql_query(query, conn)
+    conn.close()
+    df['Date'] = pd.to_datetime(df['Date'], format='mixed', utc=True)
+
+    # Les pronos "En cours" ne sont plus écrits dans le HTML : ils partent vers Supabase,
+    # où seuls les comptes premium authentifiés peuvent les lire (voir index.html).
+    push_pronos_premium(df)
+    pronos_stats_html = generate_pronos_stats_banner(df)
+
+    # Vérifie si de nouveaux visiteurs se sont inscrits depuis le dernier passage,
+    # et vous envoie un email si c'est le cas.
+    verifier_nouvelles_inscriptions()
+
+    stats_html = generate_stats_mensuelles(df)
+    banniere_html = generate_stats_banner(df)
+    perf_html = generate_perf_table(df)
+    audit_html = get_audit_html(DB_PATH)
+    maj_date_html = generate_maj_date()
+
+    if os.path.exists(HTML_PATH):
+        with open(HTML_PATH, 'r', encoding='utf-8') as f:
+            contenu = f.read()
+
+        contenu = re.sub(r'<!-- Début stats pronos -->.*?<!-- Fin stats pronos -->', f'<!-- Début stats pronos -->\n{pronos_stats_html}\n<!-- Fin stats pronos -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début bandeau stats -->.*?<!-- Fin bandeau stats -->', f'<!-- Début bandeau stats -->\n{banniere_html}\n<!-- Fin bandeau stats -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début des statistiques mensuelles -->.*?<!-- Fin des statistiques mensuelles -->', f'<!-- Début des statistiques mensuelles -->\n{stats_html}\n<!-- Fin des statistiques mensuelles -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début des performances -->.*?<!-- Fin des performances -->', f'<!-- Début des performances -->\n{perf_html}\n<!-- Fin des performances -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début du registre -->.*?<!-- Fin du registre -->', f'<!-- Début du registre -->\n{audit_html}\n<!-- Fin du registre -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début date maj -->.*?<!-- Fin date maj -->', f'<!-- Début date maj -->{maj_date_html}<!-- Fin date maj -->', contenu, flags=re.DOTALL)
+
+        with open(HTML_PATH, 'w', encoding='utf-8') as f:
+            f.write(contenu)
+
+    push_to_github()
+
+if __name__ == "__main__":
+    mettre_a_jour_site()
