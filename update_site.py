@@ -11,7 +11,7 @@ import json
 
 DB_PATH = os.path.join('..', 'tennis_stats.db')
 REGISTRE_PATH = os.path.join('..', 'registre_audits.txt')
-MATCHS_JSON_PATH = os.path.join('..', 'matchs_atp_betclic.json')
+MATCHS_JSON_PATH = os.path.join('..', 'matchs_atp_unibet.json')
 HTML_PATH = 'index.html'
 
 # Charge les clés depuis secrets_local.py s'il existe (fichier non versionné, voir .gitignore).
