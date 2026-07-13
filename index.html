@@ -238,11 +238,11 @@
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
-            <p class="text-2xl font-bold text-white">0</p>
+            <p class="text-2xl font-bold text-white">2</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="text-2xl font-bold text-white">—</p>
+            <p class="text-2xl font-bold text-emerald-400">+12.2%</p>
         </div>
     </div>
 <!-- Fin stats pronos -->
@@ -497,7 +497,7 @@
             <tbody class="divide-y divide-slate-800"><tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr></tbody>
         </table>
     </div>
-    
+    <p class="text-slate-600 text-[10px] text-center mt-3">2 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
     <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
@@ -513,8 +513,8 @@
         </div>
     </div>
     <script>
-        const AUDIT_ROWS_DATA = [];
-        const AUDIT_ENTRIES = [];
+        const AUDIT_ROWS_DATA = ["('Umag, Croatie, Simple Messieurs', '2026-07-13T14:00:00.000Z', 'Damir Dzumhur vs Henrique Rocha', 'Henrique Rocha', 1.75, 3.6481770497083823)", "('Umag, Croatie, Simple Messieurs', '2026-07-13T16:10:00.000Z', 'Kyrian Jacquet vs Marco Trungelliti', 'Kyrian Jacquet', 1.92, 3.65446734536238)"];
+        const AUDIT_ENTRIES = [{"date": "2026-07-13 13:55:53", "pari": "Henrique Rocha @1.75", "hash": "6c4fef0b5bd23d3a67f0ae533e7c1723ec7f609780fe8f22964925f9cf0a27cd", "nrows": 1}, {"date": "2026-07-13 13:55:54", "pari": "Kyrian Jacquet @1.92", "hash": "3c25e48dc7c2dacf2052a565b793c049ec00ffb363053cf1e495b07e7d08b6aa", "nrows": 2}];
         async function verifierHash() {
             const idx = parseInt(document.getElementById('select-verif').value, 10);
             const entry = AUDIT_ENTRIES[idx];
