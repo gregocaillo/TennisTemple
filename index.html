@@ -234,15 +234,15 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
-            <p class="text-2xl font-bold text-white">0</p>
+            <p class="text-2xl font-bold text-white">12</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
-            <p class="text-2xl font-bold text-white">2</p>
+            <p class="text-2xl font-bold text-white">4</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="text-2xl font-bold text-emerald-400">+9.4%</p>
+            <p class="text-2xl font-bold text-emerald-400">+39.3%</p>
         </div>
     </div>
 <!-- Fin stats pronos -->
@@ -497,7 +497,7 @@
             <tbody class="divide-y divide-slate-800"><tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr></tbody>
         </table>
     </div>
-    <p class="text-slate-600 text-[10px] text-center mt-3">3 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
+    <p class="text-slate-600 text-[10px] text-center mt-3">5 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
     <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
@@ -513,8 +513,8 @@
         </div>
     </div>
     <script>
-        const AUDIT_ROWS_DATA = ["('UMAG', '2026-07-13', 'Damir Dzumhur vs Henrique Rocha', 'Henrique Rocha', 1.83, 5.0)", "('UMAG', '2026-07-13', 'Kyrian Jacquet vs Marco Trungelliti', 'Kyrian Jacquet', 1.95, 5.0)"];
-        const AUDIT_ENTRIES = [{"date": "2026-07-10 21:35:30", "pari": "Jannik Sinner @1.21", "hash": "5a06130ddb937050344b3af94f58dc385cd52e36eb2409a44f05b8fd24faf898", "nrows": 1}, {"date": "2026-07-13 07:29:44", "pari": "Henrique Rocha @1.83", "hash": "f20bd520509c870213e8a9bd5f6fa46ce74cb3fa59ee728bc4a7f68eb1f211cd", "nrows": 1}, {"date": "2026-07-13 07:31:11", "pari": "Kyrian Jacquet @1.95", "hash": "795d073918cc18fba3e1e06681827a2b9d57cf7263060d5db522c67f5a178767", "nrows": 2}];
+        const AUDIT_ROWS_DATA = ["('UMAG', '2026-07-13', 'Damir Dzumhur vs Henrique Rocha', 'Henrique Rocha', 1.83, 5.0)", "('UMAG', '2026-07-13', 'Kyrian Jacquet vs Marco Trungelliti', 'Kyrian Jacquet', 1.95, 5.0)", "('GSTAAD', '2026-07-13', 'Lorenzo Sonego vs Joel Schwaerzler', 'Joel Schwaerzler', 2.95, 5.0)", "('GSTAAD', '2026-07-13', 'Kilian Feldbausch vs Miomir Kecmanovic', 'Kilian Feldbausch', 3.35, 5.0)"];
+        const AUDIT_ENTRIES = [{"date": "2026-07-10 21:35:30", "pari": "Jannik Sinner @1.21", "hash": "5a06130ddb937050344b3af94f58dc385cd52e36eb2409a44f05b8fd24faf898", "nrows": 1}, {"date": "2026-07-13 07:29:44", "pari": "Henrique Rocha @1.83", "hash": "f20bd520509c870213e8a9bd5f6fa46ce74cb3fa59ee728bc4a7f68eb1f211cd", "nrows": 1}, {"date": "2026-07-13 07:31:11", "pari": "Kyrian Jacquet @1.95", "hash": "795d073918cc18fba3e1e06681827a2b9d57cf7263060d5db522c67f5a178767", "nrows": 2}, {"date": "2026-07-13 08:57:39", "pari": "Joel Schwaerzler @2.95", "hash": "ee4d98ea04c724612fe89ec21d847c0aba81c89d2a57d5ac15894a5cd3a779d3", "nrows": 3}, {"date": "2026-07-13 08:58:53", "pari": "Kilian Feldbausch @3.35", "hash": "cf3b16e3938f07f42d393f8c211a3035b8cf1617b7cff3286afb4bd56ef5d5c6", "nrows": 4}];
         async function verifierHash() {
             const idx = parseInt(document.getElementById('select-verif').value, 10);
             const entry = AUDIT_ENTRIES[idx];
