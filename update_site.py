@@ -414,10 +414,26 @@ def get_verification_data(db_path):
     return data
 
 
+def get_statuts_ordonnes(db_path):
+    """Récupère le statut de chaque pari dans le même ordre (rowid ASC) que get_verification_data,
+    pour pouvoir déterminer, à partir du 'Lignes: N' d'une entrée du registre, si le pari
+    correspondant (le N-ième ajouté) est toujours 'En cours' ou non."""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.execute("SELECT statut FROM Historique_Paris ORDER BY rowid ASC")
+    statuts = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    return statuts
+
+
 def get_audit_html(db_path):
-    """Génère la section complète du registre d'audit"""
-    audit_rows = []
-    audit_entries = []
+    """Génère la section complète du registre d'audit.
+    Seuls les paris déjà clôturés (statut != 'En cours') sont affichés dans le tableau
+    et le menu déroulant : un pari encore en cours ne doit pas être visible publiquement
+    (il ne reste accessible que via l'espace premium/Supabase). La chaîne de hash complète
+    (AUDIT_ENTRIES / AUDIT_ROWS_DATA) reste néanmoins intacte côté JS pour que le calcul
+    d'intégrité des paris déjà affichés (dont le hash dépend de tout l'historique) reste correct.
+    """
+    audit_entries = []  # liste complète, y compris les paris "En cours" (nécessaire à la chaîne de hash)
 
     try:
         with open(REGISTRE_PATH, 'r', encoding='utf-8') as f:
@@ -437,23 +453,49 @@ def get_audit_html(db_path):
                             nrows = None
 
                     audit_entries.append({'date': d, 'pari': p, 'hash': h, 'nrows': nrows})
-                    audit_rows.append(
-                        f'<tr><td class="px-4 py-3 text-white text-center text-xs">{d}</td>'
-                        f'<td class="px-4 py-3 text-white text-xs text-center">{p}</td>'
-                        f'<td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">{h}</td>'
-                        f'<td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr>'
-                    )
     except FileNotFoundError:
         return '<tr><td colspan="4" class="text-center py-4 text-slate-500">Registre introuvable.</td></tr>'
+
+    statuts_ordonnes = get_statuts_ordonnes(db_path)
+
+    def pari_encore_en_cours(nrows):
+        # nrows = nombre de lignes en base au moment où l'entrée a été scellée,
+        # donc le pari correspondant est le N-ième ajouté (rowid ASC), en position N-1.
+        if nrows is None or nrows < 1 or nrows > len(statuts_ordonnes):
+            return False  # cas limite : on préfère afficher plutôt que masquer à tort
+        return statuts_ordonnes[nrows - 1] == 'En cours'
+
+    audit_rows = []
+    options_html_parts = []
+    nb_masques = 0
+    for i, e in enumerate(audit_entries):
+        if pari_encore_en_cours(e['nrows']):
+            nb_masques += 1
+            continue
+        audit_rows.append(
+            f'<tr><td class="px-4 py-3 text-white text-center text-xs">{e["date"]}</td>'
+            f'<td class="px-4 py-3 text-white text-xs text-center">{e["pari"]}</td>'
+            f'<td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">{e["hash"]}</td>'
+            f'<td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr>'
+        )
+        options_html_parts.append(f'<option value="{i}">{e["date"]} — {e["pari"]}</option>')
+
+    if not audit_rows:
+        audit_rows_html = '<tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr>'
+    else:
+        audit_rows_html = "".join(audit_rows)
+
+    note_masques_html = (
+        f'<p class="text-slate-600 text-[10px] text-center mt-3">{nb_masques} pari(s) en cours scellé(s) '
+        f'mais non affiché(s) publiquement tant qu\'ils ne sont pas clôturés.</p>'
+        if nb_masques > 0 else ''
+    )
 
     row_data = get_verification_data(db_path)
     row_data_json = json.dumps(row_data, ensure_ascii=True)
     audit_entries_json = json.dumps(audit_entries, ensure_ascii=True)
 
-    options_html = "".join([
-        f'<option value="{i}">{e["date"]} — {e["pari"]}</option>'
-        for i, e in enumerate(audit_entries)
-    ])
+    options_html = "".join(options_html_parts)
 
     return f'''
     <div class="max-w-6xl mx-auto overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
@@ -467,9 +509,10 @@ def get_audit_html(db_path):
                     <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800">{"".join(audit_rows)}</tbody>
+            <tbody class="divide-y divide-slate-800">{audit_rows_html}</tbody>
         </table>
     </div>
+    {note_masques_html}
     <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">

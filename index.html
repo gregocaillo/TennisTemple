@@ -469,9 +469,10 @@
                     <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800"><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-10 21:35:30</td><td class="px-4 py-3 text-white text-xs text-center">Jannik Sinner @1.21</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">5a06130ddb937050344b3af94f58dc385cd52e36eb2409a44f05b8fd24faf898</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-13 07:29:44</td><td class="px-4 py-3 text-white text-xs text-center">Henrique Rocha @1.83</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">f20bd520509c870213e8a9bd5f6fa46ce74cb3fa59ee728bc4a7f68eb1f211cd</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-13 07:31:11</td><td class="px-4 py-3 text-white text-xs text-center">Kyrian Jacquet @1.95</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">795d073918cc18fba3e1e06681827a2b9d57cf7263060d5db522c67f5a178767</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr></tbody>
+            <tbody class="divide-y divide-slate-800"><tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr></tbody>
         </table>
     </div>
+    <p class="text-slate-600 text-[10px] text-center mt-3">3 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
     <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
@@ -481,7 +482,7 @@
         </div>
         <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
             <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
-            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4"><option value="0">2026-07-10 21:35:30 — Jannik Sinner @1.21</option><option value="1">2026-07-13 07:29:44 — Henrique Rocha @1.83</option><option value="2">2026-07-13 07:31:11 — Kyrian Jacquet @1.95</option></select>
+            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4"></select>
             <button onclick="verifierHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
             <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
         </div>
