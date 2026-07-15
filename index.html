@@ -238,11 +238,11 @@
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
-            <p class="text-2xl font-bold text-white">0</p>
+            <p class="text-2xl font-bold text-white">3</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="text-2xl font-bold text-white">—</p>
+            <p class="text-2xl font-bold text-emerald-400">+7.7%</p>
         </div>
     </div>
 <!-- Fin stats pronos -->
@@ -497,7 +497,7 @@
             <tbody class="divide-y divide-slate-800"><tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr></tbody>
         </table>
     </div>
-    
+    <p class="text-slate-600 text-[10px] text-center mt-3">3 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
     <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
@@ -513,8 +513,8 @@
         </div>
     </div>
     <script>
-        const AUDIT_ROWS_DATA = [];
-        const AUDIT_ENTRIES = [];
+        const AUDIT_ROWS_DATA = ["('Gstaad, Suisse, Simple Messieurs', '2026-07-15T08:30:00.000Z', 'Raphael Collignon vs Lorenzo Sonego', 'Raphael Collignon', 1.47, 3.311555383688816)", "('Umag, Croatie, Simple Messieurs', '2026-07-15T14:00:00.000Z', 'Tomas Martin Etcheverry vs Daniel Merida', 'Tomas Martin Etcheverry', 1.64, 1.8727079289221527)", "('Cordenons, Italie, Simple Messieurs', '2026-07-15T12:50:00.000Z', 'Stefano Napolitano vs Alex Barrena', 'Stefano Napolitano', 1.66, 4.602763223805148)"];
+        const AUDIT_ENTRIES = [{"date": "2026-07-15 10:17:08", "pari": "Raphael Collignon @1.47", "hash": "9a0fd1019516127aba2d9a1213e45b51d553d4604956cc2b95703a4bb6bba773", "nrows": 1}, {"date": "2026-07-15 10:17:08", "pari": "Tomas Martin Etcheverry @1.64", "hash": "bdd720284bb77bc72f451aba21dbc1fd3e4ffe509b24a359cabd7ff1e6d7a99b", "nrows": 2}, {"date": "2026-07-15 10:17:08", "pari": "Stefano Napolitano @1.66", "hash": "ef5cc681d6232d0af01dff66bb4e3b361a270033e69c0855ff2023d53fbdbc46", "nrows": 3}];
         async function verifierHash() {
             const idx = parseInt(document.getElementById('select-verif').value, 10);
             const entry = AUDIT_ENTRIES[idx];
