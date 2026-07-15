@@ -234,7 +234,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
-            <p class="text-2xl font-bold text-white">34</p>
+            <p class="text-2xl font-bold text-white">19</p>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
@@ -242,7 +242,7 @@
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="text-2xl font-bold text-emerald-400">+7.0%</p>
+            <p class="text-2xl font-bold text-emerald-400">+10.2%</p>
         </div>
     </div>
 <!-- Fin stats pronos -->
@@ -457,19 +457,129 @@
 <section id="roi" class="scroll-mt-20">
     <div class="text-center mb-10">
         <h2 class="section-title text-4xl font-extrabold">Performances</h2>
-        <p class="text-xs text-slate-500 mt-4"><!-- Début date maj -->Dernière mise à jour : 14/07/2026<!-- Fin date maj --></p>
+        <p class="text-xs text-slate-500 mt-4"><!-- Début date maj -->Dernière mise à jour : 15/07/2026<!-- Fin date maj --></p>
     </div>
 
     <!-- Début bandeau stats -->
 
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
+            <p class="text-2xl font-bold text-center text-white">0.0%</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Série en cours</p>
+            <p class="text-2xl font-bold text-center text-red-400">❄️ 2 Perdus</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1" title="Closing Line Value : écart en % entre la cote à laquelle vous avez parié et la cote pré-match (utilisée comme référence du marché juste avant le match). Un CLV positif signifie que vous avez obtenu une meilleure cote que le marché — c'est un indicateur de la qualité de votre timing/valeur, indépendant du résultat du match.">CLV Moyen <i class="fa-solid fa-circle-info text-[9px]"></i></p>
+            <p class="text-2xl font-bold text-center text-white">—</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
+            <p class="text-2xl font-bold text-center text-red-400">-3.58 €</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
+            <p class="text-2xl font-bold text-center text-white">1.78</p>
+        </div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-10">
+        <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
+        
+    <svg viewBox="0 0 300 60" class="w-full h-16">
+        
+        <polyline points="6.0,6.0 294.0,54.0" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    </div>
 <!-- Fin bandeau stats -->
 
     <!-- Début des statistiques mensuelles -->
 
+    <div class="overflow-x-auto mb-10">
+        <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
+            <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                <tr>
+                    <th class="px-6 py-4 text-center text-xs">Mois</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre paris</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre gagnés</th>
+                    <th class="px-6 py-4 text-center text-xs">Taux de réussite</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Jouée Moyenne</th>
+                    <th class="px-6 py-4 text-center text-xs" title="Closing Line Value : écart moyen (%) entre la cote jouée et la cote pré-match. Positif = vous avez obtenu une meilleure cote que le marché.">CLV Moyen</th>
+                    <th class="px-6 py-4 text-center text-xs">Yield</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300 divide-y divide-slate-800">
+        <tr class="border-b border-slate-800 last:border-b-0 text-xs">
+            <td class="px-6 py-3 text-center text-xs text-white">07/2026</td>
+            <td class="px-6 py-3 text-center text-xs text-white">2</td>
+            <td class="px-6 py-3 text-center text-xs text-white">0</td>
+            <td class="px-6 py-3 text-center text-xs text-white">0.0%</td>
+            <td class="px-6 py-3 text-center text-xs text-white">1.78</td>
+            <td class="px-6 py-3 text-center text-xs text-slate-500">—</td>
+            <td class="px-6 py-3 text-center text-xs text-white">-100.1%</td>
+            <td class="px-6 py-3 text-center text-xs text-red-500">-3.58 €</td>
+        </tr></tbody>
+        </table>
+    </div>
 <!-- Fin des statistiques mensuelles -->
 
             <!-- Début des performances -->
-<p class="text-slate-500 text-center py-10">Aucun historique disponible.</p>
+
+    <div class="hidden md:block">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                    <th class="px-6 py-4 text-center text-xs">Date</th>
+                    <th class="px-6 py-4 text-center text-xs">Match</th>
+                    <th class="px-6 py-4 text-center text-xs">Pari</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Jouée</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Pré-match</th>
+                    <th class="px-6 py-4 text-center text-xs">Statut</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300">
+        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">14/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Gonzalo Villanueva vs Michele Ribecai</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Michele Ribecai</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.70</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">—</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-1.69 €</td>
+        </tr>
+        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">14/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Sumit Nagal vs Cezar Cretu</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Cezar Cretu</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.86</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">—</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-1.89 €</td>
+        </tr></tbody>
+        </table>
+    </div>
+    <div class="md:hidden space-y-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">14/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Gonzalo Villanueva vs Michele Ribecai</p>
+            <p class="text-xs text-yellow-300 mb-3">Michele Ribecai <span class="text-slate-500">@ 1.70 (pré-match —)</span></p>
+            <p class="text-sm font-bold text-red-500">-1.69 €</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">14/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Sumit Nagal vs Cezar Cretu</p>
+            <p class="text-xs text-yellow-300 mb-3">Cezar Cretu <span class="text-slate-500">@ 1.86 (pré-match —)</span></p>
+            <p class="text-sm font-bold text-red-500">-1.89 €</p>
+        </div></div>
 <!-- Fin des performances -->
 
         </section>
@@ -494,7 +604,7 @@
                     <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800"><tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr></tbody>
+            <tbody class="divide-y divide-slate-800"><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-14 09:53:28</td><td class="px-4 py-3 text-white text-xs text-center">Cezar Cretu @1.86</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">06ea7daae55869cdd40cff086492e035f8182dd40417f41f6f16b80f521b18c7</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-14 09:53:28</td><td class="px-4 py-3 text-white text-xs text-center">Michele Ribecai @1.7</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">065850f3cf4d44fe030f94661edd4a5ce94453657663fa1bcb15964006fc8f87</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr></tbody>
         </table>
     </div>
     <p class="text-slate-600 text-[10px] text-center mt-3">4 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
@@ -507,14 +617,14 @@
         </div>
         <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
             <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
-            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4"></select>
+            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4"><option value="0">2026-07-14 09:53:28 — Cezar Cretu @1.86</option><option value="2">2026-07-14 09:53:28 — Michele Ribecai @1.7</option></select>
             <button onclick="verifierHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
             <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
         </div>
     </div>
     <script>
-        const AUDIT_ROWS_DATA = ["('Cordenons, Italie, Simple Messieurs', '2026-07-14T08:00:00.000Z', 'Sumit Nagal vs Cezar Cretu', 'Cezar Cretu', 1.86, 1.8900983279822667)", "('Cordenons, Italie, Simple Messieurs', '2026-07-14T09:10:00.000Z', 'Juan Cruz Martin Manzano vs Harold Mayot', 'Harold Mayot', 1.5, 5.0)", "('Cordenons, Italie, Simple Messieurs', '2026-07-14T09:10:00.000Z', 'Gonzalo Villanueva vs Michele Ribecai', 'Michele Ribecai', 1.7, 1.6876691671567676)", "('Cordenons, Italie, Simple Messieurs', '2026-07-14T10:20:00.000Z', 'Maxim Mrva vs Carlo Alberto Caniato', 'Carlo Alberto Caniato', 2.1, 1.3330152480895467)"];
-        const AUDIT_ENTRIES = [{"date": "2026-07-14 09:53:28", "pari": "Cezar Cretu @1.86", "hash": "06ea7daae55869cdd40cff086492e035f8182dd40417f41f6f16b80f521b18c7", "nrows": 1}, {"date": "2026-07-14 09:53:28", "pari": "Harold Mayot @1.5", "hash": "d552c1eff7c24291218bfc34f4b967d72cda404f4e8a0b86cea98ae0b2e220ff", "nrows": 2}, {"date": "2026-07-14 09:53:28", "pari": "Michele Ribecai @1.7", "hash": "065850f3cf4d44fe030f94661edd4a5ce94453657663fa1bcb15964006fc8f87", "nrows": 3}, {"date": "2026-07-14 09:53:28", "pari": "Carlo Alberto Caniato @2.1", "hash": "1bbfbeb40895ed40ea6d2abdb66ad82680841ab3a13f3eb550d99de799101a47", "nrows": 4}];
+        const AUDIT_ROWS_DATA = ["('Cordenons, Italie, Simple Messieurs', '2026-07-14T08:00:00.000Z', 'Sumit Nagal vs Cezar Cretu', 'Cezar Cretu', 1.86, 1.8900983279822667)", "('Cordenons, Italie, Simple Messieurs', '2026-07-14T09:10:00.000Z', 'Juan Cruz Martin Manzano vs Harold Mayot', 'Harold Mayot', 1.5, 5.0)", "('Cordenons, Italie, Simple Messieurs', '2026-07-14T09:10:00.000Z', 'Gonzalo Villanueva vs Michele Ribecai', 'Michele Ribecai', 1.7, 1.6876691671567676)", "('Cordenons, Italie, Simple Messieurs', '2026-07-14T10:20:00.000Z', 'Maxim Mrva vs Carlo Alberto Caniato', 'Carlo Alberto Caniato', 2.1, 1.3330152480895467)", "('Cordenons, Italie, Simple Messieurs', '2026-07-15T12:50:00.000Z', 'Stefano Napolitano vs Alex Barrena', 'Stefano Napolitano', 1.66, 2.6707972597474168)", "('Umag, Croatie, Simple Messieurs', '2026-07-15T15:10:00.000Z', 'Pablo Carreno Busta vs Camilo Ugo Carabelli', 'Camilo Ugo Carabelli', 2.33, 3.0719829791822963)"];
+        const AUDIT_ENTRIES = [{"date": "2026-07-14 09:53:28", "pari": "Cezar Cretu @1.86", "hash": "06ea7daae55869cdd40cff086492e035f8182dd40417f41f6f16b80f521b18c7", "nrows": 1}, {"date": "2026-07-14 09:53:28", "pari": "Harold Mayot @1.5", "hash": "d552c1eff7c24291218bfc34f4b967d72cda404f4e8a0b86cea98ae0b2e220ff", "nrows": 2}, {"date": "2026-07-14 09:53:28", "pari": "Michele Ribecai @1.7", "hash": "065850f3cf4d44fe030f94661edd4a5ce94453657663fa1bcb15964006fc8f87", "nrows": 3}, {"date": "2026-07-14 09:53:28", "pari": "Carlo Alberto Caniato @2.1", "hash": "1bbfbeb40895ed40ea6d2abdb66ad82680841ab3a13f3eb550d99de799101a47", "nrows": 4}, {"date": "2026-07-15 06:03:35", "pari": "Stefano Napolitano @1.66", "hash": "46262f4640d2b644abb5afff5c9c763e28aed202482c8cf78dd9889de07adca3", "nrows": 5}, {"date": "2026-07-15 06:27:02", "pari": "Camilo Ugo Carabelli @2.33", "hash": "c47f9676f314efcd0b788a42514111cfa205f1dab710ea723efc6dcb0ca8ad67", "nrows": 6}];
         async function verifierHash() {
             const idx = parseInt(document.getElementById('select-verif').value, 10);
             const entry = AUDIT_ENTRIES[idx];
