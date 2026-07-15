@@ -693,12 +693,19 @@ def mettre_a_jour_site():
         with open(HTML_PATH, 'r', encoding='utf-8') as f:
             contenu = f.read()
 
-        contenu = re.sub(r'<!-- Début stats pronos -->.*?<!-- Fin stats pronos -->', f'<!-- Début stats pronos -->\n{pronos_stats_html}\n<!-- Fin stats pronos -->', contenu, flags=re.DOTALL)
-        contenu = re.sub(r'<!-- Début bandeau stats -->.*?<!-- Fin bandeau stats -->', f'<!-- Début bandeau stats -->\n{banniere_html}\n<!-- Fin bandeau stats -->', contenu, flags=re.DOTALL)
-        contenu = re.sub(r'<!-- Début des statistiques mensuelles -->.*?<!-- Fin des statistiques mensuelles -->', f'<!-- Début des statistiques mensuelles -->\n{stats_html}\n<!-- Fin des statistiques mensuelles -->', contenu, flags=re.DOTALL)
-        contenu = re.sub(r'<!-- Début des performances -->.*?<!-- Fin des performances -->', f'<!-- Début des performances -->\n{perf_html}\n<!-- Fin des performances -->', contenu, flags=re.DOTALL)
-        contenu = re.sub(r'<!-- Début du registre -->.*?<!-- Fin du registre -->', f'<!-- Début du registre -->\n{audit_html}\n<!-- Fin du registre -->', contenu, flags=re.DOTALL)
-        contenu = re.sub(r'<!-- Début date maj -->.*?<!-- Fin date maj -->', f'<!-- Début date maj -->{maj_date_html}<!-- Fin date maj -->', contenu, flags=re.DOTALL)
+# IMPORTANT : on passe des lambdas comme argument `repl` de re.sub().
+        # Quand `repl` est une chaîne, re.sub() la traite comme un template et
+        # interprète les backslashes (\1, \g<name>, \u...) de façon spéciale.
+        # Or audit_html contient du JSON encodé avec ensure_ascii=True, qui produit
+        # des séquences \uXXXX pour les caractères accentués (é, ô, î...) — d'où
+        # l'erreur "bad escape \u". Une fonction comme repl est utilisée telle quelle,
+        # sans interprétation des backslashes.
+        contenu = re.sub(r'<!-- Début stats pronos -->.*?<!-- Fin stats pronos -->', lambda m: f'<!-- Début stats pronos -->\n{pronos_stats_html}\n<!-- Fin stats pronos -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début bandeau stats -->.*?<!-- Fin bandeau stats -->', lambda m: f'<!-- Début bandeau stats -->\n{banniere_html}\n<!-- Fin bandeau stats -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début des statistiques mensuelles -->.*?<!-- Fin des statistiques mensuelles -->', lambda m: f'<!-- Début des statistiques mensuelles -->\n{stats_html}\n<!-- Fin des statistiques mensuelles -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début des performances -->.*?<!-- Fin des performances -->', lambda m: f'<!-- Début des performances -->\n{perf_html}\n<!-- Fin des performances -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début du registre -->.*?<!-- Fin du registre -->', lambda m: f'<!-- Début du registre -->\n{audit_html}\n<!-- Fin du registre -->', contenu, flags=re.DOTALL)
+        contenu = re.sub(r'<!-- Début date maj -->.*?<!-- Fin date maj -->', lambda m: f'<!-- Début date maj -->{maj_date_html}<!-- Fin date maj -->', contenu, flags=re.DOTALL)
 
         with open(HTML_PATH, 'w', encoding='utf-8') as f:
             f.write(contenu)
