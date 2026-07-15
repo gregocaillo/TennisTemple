@@ -67,18 +67,18 @@ def generate_pronos_stats_banner(df):
         value_couleur = "text-white"
 
     return f'''
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
-            <p class="text-2xl font-bold text-white">{nb_matchs_analyses}</p>
+            <p class="text-xl sm:text-2xl font-bold text-white">{nb_matchs_analyses}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
-            <p class="text-2xl font-bold text-white">{nb_paris_proposes}</p>
+            <p class="text-xl sm:text-2xl font-bold text-white">{nb_paris_proposes}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="text-2xl font-bold {value_couleur}">{value_txt}</p>
+            <p class="text-xl sm:text-2xl font-bold {value_couleur}">{value_txt}</p>
         </div>
     </div>'''
 
@@ -211,7 +211,7 @@ def generate_perf_table(df):
         </div>'''
 
     return f'''
-    <div class="hidden md:block">
+    <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
@@ -230,7 +230,7 @@ def generate_perf_table(df):
     <div class="md:hidden space-y-3">{cards}</div>'''
 
 def generate_stats_mensuelles(df):
-    """Génère le tableau statistique mensuel."""
+    """Génère le tableau statistique mensuel (desktop) + les cartes équivalentes (mobile)."""
     # Filtrer uniquement les paris terminés
     df_term = df[df['Résultat'].isin(['Gagné', 'Perdu'])].copy()
     if df_term.empty:
@@ -247,32 +247,52 @@ def generate_stats_mensuelles(df):
     })).reset_index()
 
     stats = stats.sort_values(by='Mois', ascending=False)
-    
+
     rows = ""
+    cards = ""
     for _, row in stats.iterrows():
         nb_paris = int(row['Nb'])
         nb_gagnes = int(row['Gagnés'])
+        taux_reussite = row['Gagnés'] / row['Nb'] * 100
+        pnl_color = 'text-emerald-500' if row['PNL'] >= 0 else 'text-red-500'
         if pd.notna(row['CLV_Moy']):
             clv_txt = f"+{row['CLV_Moy']:.1f}%" if row['CLV_Moy'] >= 0 else f"{row['CLV_Moy']:.1f}%"
             clv_color = 'text-emerald-500' if row['CLV_Moy'] >= 0 else 'text-red-500'
         else:
             clv_txt = "—"
             clv_color = 'text-slate-500'
+        mois_fmt = row['Mois'].strftime('%m/%Y')
 
         rows += f'''
         <tr class="border-b border-slate-800 last:border-b-0 text-xs">
-            <td class="px-6 py-3 text-center text-xs text-white">{row['Mois'].strftime('%m/%Y')}</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{mois_fmt}</td>
             <td class="px-6 py-3 text-center text-xs text-white">{nb_paris}</td>
             <td class="px-6 py-3 text-center text-xs text-white">{nb_gagnes}</td>
-            <td class="px-6 py-3 text-center text-xs text-white">{(row['Gagnés']/row['Nb']*100):.1f}%</td>
+            <td class="px-6 py-3 text-center text-xs text-white">{taux_reussite:.1f}%</td>
             <td class="px-6 py-3 text-center text-xs text-white">{row['Cote_Moy']:.2f}</td>
             <td class="px-6 py-3 text-center text-xs {clv_color}">{clv_txt}</td>
             <td class="px-6 py-3 text-center text-xs text-white">{row['Yield']:.1f}%</td>
-            <td class="px-6 py-3 text-center text-xs {'text-emerald-500' if row['PNL'] >= 0 else 'text-red-500'}">{row['PNL']:.2f} €</td>
+            <td class="px-6 py-3 text-center text-xs {pnl_color}">{row['PNL']:.2f} €</td>
         </tr>'''
 
-    return f'''
-    <div class="overflow-x-auto mb-10">
+        cards += f'''
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-sm font-bold text-white">{mois_fmt}</span>
+                <span class="text-sm font-bold {pnl_color}">{row['PNL']:.2f} €</span>
+            </div>
+            <div class="grid grid-cols-2 gap-y-2 text-xs">
+                <p class="text-slate-500">Paris <span class="text-white float-right">{nb_paris}</span></p>
+                <p class="text-slate-500">Gagnés <span class="text-white float-right">{nb_gagnes}</span></p>
+                <p class="text-slate-500">Réussite <span class="text-white float-right">{taux_reussite:.1f}%</span></p>
+                <p class="text-slate-500">Cote moy. <span class="text-white float-right">{row['Cote_Moy']:.2f}</span></p>
+                <p class="text-slate-500">CLV moy. <span class="{clv_color} float-right">{clv_txt}</span></p>
+                <p class="text-slate-500">Yield <span class="text-white float-right">{row['Yield']:.1f}%</span></p>
+            </div>
+        </div>'''
+
+    table_html = f'''
+    <div class="hidden md:block overflow-x-auto mb-10">
         <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
             <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
                 <tr>
@@ -289,6 +309,11 @@ def generate_stats_mensuelles(df):
             <tbody class="text-slate-300 divide-y divide-slate-800">{rows}</tbody>
         </table>
     </div>'''
+
+    cards_html = f'''
+    <div class="md:hidden space-y-3 mb-10">{cards}</div>'''
+
+    return table_html + cards_html
 
 def generate_sparkline_svg(valeurs):
     """Génère un mini graphique SVG (sparkline) à partir d'une liste de valeurs cumulées."""
@@ -313,7 +338,7 @@ def generate_sparkline_svg(valeurs):
     ligne_zero = f'<line x1="{marge}" y1="{zero_y:.1f}" x2="{largeur - marge}" y2="{zero_y:.1f}" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>' if zero_y is not None else ''
 
     return f'''
-    <svg viewBox="0 0 {largeur} {hauteur}" class="w-full h-16">
+    <svg viewBox="0 0 {largeur} {hauteur}" preserveAspectRatio="none" class="w-full h-16">
         {ligne_zero}
         <polyline points="{polyline}" fill="none" stroke="{couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>'''
@@ -370,29 +395,29 @@ def generate_stats_banner(df):
     )
 
     return f'''
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8 sm:mb-10">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
-            <p class="text-2xl font-bold text-center text-white">{taux_reussite:.1f}%</p>
+            <p class="text-xl sm:text-2xl font-bold text-center text-white">{taux_reussite:.1f}%</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Série en cours</p>
-            <p class="text-2xl font-bold text-center {serie_couleur}">{serie_emoji} {serie_texte}</p>
+            <p class="text-lg sm:text-2xl font-bold text-center {serie_couleur} truncate">{serie_emoji} {serie_texte}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1" title="{clv_explication}">CLV Moyen <i class="fa-solid fa-circle-info text-[9px]"></i></p>
-            <p class="text-2xl font-bold text-center {clv_couleur}">{clv_txt}</p>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="{clv_explication}">CLV Moyen <i class="fa-solid fa-circle-info text-[9px]"></i></p>
+            <p class="text-xl sm:text-2xl font-bold text-center {clv_couleur}">{clv_txt}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
-            <p class="text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
+            <p class="text-xl sm:text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
-            <p class="text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
+            <p class="text-xl sm:text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
         </div>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-10">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
         <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
         {sparkline}
     </div>'''
@@ -426,7 +451,7 @@ def get_statuts_ordonnes(db_path):
 
 
 def get_audit_html(db_path):
-    """Génère la section complète du registre d'audit.
+    """Génère la section complète du registre d'audit : tableau desktop + cartes mobile.
     Seuls les paris déjà clôturés (statut != 'En cours') sont affichés dans le tableau
     et le menu déroulant : un pari encore en cours ne doit pas être visible publiquement
     (il ne reste accessible que via l'espace premium/Supabase). La chaîne de hash complète
@@ -466,6 +491,7 @@ def get_audit_html(db_path):
         return statuts_ordonnes[nrows - 1] == 'En cours'
 
     audit_rows = []
+    audit_cards = []
     options_html_parts = []
     nb_masques = 0
     for i, e in enumerate(audit_entries):
@@ -478,12 +504,23 @@ def get_audit_html(db_path):
             f'<td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">{e["hash"]}</td>'
             f'<td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr>'
         )
+        audit_cards.append(f'''
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs text-white">{e["date"]}</span>
+                <span class="text-emerald-500 text-xs">✓ Intègre</span>
+            </div>
+            <p class="text-xs text-white mb-2">{e["pari"]}</p>
+            <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">{e["hash"]}</p>
+        </div>''')
         options_html_parts.append(f'<option value="{i}">{e["date"]} — {e["pari"]}</option>')
 
     if not audit_rows:
         audit_rows_html = '<tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr>'
+        audit_cards_html = '<p class="text-slate-500 text-center py-6 text-sm">Aucun pari clôturé pour le moment.</p>'
     else:
         audit_rows_html = "".join(audit_rows)
+        audit_cards_html = "".join(audit_cards)
 
     note_masques_html = (
         f'<p class="text-slate-600 text-[10px] text-center mt-3">{nb_masques} pari(s) en cours scellé(s) '
@@ -498,32 +535,35 @@ def get_audit_html(db_path):
     options_html = "".join(options_html_parts)
 
     return f'''
-    <div class="max-w-6xl mx-auto overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
-        <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
-        <table class="min-w-full divide-y divide-slate-700 text-xs">
-            <thead class="bg-slate-950">
-                <tr>
-                    <th class="px-4 py-3 text-emerald-400 text-center">Date</th>
-                    <th class="px-4 py-3 text-emerald-400 text-center">Pari</th>
-                    <th class="px-4 py-3 text-emerald-400 text-center">Hash</th>
-                    <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-800">{audit_rows_html}</tbody>
-        </table>
+    <div class="max-w-6xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
+        <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 rounded-t-2xl text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-700 text-xs">
+                <thead class="bg-slate-950">
+                    <tr>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Date</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Pari</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Hash</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800">{audit_rows_html}</tbody>
+            </table>
+        </div>
+        <div class="md:hidden p-4 space-y-3">{audit_cards_html}</div>
     </div>
     {note_masques_html}
-    <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
-        <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
+    <div class="max-w-6xl mx-auto mt-8 p-4 sm:p-6 bg-slate-950 border border-slate-800 rounded-xl">
+        <h3 class="text-emerald-400 font-bold mb-4 text-base sm:text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
             <p>- <b>Principe</b> : chaque pari est scellé dans une chaîne où le Hash résulte d'un calcul combinant tout l'historique des paris et l'empreinte du pari précédent</p>
             <p>- <b>Immutabilité</b> : si une seule donnée est modifiée dans le passé, le Hash de cette ligne change</p>
             <p>- <b>Vérifiabilité</b> : choisissez un pari ci-dessous pour vérifier l'intégrité en direct</p>
         </div>
-        <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
+        <div class="mt-8 p-4 sm:p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
             <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
             <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4">{options_html}</select>
-            <button onclick="verifierHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
+            <button onclick="verifierHash()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
             <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
         </div>
     </div>

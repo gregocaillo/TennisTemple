@@ -86,17 +86,17 @@
         html { scroll-behavior: smooth; }
     </style>
 </head>
-<body class="bg-court text-slate-100 min-h-screen">
+<body class="bg-court text-slate-100 min-h-screen overflow-x-hidden">
     <div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-2 w-72 max-w-[90vw]"></div>
 
-    <div class="bg-slate-950 border-b border-emerald-900/50 text-center px-4 py-2.5 text-xs text-emerald-200/90">
+    <div class="bg-slate-950 border-b border-emerald-900/50 text-center px-4 py-2.5 text-[11px] sm:text-xs text-emerald-200/90">
         <strong class="text-emerald-400">18+</strong> — Jouer comporte des risques d’addiction.
         <a href="tel:0974751313" class="underline hover:text-emerald-300 transition-colors">Joueurs Info Service : 09 74 75 13 13</a>
     </div>
 
     <nav class="border-b border-slate-800 bg-slate-950/95 backdrop-blur-xl sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
-            <a href="index.html" class="text-3xl font-black tracking-tighter bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300 bg-clip-text text-transparent">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
+            <a href="index.html" class="text-2xl sm:text-3xl font-black tracking-tighter bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300 bg-clip-text text-transparent">
                 TENNIS<span class="text-yellow-400">TEMPLE</span>
             </a>
 
@@ -135,12 +135,12 @@
                 </div>
             </div>
 
-            <button id="mobile-menu-btn" class="md:hidden text-3xl text-slate-200 hover:text-yellow-400 transition-colors">
+            <button id="mobile-menu-btn" class="md:hidden text-2xl sm:text-3xl text-slate-200 hover:text-yellow-400 transition-colors">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-slate-950 border-t border-slate-800 py-4">
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-950 border-t border-slate-800 py-4 max-h-[80vh] overflow-y-auto">
             <div class="flex flex-col px-6 space-y-4 text-base font-medium">
                 <a href="#philosophie" class="py-2 hover:text-yellow-400 transition-colors">L’Esprit</a>
                 <a href="#pronos" class="relative py-2 hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-mobile" class="hidden ml-2 w-2 h-2 bg-red-500 rounded-full inline-block"></span></a>
@@ -169,41 +169,41 @@
         </div>
     </nav>
 
-    <header class="relative overflow-hidden px-6 pt-20 pb-28 text-center hero-bg">
+    <header class="relative overflow-hidden px-4 sm:px-6 pt-14 sm:pt-20 pb-20 sm:pb-28 text-center hero-bg">
         <div class="max-w-4xl mx-auto relative z-10">
-            <span class="inline-block bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold tracking-[2px] px-5 py-2 rounded-full mb-6">
+            <span class="inline-block bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-bold tracking-[2px] px-4 sm:px-5 py-2 rounded-full mb-6">
                 MODÉLISATION MATHÉMATIQUE • ATP
             </span>
 
-            <h1 class="text-5xl md:text-6xl font-black tracking-tighter leading-tight mb-6 text-white">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-tight mb-6 text-white">
                 La Data qui bat<br>les Bookmakers
             </h1>
 
-            <p class="text-xl text-slate-300 max-w-2xl mx-auto mb-10">
+            <p class="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10">
                 Pas d’intuition. Pas d’émotion.<br>
                 <span class="text-yellow-300">Uniquement des value bets calculées.</span>
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="#pronos"
-                   class="group bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold text-lg px-10 py-5 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl shadow-yellow-500/30">
+                   class="group bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl shadow-yellow-500/30">
                     <i class="fa-solid fa-bolt"></i>
                     Voir les pronos du jour
                 </a>
                 <a href="#roi"
-                   class="border border-slate-600 hover:border-slate-400 font-semibold px-8 py-5 rounded-2xl transition-all hover:bg-slate-900/50">
+                   class="border border-slate-600 hover:border-slate-400 font-semibold px-8 py-4 sm:py-5 rounded-2xl transition-all hover:bg-slate-900/50">
                     Voir les performances
                 </a>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 pb-20 space-y-28">
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pb-20 space-y-20 sm:space-y-28">
 
-    <section id="philosophie" class="scroll-mt-20 pt-16 grid md:grid-cols-2 md:grid-rows-[auto_1fr] gap-x-16 gap-y-0">
+    <section id="philosophie" class="scroll-mt-20 pt-10 sm:pt-16 grid md:grid-cols-2 md:grid-rows-[auto_1fr] gap-x-16 gap-y-8 md:gap-y-0">
             <div class="md:col-start-1 md:row-start-1">
                 <span class="text-yellow-400 text-sm font-bold tracking-widest">// MA DÉMARCHE</span>
-                <h2 class="section-title text-4xl font-extrabold mt-3 mb-6">Le tennis, une approche par la donnée</h2>
+                <h2 class="section-title text-3xl sm:text-4xl font-extrabold mt-3 mb-6">Le tennis, une approche par la donnée</h2>
             </div>
 
             <div class="md:col-start-1 md:row-start-2 space-y-4 text-slate-400 leading-relaxed text-justify text-[0.95rem]">
@@ -212,37 +212,37 @@
                 <p>Je partage aujourd'hui cette analyse. Ici, pas de discours marketing superflu, seulement une approche directe et chiffrée, ancrée dans la réalité du terrain, pour ceux qui souhaitent transformer leur passion en opportunité financière, en acceptant la part d'aléa propre à l'analyse sportive..</p>
             </div>
 
-            <div class="md:col-start-2 md:row-start-2 group relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl h-[420px] md:h-full">
+            <div class="md:col-start-2 md:row-start-2 group relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl h-64 sm:h-80 md:h-full">
                 <img src="assets/lesprit.png"
                      alt="Analyse tennis data - Expérience terrain et modélisation"
                      class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                      loading="lazy">
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent p-4">
-                    <h4 class="text-center font-bold text-lg">Allier l'expérience terrain à la rigueur de la donnée</h4>
+                    <h4 class="text-center font-bold text-base sm:text-lg">Allier l'expérience terrain à la rigueur de la donnée</h4>
                 </div>
             </div>
         </section>
 
         <section id="pronos" class="scroll-mt-20">
             <div class="text-center mb-6">
-                <h2 class="section-title text-4xl font-extrabold">Pronostics du Jour</h2>
+                <h2 class="section-title text-3xl sm:text-4xl font-extrabold">Pronostics du Jour</h2>
                 <p class="text-slate-400 mt-4 text-xs">Mises à jour tous les matins ~ 7h</p>
             </div>
 
             <!-- Début stats pronos -->
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
-            <p class="text-2xl font-bold text-white">19</p>
+            <p class="text-xl sm:text-2xl font-bold text-white">19</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
-            <p class="text-2xl font-bold text-white">3</p>
+            <p class="text-xl sm:text-2xl font-bold text-white">3</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="text-2xl font-bold text-emerald-400">+7.7%</p>
+            <p class="text-xl sm:text-2xl font-bold text-emerald-400">+7.7%</p>
         </div>
     </div>
 <!-- Fin stats pronos -->
@@ -360,7 +360,7 @@
                     const estConnexion = authMode === 'login';
 
                     grid.innerHTML = `
-                        <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-8 text-center max-w-md mx-auto">
+                        <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-6 sm:p-8 text-center max-w-md mx-auto">
                             <div class="text-3xl mb-3 opacity-50">🔒</div>
                             <h4 class="text-sm font-bold mb-4">${estConnexion ? 'Pronostics réservés aux membres du Club' : 'Créer votre compte membre'}</h4>
 
@@ -455,8 +455,8 @@
         </section>
 
 <section id="roi" class="scroll-mt-20">
-    <div class="text-center mb-10">
-        <h2 class="section-title text-4xl font-extrabold">Performances</h2>
+    <div class="text-center mb-8 sm:mb-10">
+        <h2 class="section-title text-3xl sm:text-4xl font-extrabold">Performances</h2>
         <p class="text-xs text-slate-500 mt-4"><!-- Début date maj -->Dernière mise à jour : 15/07/2026<!-- Fin date maj --></p>
     </div>
 
@@ -475,40 +475,43 @@
         </section>
 
         <section id="audit" class="scroll-mt-20">
-            <div class="text-center max-w-5xl mx-auto mb-12">
-                <h2 class="section-title text-4xl font-extrabold">Registre d'Audit (Blockchain)</h2>
+            <div class="text-center max-w-5xl mx-auto mb-10 sm:mb-12">
+                <h2 class="section-title text-3xl sm:text-4xl font-extrabold">Registre d'Audit (Blockchain)</h2>
                 <p class="text-slate-400 text-xs mt-4 px-4 leading-relaxed">
                     Chaque pari est scellé cryptographiquement pour garantir l'absence de modification à posteriori
                 </p>
             </div>
             <!-- Début du registre -->
 
-    <div class="max-w-6xl mx-auto overflow-x-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
-        <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
-        <table class="min-w-full divide-y divide-slate-700 text-xs">
-            <thead class="bg-slate-950">
-                <tr>
-                    <th class="px-4 py-3 text-emerald-400 text-center">Date</th>
-                    <th class="px-4 py-3 text-emerald-400 text-center">Pari</th>
-                    <th class="px-4 py-3 text-emerald-400 text-center">Hash</th>
-                    <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-800"><tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr></tbody>
-        </table>
+    <div class="max-w-6xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
+        <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 rounded-t-2xl text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-700 text-xs">
+                <thead class="bg-slate-950">
+                    <tr>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Date</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Pari</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Hash</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800"><tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr></tbody>
+            </table>
+        </div>
+        <div class="md:hidden p-4 space-y-3"><p class="text-slate-500 text-center py-6 text-sm">Aucun pari clôturé pour le moment.</p></div>
     </div>
     <p class="text-slate-600 text-[10px] text-center mt-3">3 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
-    <div class="max-w-6xl mx-auto mt-8 p-6 bg-slate-950 border border-slate-800 rounded-xl">
-        <h3 class="text-emerald-400 font-bold mb-4 text-lg">Comment fonctionne l'audit cryptographique ?</h3>
+    <div class="max-w-6xl mx-auto mt-8 p-4 sm:p-6 bg-slate-950 border border-slate-800 rounded-xl">
+        <h3 class="text-emerald-400 font-bold mb-4 text-base sm:text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
             <p>- <b>Principe</b> : chaque pari est scellé dans une chaîne où le Hash résulte d'un calcul combinant tout l'historique des paris et l'empreinte du pari précédent</p>
             <p>- <b>Immutabilité</b> : si une seule donnée est modifiée dans le passé, le Hash de cette ligne change</p>
             <p>- <b>Vérifiabilité</b> : choisissez un pari ci-dessous pour vérifier l'intégrité en direct</p>
         </div>
-        <div class="mt-8 p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
+        <div class="mt-8 p-4 sm:p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
             <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
             <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4"></select>
-            <button onclick="verifierHash()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
+            <button onclick="verifierHash()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
             <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
         </div>
     </div>
@@ -544,15 +547,15 @@
         </section>
 
         <section id="tarifs" class="scroll-mt-20">
-            <div class="text-center max-w-xl mx-auto mb-16">
-                <h2 class="section-title text-3xl font-extrabold text-white">Rejoignez le Temple</h2>
+            <div class="text-center max-w-xl mx-auto mb-12 sm:mb-16">
+                <h2 class="section-title text-2xl sm:text-3xl font-extrabold text-white">Rejoignez le Temple</h2>
                 <p class="text-slate-400 mt-4 text-xs">Rentabilisez votre abonnement dès les premières value bets</p>
             </div>
-            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <div class="bg-slate-900 border border-slate-700 rounded-3xl p-10 card-hover">
+            <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
+                <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 sm:p-10 card-hover">
                     <h3 class="text-xl font-semibold">Accès Mensuel</h3>
-                    <div class="mt-8 mb-10">
-                        <span class="text-5xl font-bold">5€</span>
+                    <div class="mt-6 sm:mt-8 mb-8 sm:mb-10">
+                        <span class="text-4xl sm:text-5xl font-bold">5€</span>
                         <span class="text-slate-500">/mois</span>
                     </div>
                     <ul class="space-y-4">
@@ -560,16 +563,16 @@
                         <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Accès complet</li>
                         <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Bilan quotidien</li>
                     </ul>
-                    <button class="w-full mt-12 py-5 bg-slate-800 hover:bg-slate-700 rounded-2xl font-semibold transition">
+                    <button class="w-full mt-8 sm:mt-12 py-4 sm:py-5 bg-slate-800 hover:bg-slate-700 rounded-2xl font-semibold transition">
                         Choisir cette formule
                     </button>
                 </div>
 
-                <div class="bg-gradient-to-br from-slate-900 to-slate-950 border-2 border-emerald-500 rounded-3xl p-10 card-hover relative">
-                    <div class="absolute -top-4 right-6 bg-yellow-400 text-slate-950 text-xs font-black px-5 py-1.5 rounded-full">MEILLEUR CHOIX</div>
+                <div class="bg-gradient-to-br from-slate-900 to-slate-950 border-2 border-emerald-500 rounded-3xl p-6 sm:p-10 card-hover relative mt-6 md:mt-0">
+                    <div class="absolute -top-4 right-6 bg-yellow-400 text-slate-950 text-[10px] sm:text-xs font-black px-4 sm:px-5 py-1.5 rounded-full">MEILLEUR CHOIX</div>
                     <h3 class="text-xl font-semibold">Pass Saison</h3>
-                    <div class="mt-8 mb-10">
-                        <span class="text-5xl font-bold text-yellow-300">55€</span>
+                    <div class="mt-6 sm:mt-8 mb-8 sm:mb-10">
+                        <span class="text-4xl sm:text-5xl font-bold text-yellow-300">55€</span>
                         <span class="text-slate-500">/an</span>
                     </div>
                     <ul class="space-y-4">
@@ -577,7 +580,7 @@
                         <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> 4 mois offerts</li>
                         <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Analyses avancées</li>
                     </ul>
-                    <button class="w-full mt-12 py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-bold rounded-2xl transition hover:brightness-110">
+                    <button class="w-full mt-8 sm:mt-12 py-4 sm:py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-bold rounded-2xl transition hover:brightness-110">
                         S’abonner à l’année
                     </button>
                 </div>
@@ -585,7 +588,7 @@
         </section>
     </main>
 
-    <footer class="border-t border-slate-900 bg-slate-950 py-12 text-center text-xs text-slate-500">
+    <footer class="border-t border-slate-900 bg-slate-950 py-10 sm:py-12 text-center text-xs text-slate-500">
         <p class="max-w-2xl mx-auto px-6">
             Interdit aux mineurs. Jouer comporte des risques. Mise en jeu responsable.<br>
             Contenu à visée informative uniquement.
@@ -615,6 +618,11 @@
                         top: target.getBoundingClientRect().top + window.scrollY - navHeight,
                         behavior: 'smooth'
                     });
+                }
+                // Referme le menu mobile après un clic sur un lien d'ancre
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    mobileBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
                 }
             });
         });
