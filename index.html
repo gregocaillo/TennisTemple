@@ -53,58 +53,19 @@
         }
 
         .bg-court {
-            background: 
-                radial-gradient(circle at 30% 20%, #0f172a 0%, #020617 70%),
-                linear-gradient(45deg, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
-            background-attachment: fixed;
+            background: radial-gradient(circle at 30% 20%, #0f172a 0%, #020617 70%);
         }
 
         .hero-bg {
-            background: linear-gradient(135deg, #0a0f1c 0%, #134e4a 35%, #1e3a8a 65%, #0f172a 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(234, 179, 8, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.12) 0%, transparent 60%);
-            animation: court-glow 25s ease infinite alternate;
-            pointer-events: none;
-        }
-
-        @keyframes court-glow {
-            0% { opacity: 0.6; transform: scale(1); }
-            100% { opacity: 0.85; transform: scale(1.05); }
+            background: linear-gradient(135deg, #0f172a 0%, #134e4a 40%, #1e3a8a 100%);
         }
 
         .card-hover {
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        .card-hover::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(234, 179, 8, 0.08), rgba(16, 185, 129, 0.08));
-            opacity: 0;
-            transition: opacity 0.4s;
-            border-radius: 1rem;
-            z-index: -1;
-        }
-        
         .card-hover:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 35px 60px -15px rgb(16 185 129 / 0.3), 
-                        0 0 0 1px rgba(234, 179, 8, 0.2) inset;
-        }
-        
-        .card-hover:hover::before {
-            opacity: 1;
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
         }
 
         .section-title {
@@ -114,55 +75,15 @@
         .section-title:after {
             content: '';
             position: absolute;
-            width: 68px;
-            height: 4px;
-            background: linear-gradient(to right, #eab308, #14b8a6, #eab308);
-            bottom: -14px;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, #eab308, #14b8a6);
+            bottom: -12px;
             left: 0;
             border-radius: 9999px;
-            box-shadow: 0 0 12px #eab308;
-        }
-
-        .nav-link {
-            position: relative;
-        }
-        .nav-link:after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background: linear-gradient(to right, #eab308, #14b8a6);
-            transition: width 0.3s ease;
-        }
-        .nav-link:hover:after {
-            width: 100%;
-        }
-
-        .glass {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(234, 179, 8, 0.15);
-        }
-
-        .tennis-line {
-            position: absolute;
-            background: linear-gradient(90deg, transparent, rgba(234, 179, 8, 0.3), transparent);
-            height: 1px;
-            animation: tennis-sweep 8s linear infinite;
-        }
-
-        @keyframes tennis-sweep {
-            0% { transform: translateX(-150%); }
-            100% { transform: translateX(400%); }
         }
 
         html { scroll-behavior: smooth; }
-        
-        .stat-number {
-            font-variant-numeric: tabular-nums;
-        }
     </style>
 </head>
 <body class="bg-court text-slate-100 min-h-screen overflow-x-hidden">
@@ -173,19 +94,18 @@
         <a href="tel:0974751313" class="underline hover:text-emerald-300 transition-colors">Joueurs Info Service : 09 74 75 13 13</a>
     </div>
 
-    <nav class="border-b border-slate-800 bg-slate-950/95 backdrop-blur-xl sticky top-0 z-50 glass">
+    <nav class="border-b border-slate-800 bg-slate-950/95 backdrop-blur-xl sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
-            <a href="index.html" class="text-2xl sm:text-3xl font-black tracking-tighter bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300 bg-clip-text text-transparent flex items-center gap-2">
-                <span class="text-3xl">🎾</span>
+            <a href="index.html" class="text-2xl sm:text-3xl font-black tracking-tighter bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300 bg-clip-text text-transparent">
                 TENNIS<span class="text-yellow-400">TEMPLE</span>
             </a>
 
             <div class="hidden md:flex items-center space-x-9 text-sm font-medium">
-                <a href="#philosophie" class="nav-link hover:text-yellow-400 transition-colors">L’Esprit</a>
-                <a href="#pronos" class="relative nav-link hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-desktop" class="hidden absolute -top-1 -right-2.5 w-2 h-2 bg-red-500 rounded-full animate-ping"></span></a>
-                <a href="#roi" class="nav-link hover:text-yellow-400 transition-colors">Performances</a>
-                <a href="#audit" class="nav-link hover:text-yellow-400 transition-colors">Audit</a>
-                <a href="#tarifs" class="nav-link hover:text-yellow-400 transition-colors">Tarifs</a>
+                <a href="#philosophie" class="hover:text-yellow-400 transition-colors">L’Esprit</a>
+                <a href="#pronos" class="relative hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-desktop" class="hidden absolute -top-1 -right-2.5 w-2 h-2 bg-red-500 rounded-full"></span></a>
+                <a href="#roi" class="hover:text-yellow-400 transition-colors">Performances</a>
+                <a href="#audit" class="hover:text-yellow-400 transition-colors">Audit</a>
+                <a href="#tarifs" class="hover:text-yellow-400 transition-colors">Tarifs</a>
                 <a href="admin.html" id="admin-link-desktop" class="hidden text-emerald-400 hover:text-emerald-300 transition-colors"><i class="fa-solid fa-user-shield mr-1"></i>Admin</a>
             </div>
 
@@ -195,7 +115,7 @@
                     Se connecter
                 </button>
                 <a href="#tarifs" id="cta-tarifs-desktop"
-                   class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold px-6 py-3 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40">
+                   class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold px-6 py-3 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-500/30">
                     Rejoindre le Club
                 </a>
                 <button id="logout-btn-desktop" onclick="deconnexionGlobale()"
@@ -203,7 +123,7 @@
                     Se déconnecter
                 </button>
 
-                <div id="nav-login-panel" class="hidden absolute right-0 top-full mt-3 w-72 bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl z-50 text-left glass">
+                <div id="nav-login-panel" class="hidden absolute right-0 top-full mt-3 w-72 bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl z-50 text-left">
                     <p id="nav-auth-title-desktop" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
                     <input id="nav-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(false)">
                     <input id="nav-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(false)">
@@ -223,7 +143,7 @@
         <div id="mobile-menu" class="hidden md:hidden bg-slate-950 border-t border-slate-800 py-4 max-h-[80vh] overflow-y-auto">
             <div class="flex flex-col px-6 space-y-4 text-base font-medium">
                 <a href="#philosophie" class="py-2 hover:text-yellow-400 transition-colors">L’Esprit</a>
-                <a href="#pronos" class="relative py-2 hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-mobile" class="hidden ml-2 w-2 h-2 bg-red-500 rounded-full inline-block animate-ping"></span></a>
+                <a href="#pronos" class="relative py-2 hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-mobile" class="hidden ml-2 w-2 h-2 bg-red-500 rounded-full inline-block"></span></a>
                 <a href="#roi" class="py-2 hover:text-yellow-400 transition-colors">Performances</a>
                 <a href="#audit" class="py-2 hover:text-yellow-400 transition-colors">Audit Blockchain</a>
                 <a href="#tarifs" class="py-2 hover:text-yellow-400 transition-colors">Tarifs</a>
@@ -235,7 +155,7 @@
                     Se déconnecter
                 </button>
 
-                <div id="nav-login-block-mobile" class="mt-2 bg-slate-900 border border-slate-700 rounded-2xl p-4 glass">
+                <div id="nav-login-block-mobile" class="mt-2 bg-slate-900 border border-slate-700 rounded-2xl p-4">
                     <p id="nav-auth-title-mobile" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
                     <input id="mobile-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(true)">
                     <input id="mobile-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(true)">
@@ -250,39 +170,32 @@
     </nav>
 
     <header class="relative overflow-hidden px-4 sm:px-6 pt-14 sm:pt-20 pb-20 sm:pb-28 text-center hero-bg">
-        <!-- Tennis court accent lines -->
-        <div class="tennis-line top-[35%] left-0 w-1/2"></div>
-        <div class="tennis-line top-[65%] left-0 w-3/4 animation-delay-3000"></div>
-        
         <div class="max-w-4xl mx-auto relative z-10">
-            <span class="inline-block bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-bold tracking-[3px] px-6 sm:px-7 py-2.5 rounded-3xl mb-6 shadow-inner">
-                MODÉLISATION MATHÉMATIQUE • EXPERTISE TERRAIN
+            <span class="inline-block bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-bold tracking-[2px] px-4 sm:px-5 py-2 rounded-full mb-6">
+                MODÉLISATION MATHÉMATIQUE
             </span>
 
-            <h1 class="text-5xl sm:text-6xl md:text-7xl font-black tracking-[-3px] leading-[1.05] mb-8 text-white drop-shadow-2xl">
-                LA DATA<br>QUI BAT<br><span class="bg-gradient-to-r from-yellow-300 via-emerald-300 to-teal-300 bg-clip-text text-transparent">LES BOOKMAKERS</span>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-tight mb-6 text-white">
+                La Data qui bat<br>les Bookmakers
             </h1>
 
-            <p class="text-lg sm:text-2xl text-slate-300 max-w-2xl mx-auto mb-12 font-light">
+            <p class="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10">
                 Pas d’intuition. Pas d’émotion.<br>
-                <span class="text-yellow-300 font-medium">Uniquement des value bets calculées avec précision.</span>
+                <span class="text-yellow-300">Uniquement des value bets calculées.</span>
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="#pronos"
-                   class="group bg-gradient-to-r from-yellow-400 to-amber-300 hover:from-yellow-300 hover:to-amber-200 text-slate-950 font-bold text-lg px-10 py-5 rounded-3xl transition-all active:scale-95 flex items-center justify-center gap-4 shadow-2xl shadow-yellow-500/40 hover:shadow-yellow-400/50">
-                    <i class="fa-solid fa-bolt text-xl"></i>
+                   class="group bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl shadow-yellow-500/30">
+                    <i class="fa-solid fa-bolt"></i>
                     Voir les pronos du jour
                 </a>
                 <a href="#roi"
-                   class="border-2 border-white/70 hover:border-white font-semibold px-10 py-5 rounded-3xl transition-all hover:bg-white/10 text-lg">
+                   class="border border-slate-600 hover:border-slate-400 font-semibold px-8 py-4 sm:py-5 rounded-2xl transition-all hover:bg-slate-900/50">
                     Voir les performances
                 </a>
             </div>
         </div>
-
-        <!-- Decorative tennis elements -->
-        <div class="absolute bottom-12 right-12 text-8xl opacity-10 pointer-events-none hidden lg:block">🎾</div>
     </header>
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 pb-20 space-y-20 sm:space-y-28">
@@ -447,7 +360,7 @@
                     const estConnexion = authMode === 'login';
 
                     grid.innerHTML = `
-                        <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-6 sm:p-8 text-center max-w-md mx-auto card-hover">
+                        <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-6 sm:p-8 text-center max-w-md mx-auto">
                             <div class="text-3xl mb-3 opacity-50">🔒</div>
                             <h4 class="text-sm font-bold mb-4">${estConnexion ? 'Pronostics réservés aux membres du Club' : 'Créer votre compte membre'}</h4>
 
