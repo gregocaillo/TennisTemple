@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TennisTemple - Value bets ATP basées sur modélisation mathématique et expérience terrain. Pronostics data-driven.">
+    <meta name="theme-color" content="#0f172a">
+    <title>TennisTemple | Value Bets & Data Tennis</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Client Supabase unique, partagé par toute la page (nav + section pronos)
+        const SUPABASE_URL = 'https://eldkwsoucmfgvofsvshc.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yR4T32bvVYiH2CNUzSKiJg_eb-Trm3M';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+        // Notifications discrètes (remplace les alert() du navigateur)
+        function showToast(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            if (!container) { alert(message); return; }
+
+            const styles = {
+                error: 'bg-red-950/95 border-red-800 text-red-200',
+                success: 'bg-emerald-950/95 border-emerald-800 text-emerald-200',
+                info: 'bg-slate-900/95 border-slate-700 text-slate-200'
+            };
+            const icons = { error: 'fa-circle-exclamation', success: 'fa-circle-check', info: 'fa-circle-info' };
+
+            const toast = document.createElement('div');
+            toast.className = `${styles[type] || styles.info} border rounded-xl px-4 py-3 text-xs shadow-2xl flex items-start gap-2 transition-all duration-300 opacity-0 translate-x-4`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} mt-0.5"></i><span>${message}</span>`;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-x-4');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .bg-court {
+            background: radial-gradient(circle at 30% 20%, #0f172a 0%, #020617 70%);
+        }
+
+        .hero-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #134e4a 40%, #1e3a8a 100%);
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, #eab308, #14b8a6);
+            bottom: -12px;
+            left: 0;
+            border-radius: 9999px;
+        }
+
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-court text-slate-100 min-h-screen overflow-x-hidden">
+    <div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-2 w-72 max-w-[90vw]"></div>
+
+    <div class="bg-slate-950 border-b border-emerald-900/50 text-center px-4 py-2.5 text-[11px] sm:text-xs text-emerald-200/90">
+        <strong class="text-emerald-400">18+</strong> — Jouer comporte des risques d’addiction.
+        <a href="tel:0974751313" class="underline hover:text-emerald-300 transition-colors">Joueurs Info Service : 09 74 75 13 13</a>
+    </div>
+
+    <nav class="border-b border-slate-800 bg-slate-950/95 backdrop-blur-xl sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
+            <a href="index.html" class="text-2xl sm:text-3xl font-black tracking-tighter bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300 bg-clip-text text-transparent">
+                TENNIS<span class="text-yellow-400">TEMPLE</span>
+            </a>
+
+            <div class="hidden md:flex items-center space-x-9 text-sm font-medium">
+                <a href="#philosophie" class="hover:text-yellow-400 transition-colors">L’Esprit</a>
+                <a href="#pronos" class="relative hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-desktop" class="hidden absolute -top-1 -right-2.5 w-2 h-2 bg-red-500 rounded-full"></span></a>
+                <a href="#roi" class="hover:text-yellow-400 transition-colors">Performances</a>
+                <a href="#audit" class="hover:text-yellow-400 transition-colors">Audit</a>
+                <a href="#tarifs" class="hover:text-yellow-400 transition-colors">Tarifs</a>
+                <a href="admin.html" id="admin-link-desktop" class="hidden text-emerald-400 hover:text-emerald-300 transition-colors"><i class="fa-solid fa-user-shield mr-1"></i>Admin</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-3 relative">
+                <button id="nav-login-btn-desktop" onclick="toggleNavLoginPanel()"
+                   class="border border-slate-600 hover:border-emerald-400 hover:text-emerald-400 font-semibold px-5 py-3 rounded-2xl transition-all active:scale-95 text-sm">
+                    Se connecter
+                </button>
+                <a href="#tarifs" id="cta-tarifs-desktop"
+                   class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold px-6 py-3 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-500/30">
+                    Rejoindre le Club
+                </a>
+                <button id="logout-btn-desktop" onclick="deconnexionGlobale()"
+                   class="hidden border border-slate-600 hover:border-red-400 hover:text-red-400 font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
+                    Se déconnecter
+                </button>
+
+                <div id="nav-login-panel" class="hidden absolute right-0 top-full mt-3 w-72 bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl z-50 text-left">
+                    <p id="nav-auth-title-desktop" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
+                    <input id="nav-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(false)">
+                    <input id="nav-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(false)">
+                    <input id="nav-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(false)">
+                    <button id="nav-auth-submit-desktop" onclick="navAuthSubmit(false)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <button id="nav-auth-toggle-desktop" onclick="toggleNavAuthMode(false)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
+                    <button id="nav-forgot-desktop" onclick="demanderReinitialisation('nav-login-email')" class="text-slate-500 text-[11px] mt-1 hover:underline w-full bg-transparent">Mot de passe oublié ?</button>
+                    <p id="nav-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden text-2xl sm:text-3xl text-slate-200 hover:text-yellow-400 transition-colors">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-950 border-t border-slate-800 py-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex flex-col px-6 space-y-4 text-base font-medium">
+                <a href="#philosophie" class="py-2 hover:text-yellow-400 transition-colors">L’Esprit</a>
+                <a href="#pronos" class="relative py-2 hover:text-yellow-400 transition-colors">Pronostics<span id="pronos-badge-mobile" class="hidden ml-2 w-2 h-2 bg-red-500 rounded-full inline-block"></span></a>
+                <a href="#roi" class="py-2 hover:text-yellow-400 transition-colors">Performances</a>
+                <a href="#audit" class="py-2 hover:text-yellow-400 transition-colors">Audit Blockchain</a>
+                <a href="#tarifs" class="py-2 hover:text-yellow-400 transition-colors">Tarifs</a>
+                <a href="admin.html" id="admin-link-mobile" class="hidden py-2 text-emerald-400"><i class="fa-solid fa-user-shield mr-1"></i>Admin</a>
+                <a href="#tarifs" id="cta-tarifs-mobile" class="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-center py-4 rounded-2xl font-bold text-slate-950">
+                    Rejoindre le Club
+                </a>
+                <button id="logout-btn-mobile" onclick="deconnexionGlobale()" class="hidden mt-4 border border-slate-600 text-center py-4 rounded-2xl font-bold text-slate-300">
+                    Se déconnecter
+                </button>
+
+                <div id="nav-login-block-mobile" class="mt-2 bg-slate-900 border border-slate-700 rounded-2xl p-4">
+                    <p id="nav-auth-title-mobile" class="text-xs font-bold mb-3 text-slate-300">Connexion membre</p>
+                    <input id="mobile-login-email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(true)">
+                    <input id="mobile-login-pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(true)">
+                    <input id="mobile-login-pass-confirm" type="password" placeholder="confirmer le mot de passe" class="hidden w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') navAuthSubmit(true)">
+                    <button id="nav-auth-submit-mobile" onclick="navAuthSubmit(true)" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <button id="nav-auth-toggle-mobile" onclick="toggleNavAuthMode(true)" class="text-slate-400 text-xs mt-3 hover:underline w-full bg-transparent">Pas encore de compte ? S'inscrire</button>
+                    <button id="nav-forgot-mobile" onclick="demanderReinitialisation('mobile-login-email')" class="text-slate-500 text-[11px] mt-1 hover:underline w-full bg-transparent">Mot de passe oublié ?</button>
+                    <p id="mobile-login-error" class="text-red-400 text-xs mt-2 hidden"></p>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative overflow-hidden px-4 sm:px-6 pt-14 sm:pt-20 pb-20 sm:pb-28 text-center hero-bg">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <span class="inline-block bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-bold tracking-[2px] px-4 sm:px-5 py-2 rounded-full mb-6">
+                MODÉLISATION MATHÉMATIQUE
+            </span>
+
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-tight mb-6 text-white">
+                La Data qui bat<br>les Bookmakers
+            </h1>
+
+            <p class="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10">
+                Pas d’intuition. Pas d’émotion.<br>
+                <span class="text-yellow-300">Uniquement des value bets calculées.</span>
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#pronos"
+                   class="group bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl shadow-yellow-500/30">
+                    <i class="fa-solid fa-bolt"></i>
+                    Voir les pronos du jour
+                </a>
+                <a href="#roi"
+                   class="border border-slate-600 hover:border-slate-400 font-semibold px-8 py-4 sm:py-5 rounded-2xl transition-all hover:bg-slate-900/50">
+                    Voir les performances
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pb-20 space-y-20 sm:space-y-28">
+
+    <section id="philosophie" class="scroll-mt-20 pt-10 sm:pt-16 grid md:grid-cols-2 md:grid-rows-[auto_1fr] gap-x-16 gap-y-8 md:gap-y-0">
+            <div class="md:col-start-1 md:row-start-1">
+                <span class="text-yellow-400 text-sm font-bold tracking-widest">// MA DÉMARCHE</span>
+                <h2 class="section-title text-3xl sm:text-4xl font-extrabold mt-3 mb-6">Le tennis, une approche par la donnée</h2>
+            </div>
+
+            <div class="md:col-start-1 md:row-start-2 space-y-4 text-slate-400 leading-relaxed text-justify text-[0.95rem]">
+                <p>Mon parcours repose sur deux piliers : des années de compétition sur les courts (15/1 au mieux de ma forme) et une carrière dédiée à l'analyse de données. Si mes débuts dans les paris sportifs m'ont conduit vers des services de tipsters, j'ai très vite souhaité m'en détacher. Trop onéreux pour une petite bankroll, ces services proposent pour la plupart des résultats à la fiabilité douteuse.</p>
+                <p>J'ai donc fusionné mes expertises pour traiter chaque match de tennis non comme un duel, mais comme un ensemble de variables à décoder. Je ne cherche pas à prédire l'imprévisible, mais à structurer une analyse rigoureuse pour identifier des opportunités réelles.</p>
+                <p>Je partage aujourd'hui cette analyse. Ici, pas de discours marketing superflu, seulement une approche directe et chiffrée, ancrée dans la réalité du terrain, pour ceux qui souhaitent transformer leur passion en opportunité financière, en acceptant la part d'aléa propre à l'analyse sportive..</p>
+            </div>
+
+            <div class="md:col-start-2 md:row-start-2 group relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl h-64 sm:h-80 md:h-full">
+                <img src="assets/lesprit.png"
+                     alt="Analyse tennis data - Expérience terrain et modélisation"
+                     class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                     loading="lazy">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent p-4">
+                    <h4 class="text-center font-bold text-base sm:text-lg">Allier l'expérience terrain à la rigueur de la donnée</h4>
+                </div>
+            </div>
+        </section>
+
+        <section id="pronos" class="scroll-mt-20">
+            <div class="text-center mb-6">
+                <h2 class="section-title text-3xl sm:text-4xl font-extrabold">Pronostics du Jour</h2>
+                <p class="text-slate-400 mt-4 text-xs">Mises à jour tous les matins ~ 7h</p>
+            </div>
+
+            <!-- Début stats pronos -->
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
+            <p class="text-xl sm:text-2xl font-bold text-white">16</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
+            <p class="text-xl sm:text-2xl font-bold text-white">4</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
+            <p class="text-xl sm:text-2xl font-bold text-emerald-400">+17.6%</p>
+        </div>
+    </div>
+<!-- Fin stats pronos -->
+
+            <div id="pronos-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
+            </div>
+
+            <script>
+                // Le client Supabase global est défini dans le <head> (variable supabaseClient)
+
+                let authMode = 'login'; // 'login' ou 'signup'
+
+                function formaterDateHeure(isoString) {
+                    if (!isoString) return '—';
+                    const d = new Date(isoString);
+                    return d.toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                }
+
+                async function chargerPronos() {
+                    const grid = document.getElementById('pronos-grid');
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+
+                    if (!session) {
+                        renderAuthCard();
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('pronos_premium')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error || !data || data.length === 0) {
+                        grid.innerHTML = `<p class="col-span-full text-center text-slate-500 text-xs py-8">Aucun accès premium actif sur ce compte, ou aucun pari en cours.</p>`;
+                        return;
+                    }
+
+                    grid.innerHTML = data.map(row => `
+                        <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 card-hover">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-emerald-400 text-xs font-bold uppercase">${row.tournoi}</span>
+                                    <h3 class="text-sm font-bold mt-1">${row.match_intitule}</h3>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 rounded-xl p-4 mb-4">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-base text-white">Pari :</span>
+                                    <span class="text-base font-bold text-yellow-300">${row.pari}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs mb-3">
+                                <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">${Number(row.cote).toFixed(2)}</span></div>
+                                <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">${Number(row.mise).toFixed(2)} €</span></div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 border-t border-slate-800 pt-3">
+                                <i class="fa-regular fa-clock mr-1"></i>Mis en ligne le ${formaterDateHeure(row.created_at)}
+                            </p>
+                        </div>`).join('');
+
+                    verifierPronosNonVus(data);
+                }
+
+                // Signature des pronos actuellement chargés + badges nav, mémorisés pour être
+                // accessibles à la fois par le clic sur "Pronostics" et par l'observateur de scroll.
+                let pronosSignatureActuelle = '';
+                const pronosBadges = () => [document.getElementById('pronos-badge-desktop'), document.getElementById('pronos-badge-mobile')];
+
+                function marquerPronosVus() {
+                    if (!pronosSignatureActuelle) return;
+                    localStorage.setItem('tennistemple_pronos_vus', pronosSignatureActuelle);
+                    pronosBadges().forEach(b => b?.classList.add('hidden'));
+                }
+
+                // Affiche un point rouge sur "Pronostics" dans la nav si de nouveaux pronos
+                // sont arrivés depuis la dernière visite (mémorisé dans ce navigateur uniquement).
+                // Le point s'efface soit au clic sur le lien "Pronostics", soit dès que la section
+                // devient visible au scroll (voir l'IntersectionObserver plus bas).
+                function verifierPronosNonVus(data) {
+                    const signature = data.map(p => p.id).sort().join(',');
+                    const dernierVu = localStorage.getItem('tennistemple_pronos_vus') || '';
+                    pronosSignatureActuelle = signature;
+
+                    const badges = pronosBadges();
+                    if (signature && signature !== dernierVu) {
+                        badges.forEach(b => b?.classList.remove('hidden'));
+                    } else {
+                        badges.forEach(b => b?.classList.add('hidden'));
+                    }
+
+                    document.querySelectorAll('a[href="#pronos"]').forEach(link => {
+                        link.addEventListener('click', marquerPronosVus);
+                    });
+                }
+
+                // Marque les pronos comme vus dès que la section #pronos est bien visible au scroll
+                // (pas juste effleurée en bord d'écran), sans attendre un clic sur le lien de nav.
+                const pronosSectionEl = document.getElementById('pronos');
+                if (pronosSectionEl && 'IntersectionObserver' in window) {
+                    const pronosObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                marquerPronosVus();
+                            }
+                        });
+                    }, { threshold: 0.35 });
+                    pronosObserver.observe(pronosSectionEl);
+                }
+
+                function renderAuthCard(message) {
+                    const grid = document.getElementById('pronos-grid');
+                    const estConnexion = authMode === 'login';
+
+                    grid.innerHTML = `
+                        <div class="col-span-full bg-slate-900 border border-slate-700 rounded-2xl p-6 sm:p-8 text-center max-w-md mx-auto">
+                            <div class="text-3xl mb-3 opacity-50">🔒</div>
+                            <h4 class="text-sm font-bold mb-4">${estConnexion ? 'Pronostics réservés aux membres du Club' : 'Créer votre compte membre'}</h4>
+
+                            ${message ? `<p class="text-emerald-400 text-xs mb-3">${message}</p>` : ''}
+
+                            <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') ${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}">
+                            <input id="pass" type="password" placeholder="mot de passe (6 caractères min.)" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') ${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}">
+                            ${estConnexion ? '' : `<input id="pass-confirm" type="password" placeholder="confirmer le mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') signupSupabase()">`}
+
+                            <button onclick="${estConnexion ? 'loginSupabase()' : 'signupSupabase()'}" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">
+                                ${estConnexion ? 'Se connecter' : 'Créer mon compte'}
+                            </button>
+
+                            ${estConnexion ? `<button onclick="demanderReinitialisation('email')" class="text-slate-500 text-[11px] mt-2 hover:underline w-full bg-transparent">Mot de passe oublié ?</button>` : ''}
+
+                            <button onclick="switchAuthMode()" class="text-slate-400 text-xs mt-3 hover:underline w-full">
+                                ${estConnexion ? "Pas encore de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
+                            </button>
+
+                            <a href="#tarifs" class="block text-emerald-400 text-xs mt-4 hover:underline">Voir les tarifs d'abonnement</a>
+                        </div>`;
+                }
+
+                function switchAuthMode() {
+                    authMode = authMode === 'login' ? 'signup' : 'login';
+                    renderAuthCard();
+                }
+
+                async function demanderReinitialisation(emailInputId) {
+                    const email = document.getElementById(emailInputId)?.value;
+                    if (!email) {
+                        showToast("Renseignez d'abord votre email ci-dessus.");
+                        return;
+                    }
+                    const redirectUrl = new URL('reset-password.html', window.location.href).href;
+                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
+                    if (error) {
+                        showToast("Erreur : " + error.message);
+                        return;
+                    }
+                    showToast("Si ce compte existe, un email de réinitialisation vient d'être envoyé.", 'success');
+                }
+
+                async function loginSupabase() {
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('pass').value;
+                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) { showToast("Identifiants incorrects."); return; }
+                    showToast("Connexion réussie.", 'success');
+                    chargerPronos();
+                    if (typeof updateNavState === 'function') updateNavState();
+                }
+
+                async function signupSupabase() {
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('pass').value;
+                    const passwordConfirm = document.getElementById('pass-confirm').value;
+
+                    if (!email || password.length < 6) {
+                        showToast("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                        return;
+                    }
+
+                    if (password !== passwordConfirm) {
+                        showToast("Les deux mots de passe ne correspondent pas.");
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+
+                    if (error) {
+                        showToast("Erreur lors de la création du compte : " + error.message);
+                        return;
+                    }
+
+                    // Si la confirmation par email est désactivée dans Supabase, une session est
+                    // immédiatement renvoyée et l'utilisateur peut voir les pronos (encore vide,
+                    // le temps qu'un admin active son compte premium).
+                    if (data.session) {
+                        authMode = 'login';
+                        showToast("Compte créé, bienvenue !", 'success');
+                        chargerPronos();
+                        if (typeof updateNavState === 'function') updateNavState();
+                    } else {
+                        authMode = 'login';
+                        renderAuthCard("Compte créé ! Vérifiez votre email pour confirmer votre inscription, puis connectez-vous.");
+                    }
+                }
+
+                chargerPronos();
+            </script>
+        </section>
+
+<section id="roi" class="scroll-mt-20">
+    <div class="text-center mb-8 sm:mb-10">
+        <h2 class="section-title text-3xl sm:text-4xl font-extrabold">Performances</h2>
+        <p class="text-xs text-slate-500 mt-4"><!-- Début date maj -->Dernière mise à jour : 16/07/2026<!-- Fin date maj --></p>
+    </div>
+
+    <!-- Début bandeau stats -->
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8 sm:mb-10">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
+            <p class="text-xl sm:text-2xl font-bold text-center text-white">66.7%</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Série en cours</p>
+            <p class="text-lg sm:text-2xl font-bold text-center text-red-400 truncate"> 1 Perdu</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="Closing Line Value : écart en % entre la cote à laquelle vous avez parié et la cote pré-match (utilisée comme référence du marché juste avant le match). Un CLV positif signifie que vous avez obtenu une meilleure cote que le marché — c'est un indicateur de la qualité de votre timing/valeur, indépendant du résultat du match.">CLV Moyen <i class="fa-solid fa-circle-info text-[9px]"></i></p>
+            <p class="text-xl sm:text-2xl font-bold text-center text-emerald-400">+7.2%</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
+            <p class="text-xl sm:text-2xl font-bold text-center text-emerald-400">3.57 €</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
+            <p class="text-xl sm:text-2xl font-bold text-center text-white">1.67</p>
+        </div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
+        <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
+        
+    <svg viewBox="0 0 300 60" preserveAspectRatio="none" class="w-full h-16">
+        
+        <polyline points="6.0,54.0 150.0,6.0 294.0,29.1" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    </div>
+<!-- Fin bandeau stats -->
+
+    <!-- Début des statistiques mensuelles -->
+
+    <div class="hidden md:block overflow-x-auto mb-10">
+        <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
+            <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                <tr>
+                    <th class="px-6 py-4 text-center text-xs">Mois</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre paris</th>
+                    <th class="px-6 py-4 text-center text-xs">Nombre gagnés</th>
+                    <th class="px-6 py-4 text-center text-xs">Taux de réussite</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Jouée Moyenne</th>
+                    <th class="px-6 py-4 text-center text-xs" title="Closing Line Value : écart moyen (%) entre la cote jouée et la cote pré-match. Positif = vous avez obtenu une meilleure cote que le marché.">CLV Moyen</th>
+                    <th class="px-6 py-4 text-center text-xs">Yield</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300 divide-y divide-slate-800">
+        <tr class="border-b border-slate-800 last:border-b-0 text-xs">
+            <td class="px-6 py-3 text-center text-xs text-white">07/2026</td>
+            <td class="px-6 py-3 text-center text-xs text-white">3</td>
+            <td class="px-6 py-3 text-center text-xs text-white">2</td>
+            <td class="px-6 py-3 text-center text-xs text-white">66.7%</td>
+            <td class="px-6 py-3 text-center text-xs text-white">1.67</td>
+            <td class="px-6 py-3 text-center text-xs text-emerald-500">+7.2%</td>
+            <td class="px-6 py-3 text-center text-xs text-white">37.8%</td>
+            <td class="px-6 py-3 text-center text-xs text-emerald-500">3.57 €</td>
+        </tr></tbody>
+        </table>
+    </div>
+    <div class="md:hidden space-y-3 mb-10">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-sm font-bold text-white">07/2026</span>
+                <span class="text-sm font-bold text-emerald-500">3.57 €</span>
+            </div>
+            <div class="grid grid-cols-2 gap-y-2 text-xs">
+                <p class="text-slate-500">Paris <span class="text-white float-right">3</span></p>
+                <p class="text-slate-500">Gagnés <span class="text-white float-right">2</span></p>
+                <p class="text-slate-500">Réussite <span class="text-white float-right">66.7%</span></p>
+                <p class="text-slate-500">Cote moy. <span class="text-white float-right">1.67</span></p>
+                <p class="text-slate-500">CLV moy. <span class="text-emerald-500 float-right">+7.2%</span></p>
+                <p class="text-slate-500">Yield <span class="text-white float-right">37.8%</span></p>
+            </div>
+        </div></div>
+<!-- Fin des statistiques mensuelles -->
+
+            <!-- Début des performances -->
+
+    <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                    <th class="px-6 py-4 text-center text-xs">Date</th>
+                    <th class="px-6 py-4 text-center text-xs">Match</th>
+                    <th class="px-6 py-4 text-center text-xs">Pari</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Jouée</th>
+                    <th class="px-6 py-4 text-center text-xs">Cote Pré-match</th>
+                    <th class="px-6 py-4 text-center text-xs">Statut</th>
+                    <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
+                </tr>
+            </thead>
+            <tbody class="text-slate-300">
+        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Tomas Martin Etcheverry vs Daniel Merida</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Tomas Martin Etcheverry</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.64</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.50</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-1.87 €</td>
+        </tr>
+        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Gonzalo Villanueva vs Juan Cruz Martin Manzano</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Gonzalo Villanueva</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.91</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">—</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">3.88 €</td>
+        </tr>
+        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Raphael Collignon vs Lorenzo Sonego</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Raphael Collignon</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.47</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.40</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">1.56 €</td>
+        </tr></tbody>
+        </table>
+    </div>
+    <div class="md:hidden space-y-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">15/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Tomas Martin Etcheverry vs Daniel Merida</p>
+            <p class="text-xs text-yellow-300 mb-3">Tomas Martin Etcheverry <span class="text-slate-500">@ 1.64 (pré-match 1.50)</span></p>
+            <p class="text-sm font-bold text-red-500">-1.87 €</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">15/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Gonzalo Villanueva vs Juan Cruz Martin Manzano</p>
+            <p class="text-xs text-yellow-300 mb-3">Gonzalo Villanueva <span class="text-slate-500">@ 1.91 (pré-match —)</span></p>
+            <p class="text-sm font-bold text-emerald-500">3.88 €</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">15/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Raphael Collignon vs Lorenzo Sonego</p>
+            <p class="text-xs text-yellow-300 mb-3">Raphael Collignon <span class="text-slate-500">@ 1.47 (pré-match 1.40)</span></p>
+            <p class="text-sm font-bold text-emerald-500">1.56 €</p>
+        </div></div>
+<!-- Fin des performances -->
+
+        </section>
+
+        <section id="audit" class="scroll-mt-20">
+            <div class="text-center max-w-5xl mx-auto mb-10 sm:mb-12">
+                <h2 class="section-title text-3xl sm:text-4xl font-extrabold">Registre d'Audit (Blockchain)</h2>
+                <p class="text-slate-400 text-xs mt-4 px-4 leading-relaxed">
+                    Chaque pari est scellé cryptographiquement pour garantir l'absence de modification à posteriori
+                </p>
+            </div>
+            <!-- Début du registre -->
+
+    <div class="max-w-6xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
+        <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 rounded-t-2xl text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-700 text-xs">
+                <thead class="bg-slate-950">
+                    <tr>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Date</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Pari</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Hash</th>
+                        <th class="px-4 py-3 text-emerald-400 text-center">Statut</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800"><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-15 10:17:08</td><td class="px-4 py-3 text-white text-xs text-center">Raphael Collignon @1.47</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">9a0fd1019516127aba2d9a1213e45b51d553d4604956cc2b95703a4bb6bba773</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-15 10:17:08</td><td class="px-4 py-3 text-white text-xs text-center">Tomas Martin Etcheverry @1.64</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">bdd720284bb77bc72f451aba21dbc1fd3e4ffe509b24a359cabd7ff1e6d7a99b</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr><tr><td class="px-4 py-3 text-white text-center text-xs">2026-07-16 06:04:12</td><td class="px-4 py-3 text-white text-xs text-center">Gonzalo Villanueva @1.91</td><td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">2adc2fe2d0fb57e18a425b64900c23b021fb82e0307ddccc6817fd75168a40fc</td><td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr></tbody>
+            </table>
+        </div>
+        <div class="md:hidden p-4 space-y-3">
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs text-white">2026-07-15 10:17:08</span>
+                <span class="text-emerald-500 text-xs">✓ Intègre</span>
+            </div>
+            <p class="text-xs text-white mb-2">Raphael Collignon @1.47</p>
+            <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">9a0fd1019516127aba2d9a1213e45b51d553d4604956cc2b95703a4bb6bba773</p>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs text-white">2026-07-15 10:17:08</span>
+                <span class="text-emerald-500 text-xs">✓ Intègre</span>
+            </div>
+            <p class="text-xs text-white mb-2">Tomas Martin Etcheverry @1.64</p>
+            <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">bdd720284bb77bc72f451aba21dbc1fd3e4ffe509b24a359cabd7ff1e6d7a99b</p>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs text-white">2026-07-16 06:04:12</span>
+                <span class="text-emerald-500 text-xs">✓ Intègre</span>
+            </div>
+            <p class="text-xs text-white mb-2">Gonzalo Villanueva @1.91</p>
+            <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">2adc2fe2d0fb57e18a425b64900c23b021fb82e0307ddccc6817fd75168a40fc</p>
+        </div></div>
+    </div>
+    <p class="text-slate-600 text-[10px] text-center mt-3">4 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
+    <div class="max-w-6xl mx-auto mt-8 p-4 sm:p-6 bg-slate-950 border border-slate-800 rounded-xl">
+        <h3 class="text-emerald-400 font-bold mb-4 text-base sm:text-lg">Comment fonctionne l'audit cryptographique ?</h3>
+        <div class="text-slate-400 text-sm space-y-4">
+            <p>- <b>Principe</b> : chaque pari est scellé dans une chaîne où le Hash résulte d'un calcul combinant tout l'historique des paris et l'empreinte du pari précédent</p>
+            <p>- <b>Immutabilité</b> : si une seule donnée est modifiée dans le passé, le Hash de cette ligne change</p>
+            <p>- <b>Vérifiabilité</b> : choisissez un pari ci-dessous pour vérifier l'intégrité en direct</p>
+        </div>
+        <div class="mt-8 p-4 sm:p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
+            <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
+            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4"><option value="0">2026-07-15 10:17:08 — Raphael Collignon @1.47</option><option value="1">2026-07-15 10:17:08 — Tomas Martin Etcheverry @1.64</option><option value="3">2026-07-16 06:04:12 — Gonzalo Villanueva @1.91</option></select>
+            <button onclick="verifierHash()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
+            <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
+        </div>
+    </div>
+    <script>
+        const AUDIT_ROWS_DATA = ["('Gstaad, Suisse, Simple Messieurs', '2026-07-15T08:30:00.000Z', 'Raphael Collignon vs Lorenzo Sonego', 'Raphael Collignon', 1.47, 3.311555383688816)", "('Umag, Croatie, Simple Messieurs', '2026-07-15T14:00:00.000Z', 'Tomas Martin Etcheverry vs Daniel Merida', 'Tomas Martin Etcheverry', 1.64, 1.8727079289221527)", "('Cordenons, Italie, Simple Messieurs', '2026-07-15T12:50:00.000Z', 'Stefano Napolitano vs Alex Barrena', 'Stefano Napolitano', 1.66, 4.602763223805148)", "('Cordenons, Italie, Simple Messieurs', '2026-07-15T09:00:00.000Z', 'Gonzalo Villanueva vs Juan Cruz Martin Manzano', 'Gonzalo Villanueva', 1.91, 4.266905703432727)", "('Gstaad, Suisse, Simple Messieurs', '2026-07-16T08:30:00.000Z', 'Juan Manuel Cerundolo vs Miomir Kecmanovic', 'Miomir Kecmanovic', 1.96, 4.699506444237628)", "('Gstaad, Suisse, Simple Messieurs', '2026-07-16T15:30:00.000Z', 'Alexander Shevchenko vs Dominic Stricker', 'Alexander Shevchenko', 1.87, 3.065577081693205)", "('Umag, Croatie, Simple Messieurs', '2026-07-16T19:00:00.000Z', 'Alex Molcan vs Alejandro Davidovich Fokina', 'Alex Molcan', 2.38, 5.0)"];
+        const AUDIT_ENTRIES = [{"date": "2026-07-15 10:17:08", "pari": "Raphael Collignon @1.47", "hash": "9a0fd1019516127aba2d9a1213e45b51d553d4604956cc2b95703a4bb6bba773", "nrows": 1}, {"date": "2026-07-15 10:17:08", "pari": "Tomas Martin Etcheverry @1.64", "hash": "bdd720284bb77bc72f451aba21dbc1fd3e4ffe509b24a359cabd7ff1e6d7a99b", "nrows": 2}, {"date": "2026-07-15 10:17:08", "pari": "Stefano Napolitano @1.66", "hash": "ef5cc681d6232d0af01dff66bb4e3b361a270033e69c0855ff2023d53fbdbc46", "nrows": 3}, {"date": "2026-07-16 06:04:12", "pari": "Gonzalo Villanueva @1.91", "hash": "2adc2fe2d0fb57e18a425b64900c23b021fb82e0307ddccc6817fd75168a40fc", "nrows": 4}, {"date": "2026-07-16 07:19:59", "pari": "Miomir Kecmanovic @1.96", "hash": "09e898870c89acf3bfd980cbe0f21a133ab023cf568d644882008548606a8cf1", "nrows": 5}, {"date": "2026-07-16 07:19:59", "pari": "Alexander Shevchenko @1.87", "hash": "b84b40384a332417e63cac526a319a4c7c8e5a9e335a92c9eee71c8c7aaff160", "nrows": 6}, {"date": "2026-07-16 07:19:59", "pari": "Alex Molcan @2.38", "hash": "67391ea9fb85600f72230ca7c8c3f33830a0d67b37a2eb526c29f9a082d50724", "nrows": 7}];
+        async function verifierHash() {
+            const idx = parseInt(document.getElementById('select-verif').value, 10);
+            const entry = AUDIT_ENTRIES[idx];
+            const divRes = document.getElementById('resultat-hash');
+            divRes.classList.remove('hidden');
+            if (entry.nrows === null) { 
+                divRes.textContent = "⚠ Vérification impossible."; 
+                return; 
+            }
+            const subset = AUDIT_ROWS_DATA.slice(0, entry.nrows);
+            const prevHash = idx === 0 ? "0" : AUDIT_ENTRIES[idx - 1].hash;
+            const chaine = subset.join('') + prevHash;
+            const msg = new TextEncoder().encode(chaine);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
+            const hashCalcule = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            if (hashCalcule === entry.hash) { 
+                divRes.className = "mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all text-emerald-500"; 
+                divRes.textContent = "✓ Intègre : " + hashCalcule; 
+            } else { 
+                divRes.className = "mt-4 p-3 bg-black border border-red-900 rounded text-[11px] font-mono break-all text-red-500"; 
+                divRes.textContent = "✗ ANOMALIE : " + hashCalcule; 
+            }
+        }
+    </script>
+    
+<!-- Fin du registre -->
+        </section>
+
+        <section id="tarifs" class="scroll-mt-20">
+            <div class="text-center max-w-xl mx-auto mb-12 sm:mb-16">
+                <h2 class="section-title text-2xl sm:text-3xl font-extrabold text-white">Rejoignez le Temple</h2>
+                <p class="text-slate-400 mt-4 text-xs">Rentabilisez votre abonnement dès les premières value bets</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
+                <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 sm:p-10 card-hover">
+                    <h3 class="text-xl font-semibold">Accès Mensuel</h3>
+                    <div class="mt-6 sm:mt-8 mb-8 sm:mb-10">
+                        <span class="text-4xl sm:text-5xl font-bold">6€</span>
+                        <span class="text-slate-500">/mois</span>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Sans engagement</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Accès à toutes les prévisions</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Résultats et suivi complet</li>
+                    </ul>
+                    <button class="w-full mt-8 sm:mt-12 py-4 sm:py-5 bg-slate-800 hover:bg-slate-700 rounded-2xl font-semibold transition">
+                        Choisir cette formule
+                    </button>
+                </div>
+
+                <div class="bg-gradient-to-br from-slate-900 to-slate-950 border-2 border-emerald-500 rounded-3xl p-6 sm:p-10 card-hover relative mt-6 md:mt-0">
+                    <div class="absolute -top-4 right-6 bg-yellow-400 text-slate-950 text-[10px] sm:text-xs font-black px-4 sm:px-5 py-1.5 rounded-full">MEILLEUR CHOIX</div>
+                    <h3 class="text-xl font-semibold">Pass Saison</h3>
+                    <div class="mt-6 sm:mt-8 mb-8 sm:mb-10">
+                        <span class="text-4xl sm:text-5xl font-bold text-yellow-300">48€</span>
+                        <span class="text-slate-500">/an</span>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Accès à toutes les prévisions</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> 4 mois offerts</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Résultats et suivi complet</li>
+                    </ul>
+                    <button class="w-full mt-8 sm:mt-12 py-4 sm:py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-bold rounded-2xl transition hover:brightness-110">
+                        S’abonner à l’année
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-slate-900 bg-slate-950 py-10 sm:py-12 text-center text-xs text-slate-500">
+        <p class="max-w-2xl mx-auto px-6">
+            Interdit aux mineurs. Jouer comporte des risques. Mise en jeu responsable.<br>
+            Contenu à visée informative uniquement.
+        </p>
+        <p class="mt-6">&copy; 2026 TennisTemple — Tous droits réservés</p>
+    </footer>
+
+    <script>
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileBtn.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.toggle('hidden');
+            mobileBtn.innerHTML = isHidden
+                ? '<i class="fa-solid fa-bars"></i>'
+                : '<i class="fa-solid fa-xmark"></i>';
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') return;
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const navHeight = 80;
+                    window.scrollTo({
+                        top: target.getBoundingClientRect().top + window.scrollY - navHeight,
+                        behavior: 'smooth'
+                    });
+                }
+                // Referme le menu mobile après un clic sur un lien d'ancre
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    mobileBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
+                }
+            });
+        });
+
+        async function deconnexionGlobale() {
+            await supabaseClient.auth.signOut();
+            navAuthModeState.desktop = 'login';
+            navAuthModeState.mobile = 'login';
+            renderNavAuthMode(false);
+            renderNavAuthMode(true);
+            updateNavState();
+            if (typeof chargerPronos === 'function') chargerPronos();
+        }
+
+        function toggleNavLoginPanel() {
+            document.getElementById('nav-login-panel')?.classList.toggle('hidden');
+        }
+
+        const navAuthModeState = { desktop: 'login', mobile: 'login' };
+
+        function toggleNavAuthMode(mobile) {
+            const key = mobile ? 'mobile' : 'desktop';
+            navAuthModeState[key] = navAuthModeState[key] === 'login' ? 'signup' : 'login';
+            renderNavAuthMode(mobile);
+        }
+
+        function renderNavAuthMode(mobile) {
+            const suffix = mobile ? 'mobile' : 'desktop';
+            const mode = navAuthModeState[suffix];
+            const titleEl = document.getElementById(`nav-auth-title-${suffix}`);
+            const submitBtn = document.getElementById(`nav-auth-submit-${suffix}`);
+            const toggleBtn = document.getElementById(`nav-auth-toggle-${suffix}`);
+            const errorEl = document.getElementById(mobile ? 'mobile-login-error' : 'nav-login-error');
+            const confirmEl = document.getElementById(mobile ? 'mobile-login-pass-confirm' : 'nav-login-pass-confirm');
+            const forgotEl = document.getElementById(`nav-forgot-${suffix}`);
+
+            errorEl?.classList.add('hidden');
+            errorEl?.classList.remove('text-emerald-400');
+            errorEl?.classList.add('text-red-400');
+
+            if (mode === 'login') {
+                titleEl.textContent = 'Connexion membre';
+                submitBtn.textContent = 'Se connecter';
+                toggleBtn.textContent = "Pas encore de compte ? S'inscrire";
+                confirmEl?.classList.add('hidden');
+                forgotEl?.classList.remove('hidden');
+            } else {
+                titleEl.textContent = 'Créer un compte';
+                submitBtn.textContent = 'Créer mon compte';
+                toggleBtn.textContent = "Déjà un compte ? Se connecter";
+                confirmEl?.classList.remove('hidden');
+                forgotEl?.classList.add('hidden');
+            }
+        }
+
+        async function navAuthSubmit(mobile) {
+            const suffix = mobile ? 'mobile' : 'desktop';
+            const mode = navAuthModeState[suffix];
+            const emailId = mobile ? 'mobile-login-email' : 'nav-login-email';
+            const passId = mobile ? 'mobile-login-pass' : 'nav-login-pass';
+            const errorEl = document.getElementById(mobile ? 'mobile-login-error' : 'nav-login-error');
+
+            const email = document.getElementById(emailId).value;
+            const password = document.getElementById(passId).value;
+            errorEl?.classList.add('hidden');
+
+            if (mode === 'login') {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) {
+                    if (errorEl) { errorEl.textContent = "Identifiants incorrects."; errorEl.classList.remove('hidden'); }
+                    return;
+                }
+            } else {
+                const passwordConfirm = document.getElementById(mobile ? 'mobile-login-pass-confirm' : 'nav-login-pass-confirm').value;
+
+                if (!email || password.length < 6) {
+                    showToast("Merci de renseigner un email et un mot de passe d'au moins 6 caractères.");
+                    return;
+                }
+                if (password !== passwordConfirm) {
+                    showToast("Les deux mots de passe ne correspondent pas.");
+                    return;
+                }
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) {
+                    if (errorEl) { errorEl.textContent = error.message; errorEl.classList.remove('hidden'); }
+                    return;
+                }
+                if (!data.session) {
+                    navAuthModeState[suffix] = 'login';
+                    renderNavAuthMode(mobile);
+                    if (errorEl) {
+                        errorEl.textContent = "Compte créé ! Vérifiez votre email pour confirmer, puis connectez-vous.";
+                        errorEl.classList.remove('hidden', 'text-red-400');
+                        errorEl.classList.add('text-emerald-400');
+                    }
+                    return;
+                }
+            }
+
+            document.getElementById('nav-login-panel')?.classList.add('hidden');
+            showToast(mode === 'login' ? "Connexion réussie." : "Compte créé, bienvenue !", 'success');
+            updateNavState();
+            if (typeof chargerPronos === 'function') chargerPronos();
+        }
+
+        // Ajuste l'affichage de la nav selon l'état de connexion (bouton déconnexion, lien admin)
+        async function updateNavState() {
+            const ctaDesktop = document.getElementById('cta-tarifs-desktop');
+            const logoutDesktop = document.getElementById('logout-btn-desktop');
+            const loginBtnDesktop = document.getElementById('nav-login-btn-desktop');
+            const loginPanel = document.getElementById('nav-login-panel');
+            const ctaMobile = document.getElementById('cta-tarifs-mobile');
+            const logoutMobile = document.getElementById('logout-btn-mobile');
+            const loginBlockMobile = document.getElementById('nav-login-block-mobile');
+            const adminDesktop = document.getElementById('admin-link-desktop');
+            const adminMobile = document.getElementById('admin-link-mobile');
+
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+
+                if (!session) {
+                    ctaDesktop?.classList.remove('hidden');
+                    logoutDesktop?.classList.add('hidden');
+                    loginBtnDesktop?.classList.remove('hidden');
+                    ctaMobile?.classList.remove('hidden');
+                    logoutMobile?.classList.add('hidden');
+                    loginBlockMobile?.classList.remove('hidden');
+                    adminDesktop?.classList.add('hidden');
+                    adminMobile?.classList.add('hidden');
+                    return;
+                }
+
+                ctaDesktop?.classList.add('hidden');
+                logoutDesktop?.classList.remove('hidden');
+                loginBtnDesktop?.classList.add('hidden');
+                loginPanel?.classList.add('hidden');
+                ctaMobile?.classList.add('hidden');
+                logoutMobile?.classList.remove('hidden');
+                loginBlockMobile?.classList.add('hidden');
+
+                const { data: profil } = await supabaseClient
+                    .from('profiles')
+                    .select('is_admin')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profil && profil.is_admin) {
+                    adminDesktop?.classList.remove('hidden');
+                    adminMobile?.classList.remove('hidden');
+                } else {
+                    adminDesktop?.classList.add('hidden');
+                    adminMobile?.classList.add('hidden');
+                }
+            } catch (e) {
+                // silencieux : pas grave si la vérification échoue
+            }
+        }
+
+        updateNavState();
+    </script>
+</body>
+</html>

@@ -67,18 +67,18 @@ def generate_pronos_stats_banner(df):
         value_couleur = "text-white"
 
     return f'''
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
-        <div class="stat-card bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 text-center">
-            <p class="text-slate-500 text-[10px] sm:text-[11px] uppercase tracking-wider mb-2">Matchs analysés</p>
-            <p class="num text-2xl sm:text-3xl font-bold text-white">{nb_matchs_analyses}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
+            <p class="text-xl sm:text-2xl font-bold text-white">{nb_matchs_analyses}</p>
         </div>
-        <div class="stat-card bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 text-center">
-            <p class="text-slate-500 text-[10px] sm:text-[11px] uppercase tracking-wider mb-2">Paris proposés</p>
-            <p class="num text-2xl sm:text-3xl font-bold text-white">{nb_paris_proposes}</p>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
+            <p class="text-xl sm:text-2xl font-bold text-white">{nb_paris_proposes}</p>
         </div>
-        <div class="stat-card bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 text-center sm:col-span-2 lg:col-span-1">
-            <p class="text-slate-500 text-[10px] sm:text-[11px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="num text-2xl sm:text-3xl font-bold {value_couleur}">{value_txt}</p>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
+            <p class="text-xl sm:text-2xl font-bold {value_couleur}">{value_txt}</p>
         </div>
     </div>'''
 
@@ -198,7 +198,6 @@ def generate_perf_table(df):
     cards = ""
     for _, row in df_terminees.iterrows():
         color_class = "text-emerald-500" if row['Résultat'] == 'Gagné' else ("text-red-500" if row['Résultat'] == 'Perdu' else "text-slate-400")
-        accent_class = "border-l-emerald-500" if row['Résultat'] == 'Gagné' else ("border-l-red-500" if row['Résultat'] == 'Perdu' else "border-l-slate-600")
         date_fmt = row['Date'].strftime('%d/%m/%Y')
         cote_fmt = f"{row['Cote']:.2f}"
         cote_prematch_fmt = f"{row['CotePrematch']:.2f}" if pd.notna(row['CotePrematch']) else "—"
@@ -217,21 +216,21 @@ def generate_perf_table(df):
         </tr>'''
 
         cards += f'''
-        <div class="bg-slate-900 border border-slate-800 border-l-4 {accent_class} rounded-2xl p-4 transition-colors hover:border-slate-700">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
-                <span class="num text-xs text-slate-500">{date_fmt}</span>
+                <span class="text-xs text-slate-500">{date_fmt}</span>
                 {badge}
             </div>
             <p class="text-sm font-bold text-white mb-1">{row['Match']}</p>
-            <p class="text-xs text-yellow-300 mb-3">{row['Pari']} <span class="num text-slate-500">@ {cote_fmt} (pré-match {cote_prematch_fmt})</span></p>
-            <p class="num text-base font-bold {color_class}">{gain_fmt}</p>
+            <p class="text-xs text-yellow-300 mb-3">{row['Pari']} <span class="text-slate-500">@ {cote_fmt} (pré-match {cote_prematch_fmt})</span></p>
+            <p class="text-sm font-bold {color_class}">{gain_fmt}</p>
         </div>'''
 
     return f'''
-    <div class="hidden md:block overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-lg">
+    <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="text-slate-400 text-xs uppercase tracking-wider bg-slate-950/60 border-b border-slate-800">
+                <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
                     <th class="px-6 py-4 text-center text-xs">Date</th>
                     <th class="px-6 py-4 text-center text-xs">Match</th>
                     <th class="px-6 py-4 text-center text-xs">Pari</th>
@@ -296,22 +295,22 @@ def generate_stats_mensuelles(df):
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
             <div class="flex justify-between items-center mb-3">
                 <span class="text-sm font-bold text-white">{mois_fmt}</span>
-                <span class="num text-sm font-bold {pnl_color}">{row['PNL']:.2f} €</span>
+                <span class="text-sm font-bold {pnl_color}">{row['PNL']:.2f} €</span>
             </div>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs">
-                <p class="flex justify-between text-slate-500">Paris <span class="num text-white font-semibold">{nb_paris}</span></p>
-                <p class="flex justify-between text-slate-500">Gagnés <span class="num text-white font-semibold">{nb_gagnes}</span></p>
-                <p class="flex justify-between text-slate-500">Réussite <span class="num text-white font-semibold">{taux_reussite:.1f}%</span></p>
-                <p class="flex justify-between text-slate-500">Cote moy. <span class="num text-white font-semibold">{row['Cote_Moy']:.2f}</span></p>
-                <p class="flex justify-between text-slate-500">CLV moy. <span class="num {clv_color} font-semibold">{clv_txt}</span></p>
-                <p class="flex justify-between text-slate-500">Yield <span class="num text-white font-semibold">{row['Yield']:.1f}%</span></p>
+            <div class="grid grid-cols-2 gap-y-2 text-xs">
+                <p class="text-slate-500">Paris <span class="text-white float-right">{nb_paris}</span></p>
+                <p class="text-slate-500">Gagnés <span class="text-white float-right">{nb_gagnes}</span></p>
+                <p class="text-slate-500">Réussite <span class="text-white float-right">{taux_reussite:.1f}%</span></p>
+                <p class="text-slate-500">Cote moy. <span class="text-white float-right">{row['Cote_Moy']:.2f}</span></p>
+                <p class="text-slate-500">CLV moy. <span class="{clv_color} float-right">{clv_txt}</span></p>
+                <p class="text-slate-500">Yield <span class="text-white float-right">{row['Yield']:.1f}%</span></p>
             </div>
         </div>'''
 
     table_html = f'''
-    <div class="hidden md:block overflow-x-auto rounded-2xl border border-slate-800 mb-10">
-        <table class="w-full text-left border-collapse bg-slate-900 overflow-hidden">
-            <thead class="text-slate-400 text-xs uppercase tracking-wider bg-slate-950/60 border-b border-slate-800">
+    <div class="hidden md:block overflow-x-auto mb-10">
+        <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
+            <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
                 <tr>
                     <th class="px-6 py-4 text-center text-xs">Mois</th>
                     <th class="px-6 py-4 text-center text-xs">Nombre paris</th>
@@ -413,25 +412,25 @@ def generate_stats_banner(df):
 
     return f'''
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8 sm:mb-10">
-        <div class="stat-card bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
-            <p class="num text-xl sm:text-2xl font-bold text-center text-white">{taux_reussite:.1f}%</p>
+            <p class="text-xl sm:text-2xl font-bold text-center text-white">{taux_reussite:.1f}%</p>
         </div>
-        <div class="stat-card bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Série en cours</p>
-            <p class="text-lg sm:text-2xl font-bold text-center {serie_couleur}">{serie_emoji} {serie_texte}</p>
+            <p class="text-lg sm:text-2xl font-bold text-center {serie_couleur} truncate">{serie_emoji} {serie_texte}</p>
         </div>
-        <div class="stat-card bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="{clv_explication}">CLV Moyen <i class="fa-solid fa-circle-info text-[9px]"></i></p>
-            <p class="num text-xl sm:text-2xl font-bold text-center {clv_couleur}">{clv_txt}</p>
+            <p class="text-xl sm:text-2xl font-bold text-center {clv_couleur}">{clv_txt}</p>
         </div>
-        <div class="stat-card bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
-            <p class="num text-xl sm:text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
+            <p class="text-xl sm:text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
         </div>
-        <div class="stat-card bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 col-span-2 sm:col-span-3 lg:col-span-1">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
-            <p class="num text-xl sm:text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
+            <p class="text-xl sm:text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
         </div>
     </div>
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
