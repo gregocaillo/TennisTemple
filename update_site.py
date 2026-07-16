@@ -129,9 +129,9 @@ def appliquer_clotures_admin():
 
     print(f"{len(ids_traites)} clôture(s) admin appliquée(s) et synchronisée(s) avec la base locale.")
 
-
 def push_pronos_premium(df):
-    """Remplace le contenu de la table pronos_premium sur Supabase par les paris 'En cours' actuels."""
+    """Met à jour la table pronos_premium sur Supabase (upsert) sans recréer les lignes
+    existantes, afin de préserver leur date de création d'origine."""
     if not SUPABASE_SERVICE_KEY:
         print("⚠ SUPABASE_SERVICE_KEY non définie, envoi des pronos premium ignoré.")
         return
@@ -142,27 +142,43 @@ def push_pronos_premium(df):
         "Content-Type": "application/json"
     }
 
-    # On vide la table avant de repousser l'état actuel (évite les doublons / paris clôturés qui traînent)
-    del_resp = requests.delete(f"{SUPABASE_URL}/rest/v1/pronos_premium?id=gt.0", headers=headers)
-    if del_resp.status_code >= 300:
-        print(f"⚠ Erreur lors du vidage de pronos_premium : {del_resp.status_code} {del_resp.text}")
-
     df_en_cours = df[df['Résultat'] == 'En cours']
+    ids_en_cours = df_en_cours['ID'].astype(int).tolist()
+
+    # 1. Supprime uniquement les paris qui NE SONT PLUS en cours (clôturés entre-temps)
+    if ids_en_cours:
+        ids_str = ",".join(str(i) for i in ids_en_cours)
+        filtre = f"paris_id=not.in.({ids_str})"
+    else:
+        filtre = "paris_id=gt.0"  # plus aucun pari en cours -> table à vider entièrement
+    del_resp = requests.delete(f"{SUPABASE_URL}/rest/v1/pronos_premium?{filtre}", headers=headers)
+    if del_resp.status_code >= 300:
+        print(f"⚠ Erreur lors du nettoyage de pronos_premium : {del_resp.status_code} {del_resp.text}")
+
+    # 2. Upsert des paris en cours : insère les nouveaux, met à jour les existants
+    #    SANS toucher à created_at (colonne non envoyée dans le payload)
+    upsert_headers = {**headers, "Prefer": "resolution=merge-duplicates"}
+    payloads = []
     for _, row in df_en_cours.iterrows():
-        payload = {
+        payloads.append({
             "paris_id": int(row['ID']),
             "tournoi": row['Tournoi'],
             "match_intitule": row['Match'],
             "pari": row['Pari'],
             "cote": float(row['Cote']),
             "mise": float(row['Mise'])
-        }
-        resp = requests.post(f"{SUPABASE_URL}/rest/v1/pronos_premium", json=payload, headers=headers)
+        })
+
+    if payloads:
+        resp = requests.post(
+            f"{SUPABASE_URL}/rest/v1/pronos_premium?on_conflict=paris_id",
+            json=payloads,
+            headers=upsert_headers
+        )
         if resp.status_code >= 300:
-            print(f"⚠ Erreur lors de l'envoi d'un prono premium : {resp.status_code} {resp.text}")
+            print(f"⚠ Erreur lors de l'upsert des pronos premium : {resp.status_code} {resp.text}")
 
-    print(f"{len(df_en_cours)} prono(s) premium envoyé(s) à Supabase.")
-
+    print(f"{len(payloads)} prono(s) premium synchronisé(s) avec Supabase (upsert).")
 
 def generate_perf_table(df):
     """Génère le tableau desktop + la vue en cartes mobile, avec pastilles de statut."""
