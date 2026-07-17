@@ -443,9 +443,11 @@ def generate_stats_banner(df):
     serie_emoji = "🔥" if serie_resultat == 'Gagné' and serie_longueur >= 2 else ("❄️" if serie_resultat == 'Perdu' and serie_longueur >= 2 else "")
     serie_couleur = "text-emerald-400" if serie_resultat == 'Gagné' else "text-red-400"
 
-    # Sparkline sur les 30 derniers paris (ou moins si l'historique est plus court)
-    cumul = df_pnl['Gain/Perte'].cumsum().tolist()[-30:]
-    sparkline = generate_sparkline_svg(cumul)
+    # Sparkline sur TOUT l'historique disponible (plus de limite aux 30 derniers paris),
+    # avec les vraies dates de chaque pari pour la légende de l'abscisse.
+    cumul = df_pnl['Gain/Perte'].cumsum().tolist()
+    dates_paris = df_pnl['Date'].dt.strftime('%d/%m/%y').tolist()
+    sparkline = generate_sparkline_svg(cumul, dates=dates_paris)
 
     pnl_couleur = "text-emerald-400" if pnl_total >= 0 else "text-red-400"
 
@@ -480,7 +482,7 @@ def generate_stats_banner(df):
         </div>
     </div>
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
-        <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (30 derniers paris)</p>
+        <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (depuis le début, {len(cumul)} paris)</p>
         {sparkline}
     </div>'''
 
