@@ -166,7 +166,8 @@ def push_pronos_premium(df):
             "match_intitule": row['Match'],
             "pari": row['Pari'],
             "cote": float(row['Cote']),
-            "mise": float(row['Mise'])
+            "mise": float(row['Mise']),
+            "gain_potentiel": float(row['GainPotentiel']) if pd.notna(row['GainPotentiel']) else None
         })
 
     if payloads:
@@ -717,7 +718,8 @@ def mettre_a_jour_site():
     query = """
         SELECT id AS 'ID', nom_tournoi AS 'Tournoi', date_match AS 'Date', match_intitule AS 'Match', 
                joueur_choisi AS 'Pari', mise AS 'Mise', cote_jouee AS 'Cote', cote_prematch AS 'CotePrematch',
-               statut AS 'Résultat', gain_net AS 'Gain/Perte', prob_predite AS 'ProbPredite'
+               statut AS 'Résultat', gain_net AS 'Gain/Perte', prob_predite AS 'ProbPredite',
+               gain_potentiel AS 'GainPotentiel'
         FROM Historique_Paris
     """
     df = pd.read_sql_query(query, conn)

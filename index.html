@@ -295,9 +295,19 @@
                                 <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Pari</p>
                                 <p class="text-base font-bold text-yellow-300 leading-snug break-words">${row.pari}</p>
                             </div>
-                            <div class="flex justify-between text-xs mb-3">
-                                <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">${Number(row.cote).toFixed(2)}</span></div>
-                                <div><span class="text-slate-500">Mise</span><br><span class="text-lg font-bold">${Number(row.mise).toFixed(2)} €</span></div>
+                            <div class="grid grid-cols-3 gap-2 text-xs mb-3">
+                                <div class="text-center">
+                                    <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Cote</p>
+                                    <p class="text-lg font-bold">${Number(row.cote).toFixed(2)}</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Mise</p>
+                                    <p class="text-lg font-bold">${Number(row.mise).toFixed(2)} €</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Gain Potentiel</p>
+                                    <p class="text-lg font-bold text-emerald-400">${row.gain_potentiel != null ? Number(row.gain_potentiel).toFixed(2) + ' €' : '—'}</p>
+                                </div>
                             </div>
                             <p class="text-[10px] text-slate-500 border-t border-slate-800 pt-3">
                                 <i class="fa-regular fa-clock mr-1"></i>Mis en ligne le ${formaterDateHeure(row.created_at)}
