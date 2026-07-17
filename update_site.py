@@ -507,21 +507,23 @@ def get_audit_html(db_path):
             return False  # cas limite : on préfère afficher plutôt que masquer à tort
         return statuts_ordonnes[nrows - 1] == 'En cours'
 
-    audit_rows = []
-    audit_cards = []
+    audit_rows_all = []
+    audit_cards_all = []
     options_html_parts = []
     nb_masques = 0
+    
     for i, e in enumerate(audit_entries):
         if pari_encore_en_cours(e['nrows']):
             nb_masques += 1
             continue
-        audit_rows.append(
+            
+        audit_rows_all.append(
             f'<tr><td class="px-4 py-3 text-white text-center text-xs">{e["date"]}</td>'
             f'<td class="px-4 py-3 text-white text-xs text-center">{e["pari"]}</td>'
             f'<td class="px-4 py-3 text-yellow-600 font-mono text-xs font-bold text-center">{e["hash"]}</td>'
             f'<td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr>'
         )
-        audit_cards.append(f'''
+        audit_cards_all.append(f'''
         <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs text-white">{e["date"]}</span>
@@ -531,6 +533,10 @@ def get_audit_html(db_path):
             <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">{e["hash"]}</p>
         </div>''')
         options_html_parts.append(f'<option value="{i}">{e["date"]} — {e["pari"]}</option>')
+
+    # Filtrage : ne garder que les 5 derniers pour l'affichage
+    audit_rows = audit_rows_all[-5:]
+    audit_cards = audit_cards_all[-5:]
 
     if not audit_rows:
         audit_rows_html = '<tr><td colspan="4" class="text-center py-6 text-slate-500">Aucun pari clôturé pour le moment.</td></tr>'
