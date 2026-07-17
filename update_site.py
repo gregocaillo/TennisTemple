@@ -298,13 +298,13 @@ def generate_stats_mensuelles(df):
                 <span class="text-sm font-bold text-white">{mois_fmt}</span>
                 <span class="text-sm font-bold {pnl_color}">{row['PNL']:.2f} €</span>
             </div>
-            <div class="grid grid-cols-2 gap-y-2 text-xs">
-                <p class="text-slate-500">Paris <span class="text-white float-right">{nb_paris}</span></p>
-                <p class="text-slate-500">Gagnés <span class="text-white float-right">{nb_gagnes}</span></p>
-                <p class="text-slate-500">Réussite <span class="text-white float-right">{taux_reussite:.1f}%</span></p>
-                <p class="text-slate-500">Cote moy. <span class="text-white float-right">{row['Cote_Moy']:.2f}</span></p>
-                <p class="text-slate-500">CLV moy. <span class="{clv_color} float-right">{clv_txt}</span></p>
-                <p class="text-slate-500">Yield <span class="text-white float-right">{row['Yield']:.1f}%</span></p>
+            <div class="flex flex-col gap-y-2 text-xs">
+                <p class="text-slate-500 flex justify-between"><span>Paris</span> <span class="text-white">&nbsp;&nbsp;{nb_paris}&nbsp;&nbsp;</span></p>
+                <p class="text-slate-500 flex justify-between"><span>Gagnés</span> <span class="text-white">&nbsp;&nbsp;{nb_gagnes}&nbsp;&nbsp;</span></p>
+                <p class="text-slate-500 flex justify-between"><span>Réussite</span> <span class="text-white">&nbsp;&nbsp;{taux_reussite:.1f}%&nbsp;&nbsp;</span></p>
+                <p class="text-slate-500 flex justify-between"><span>Cote moy.</span> <span class="text-white">&nbsp;&nbsp;{row['Cote_Moy']:.2f}&nbsp;&nbsp;</span></p>
+                <p class="text-slate-500 flex justify-between"><span>CLV moy.</span> <span class="{clv_color}">&nbsp;&nbsp;{clv_txt}&nbsp;&nbsp;</span></p>
+                <p class="text-slate-500 flex justify-between"><span>Yield</span> <span class="text-white">&nbsp;&nbsp;{row['Yield']:.1f}%&nbsp;&nbsp;</span></p>
             </div>
         </div>'''
 
