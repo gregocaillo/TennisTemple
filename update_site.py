@@ -482,7 +482,7 @@ def generate_stats_banner(df):
         </div>
     </div>
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
-        <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (depuis le début, {len(cumul)} paris)</p>
+        <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (Nombre des paris : {len(cumul)})</p>
         {sparkline}
     </div>'''
 
