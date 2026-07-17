@@ -632,11 +632,11 @@ def envoyer_email_notification(nouveaux_emails):
         print("⚠ GMAIL_ADDRESS / GMAIL_APP_PASSWORD non définis, notification email ignorée.")
         return
 
-    corps = "Nouvelle(s) inscription(s) sur TennisTemple :\n\n" + "\n".join(f"- {e}" for e in nouveaux_emails)
+    corps = "Nouvelle(s) inscription(s) sur The Winning Oracle :\n\n" + "\n".join(f"- {e}" for e in nouveaux_emails)
     corps += "\n\nActivez leur accès premium (après paiement) depuis /admin.html"
 
     msg = MIMEText(corps)
-    msg['Subject'] = f"TennisTemple : {len(nouveaux_emails)} nouvelle(s) inscription(s)"
+    msg['Subject'] = f"The Winning Oracle : {len(nouveaux_emails)} nouvelle(s) inscription(s)"
     msg['From'] = GMAIL_ADDRESS
     msg['To'] = EMAIL_DESTINATAIRE
 

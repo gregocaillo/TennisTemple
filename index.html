@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TennisTemple - Value bets ATP basées sur modélisation mathématique et expérience terrain. Pronostics data-driven.">
-    <meta name="theme-color" content="#0f172a">
-    <title>TennisTemple | Value Bets & Data Tennis</title>
+    <meta name="description" content="The Winning Oracle - Value bets ATP basées sur modélisation mathématique et expérience terrain. Pronostics data-driven.">
+    <title>The Winning Oracle | Value Bets & Data Tennis</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -102,7 +101,7 @@
     <nav class="border-b border-slate-800 bg-slate-950/95 backdrop-blur-xl sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
             <a href="index.html" class="text-2xl sm:text-3xl font-black tracking-tighter bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300 bg-clip-text text-transparent">
-                TENNIS<span class="text-yellow-400">TEMPLE</span>
+                THE WINNING <span class="text-yellow-400">ORACLE</span>
             </a>
 
             <div class="hidden md:flex items-center space-x-9 text-sm font-medium">
@@ -329,7 +328,7 @@
 
                 function marquerPronosVus() {
                     if (!pronosSignatureActuelle) return;
-                    localStorage.setItem('tennistemple_pronos_vus', pronosSignatureActuelle);
+                    localStorage.setItem('two_pronos_vus', pronosSignatureActuelle);
                     pronosBadges().forEach(b => b?.classList.add('hidden'));
                 }
 
@@ -339,7 +338,7 @@
                 // devient visible au scroll (voir l'IntersectionObserver plus bas).
                 function verifierPronosNonVus(data) {
                     const signature = data.map(p => p.id).sort().join(',');
-                    const dernierVu = localStorage.getItem('tennistemple_pronos_vus') || '';
+                    const dernierVu = localStorage.getItem('two_pronos_vus') || '';
                     pronosSignatureActuelle = signature;
 
                     const badges = pronosBadges();
@@ -903,7 +902,7 @@
             Interdit aux mineurs. Jouer comporte des risques. Mise en jeu responsable.<br>
             Contenu à visée informative uniquement.
         </p>
-        <p class="mt-6">&copy; 2026 TennisTemple — Tous droits réservés</p>
+        <p class="mt-6">&copy; 2026 The Winning Oracle — Tous droits réservés</p>
     </footer>
 
     <script>
