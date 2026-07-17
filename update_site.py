@@ -332,34 +332,79 @@ def generate_stats_mensuelles(df):
 
     return table_html + cards_html
 
-def generate_sparkline_svg(valeurs):
-    """Génère un mini graphique SVG (sparkline) à partir d'une liste de valeurs cumulées."""
+def generate_sparkline_svg(valeurs, dates=None):
+    """Génère un mini graphique SVG (sparkline) à partir d'une liste de valeurs
+    cumulées, avec grille horizontale et légendes des axes (€ en ordonnée,
+    dates ou n° de pari en abscisse).
+
+    valeurs : liste de soldes cumulés (float), du plus ancien au plus récent.
+    dates   : liste optionnelle de labels alignés sur `valeurs` (ex: '17/07'),
+              utilisée pour l'abscisse. Si absente -> 'Pari 1' / 'Pari N'.
+    """
     if len(valeurs) < 2:
         return ''
 
-    largeur, hauteur, marge = 300, 60, 6
+    largeur, hauteur, marge = 300, 100, 8
     v_min, v_max = min(valeurs), max(valeurs)
     if v_max == v_min:
         v_max += 1
-
     n = len(valeurs)
-    points = []
-    for i, v in enumerate(valeurs):
-        x = marge + (i / (n - 1)) * (largeur - 2 * marge)
-        y = hauteur - marge - ((v - v_min) / (v_max - v_min)) * (hauteur - 2 * marge)
-        points.append(f"{x:.1f},{y:.1f}")
 
-    couleur = "#34d399" if valeurs[-1] >= valeurs[0] else "#f87171"
+    def _x(i):
+        return marge + (i / (n - 1)) * (largeur - 2 * marge)
+
+    def _y(v):
+        return hauteur - marge - ((v - v_min) / (v_max - v_min)) * (hauteur - 2 * marge)
+
+    points = [f"{_x(i):.1f},{_y(v):.1f}" for i, v in enumerate(valeurs)]
     polyline = " ".join(points)
-    zero_y = hauteur - marge - ((0 - v_min) / (v_max - v_min)) * (hauteur - 2 * marge) if v_min <= 0 <= v_max else None
-    ligne_zero = f'<line x1="{marge}" y1="{zero_y:.1f}" x2="{largeur - marge}" y2="{zero_y:.1f}" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>' if zero_y is not None else ''
+    couleur = "#34d399" if valeurs[-1] >= valeurs[0] else "#f87171"
+
+    # --- Grille horizontale : 4 repères également espacés entre min et max ---
+    nb_reperes = 4
+    lignes_grille = []
+    for i in range(nb_reperes):
+        fraction = i / (nb_reperes - 1)
+        valeur_repere = v_min + fraction * (v_max - v_min)
+        y = _y(valeur_repere)
+        lignes_grille.append(
+            f'<line x1="{marge}" y1="{y:.1f}" x2="{largeur - marge}" y2="{y:.1f}" '
+            f'stroke="#1e293b" stroke-width="1"/>'
+        )
+    grille_svg = "\n            ".join(lignes_grille)
+
+    # --- Ligne du zéro (si comprise dans la plage) ---
+    ligne_zero = ''
+    if v_min <= 0 <= v_max:
+        zero_y = _y(0)
+        ligne_zero = (
+            f'<line x1="{marge}" y1="{zero_y:.1f}" x2="{largeur - marge}" y2="{zero_y:.1f}" '
+            f'stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>'
+        )
+
+    # --- Labels de l'abscisse : dates si fournies, sinon "Pari 1" / "Pari N" ---
+    if dates and len(dates) == n:
+        label_debut, label_fin = dates[0], dates[-1]
+    else:
+        label_debut, label_fin = "Pari 1", f"Pari {n}"
 
     return f'''
-    <svg viewBox="0 0 {largeur} {hauteur}" preserveAspectRatio="none" class="w-full h-16">
-        {ligne_zero}
-        <polyline points="{polyline}" fill="none" stroke="{couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>'''
-
+    <div>
+        <div class="relative">
+            <span class="absolute top-0 left-1 text-[8px] text-slate-600 bg-slate-900/80 px-1 rounded">{v_max:+.0f}€</span>
+            <span class="absolute bottom-0 left-1 text-[8px] text-slate-600 bg-slate-900/80 px-1 rounded">{v_min:+.0f}€</span>
+            <svg viewBox="0 0 {largeur} {hauteur}" preserveAspectRatio="none" class="w-full h-16">
+                {grille_svg}
+                {ligne_zero}
+                <polyline points="{polyline}" fill="none" stroke="{couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="flex justify-between text-[8px] text-slate-600 uppercase tracking-wider mt-1 pt-1 border-t border-slate-800/60">
+            <span>{label_debut}</span>
+            <span>Solde (€)</span>
+            <span>{label_fin}</span>
+        </div>
+    </div>'''
 
 def generate_stats_banner(df):
     """Génère le bandeau de statistiques clés (taux de réussite, série, CLV, PnL, cote moyenne) + sparkline."""
