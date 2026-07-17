@@ -562,7 +562,7 @@ def get_audit_html(db_path):
         <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 rounded-t-2xl text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
 
         <div class="px-4 pt-4 pb-0">
-            <p class="text-slate-500 text-[10px] italic">Affichage limité aux 5 derniers certificats clôturés.</p>
+            <p class="text-slate-500 text-[10px] italic text-center">Affichage limité aux 5 derniers certificats clôturés.</p>
         </div>
 
         <div class="hidden md:block overflow-x-auto">
