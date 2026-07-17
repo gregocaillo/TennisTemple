@@ -428,7 +428,7 @@ def generate_stats_banner(df):
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
             <p class="text-xl sm:text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="col-span-2 sm:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
         </div>

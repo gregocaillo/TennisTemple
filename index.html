@@ -292,10 +292,8 @@
                                 </div>
                             </div>
                             <div class="bg-slate-950 rounded-xl p-4 mb-4">
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-base text-white">Pari :</span>
-                                    <span class="text-base font-bold text-yellow-300">${row.pari}</span>
-                                </div>
+                                <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Pari</p>
+                                <p class="text-base font-bold text-yellow-300 leading-snug break-words">${row.pari}</p>
                             </div>
                             <div class="flex justify-between text-xs mb-3">
                                 <div><span class="text-slate-500">Cote</span><br><span class="text-lg font-bold">${Number(row.cote).toFixed(2)}</span></div>
@@ -479,7 +477,7 @@
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-emerald-400">8.81 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="col-span-2 sm:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">1.84</p>
         </div>
