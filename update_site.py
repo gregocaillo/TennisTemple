@@ -68,15 +68,15 @@ def generate_pronos_stats_banner(df):
 
     return f'''
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5 text-center">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
             <p class="text-xl sm:text-2xl font-bold text-white">{nb_matchs_analyses}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5 text-center">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
             <p class="text-xl sm:text-2xl font-bold text-white">{nb_paris_proposes}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5 text-center">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
             <p class="text-xl sm:text-2xl font-bold {value_couleur}">{value_txt}</p>
         </div>
@@ -217,7 +217,7 @@ def generate_perf_table(df):
         </tr>'''
 
         cards += f'''
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">{date_fmt}</span>
                 {badge}
@@ -293,7 +293,7 @@ def generate_stats_mensuelles(df):
         </tr>'''
 
         cards += f'''
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
             <div class="flex justify-between items-center mb-3">
                 <span class="text-sm font-bold text-white">{mois_fmt}</span>
                 <span class="text-sm font-bold {pnl_color}">{row['PNL']:.2f} €</span>
@@ -460,28 +460,28 @@ def generate_stats_banner(df):
 
     return f'''
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8 sm:mb-10">
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">{taux_reussite:.1f}%</p>
         </div>
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Série en cours</p>
             <p class="text-lg sm:text-2xl font-bold text-center {serie_couleur} truncate">{serie_emoji} {serie_texte}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="{clv_explication}">CLV Moyen <i class="fa-solid fa-circle-info text-[9px]"></i></p>
             <p class="text-xl sm:text-2xl font-bold text-center {clv_couleur}">{clv_txt}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
             <p class="text-xl sm:text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
         </div>
-        <div class="col-span-2 sm:col-span-1 bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
+        <div class="col-span-2 sm:col-span-1 bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
         </div>
     </div>
-    <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
+    <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
         <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (Nombre de paris : {len(cumul)})</p>
         {sparkline}
     </div>'''
@@ -571,7 +571,7 @@ def get_audit_html(db_path):
             f'<td class="px-4 py-3 text-emerald-500 text-center">✓</td></tr>'
         )
         audit_cards_all.append(f'''
-        <div class="bg-slate-950 border border-slate-600 rounded-xl p-4">
+        <div class="bg-slate-950 border gold-frame rounded-xl p-4">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs text-white">{e["date"]}</span>
                 <span class="text-emerald-500 text-xs">✓ Intègre</span>
@@ -605,7 +605,7 @@ def get_audit_html(db_path):
     options_html = "".join(options_html_parts)
 
     return f'''
-    <div class="max-w-6xl mx-auto bg-slate-900 border border-slate-600 rounded-2xl shadow-xl">
+    <div class="max-w-6xl mx-auto bg-slate-900 border gold-frame rounded-2xl shadow-xl">
         <div class="px-4 py-2 bg-slate-950 border-b border-slate-700 rounded-t-2xl text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
 
         <div class="px-4 pt-4 pb-0">
@@ -628,16 +628,16 @@ def get_audit_html(db_path):
         <div class="md:hidden p-4 space-y-3">{audit_cards_html}</div>
     </div>
     {note_masques_html}
-    <div class="max-w-6xl mx-auto mt-8 p-4 sm:p-6 bg-slate-950 border border-slate-600 rounded-xl">
+    <div class="max-w-6xl mx-auto mt-8 p-4 sm:p-6 bg-slate-950 border gold-frame rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-base sm:text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
             <p>- <b>Principe</b> : chaque pari est scellé dans une chaîne où le Hash résulte d'un calcul combinant tout l'historique des paris et l'empreinte du pari précédent</p>
             <p>- <b>Immutabilité</b> : si une seule donnée est modifiée dans le passé, le Hash de cette ligne change</p>
             <p>- <b>Vérifiabilité</b> : choisissez un pari ci-dessous pour vérifier l'intégrité en direct</p>
         </div>
-        <div class="mt-8 p-4 sm:p-6 bg-slate-900 border border-emerald-900/30 rounded-lg">
+        <div class="mt-8 p-4 sm:p-6 bg-slate-900 border gold-frame rounded-lg">
             <h4 class="text-emerald-400 font-bold text-sm mb-4 uppercase">Vérificateur d'intégrité</h4>
-            <select id="select-verif" class="bg-black border border-slate-700 text-white p-2 rounded text-xs w-full mb-4">{options_html}</select>
+            <select id="select-verif" class="bg-black border gold-frame text-white p-2 rounded text-xs w-full mb-4">{options_html}</select>
             <button onclick="verifierHash()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded text-sm font-bold transition">Vérifier l'intégrité</button>
             <div id="resultat-hash" class="mt-4 p-3 bg-black border border-emerald-900 rounded text-[11px] font-mono break-all hidden"></div>
         </div>
