@@ -1,0 +1,13 @@
+C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py:256: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_term['Mois'] = df_term['Date'].dt.to_period('M')
+C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py:257: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  stats = df_term.groupby('Mois').apply(lambda x: pd.Series({
+[main b4f19c3] Mise Ã  jour auto - 2026-07-18 06:06:11
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ create mode 100644 pipeline_log.txt
+To github.com:gregocaillo/TennisTemple.git
+   f4c64be..b4f19c3  main -> main
+Aucune clôture en attente depuis l'espace admin.
+1 prono(s) premium synchronisé(s) avec Supabase (upsert).
+Aucune nouvelle inscription depuis le dernier passage.
+Mise à jour poussée sur GitHub avec succès.
