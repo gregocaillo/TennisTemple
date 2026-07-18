@@ -145,6 +145,7 @@
         .section-title {
             position: relative;
             display: inline-block;
+            text-transform: uppercase;
         }
         .section-title:after {
             content: '';
@@ -291,7 +292,7 @@
                 <p>Je partage aujourd'hui cette analyse. Ici, pas de discours marketing superflu, seulement une approche directe et chiffrée, ancrée dans la réalité du terrain, pour ceux qui souhaitent transformer leur passion en opportunité financière, en acceptant la part d'aléa propre à l'analyse sportive..</p>
             </div>
 
-            <div class="md:col-start-2 md:row-start-2 group relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl h-64 sm:h-80 md:h-full">
+            <div class="md:col-start-2 md:row-start-2 group relative rounded-3xl overflow-hidden border border-slate-600 shadow-2xl h-64 sm:h-80 md:h-full">
                 <img src="assets/lesprit.png"
                      alt="Analyse tennis data - Expérience terrain et modélisation"
                      class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
@@ -311,15 +312,15 @@
             <!-- Début stats pronos -->
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Matchs analysés</p>
             <p class="text-xl sm:text-2xl font-bold text-white">0</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
             <p class="text-xl sm:text-2xl font-bold text-white">2</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
             <p class="text-xl sm:text-2xl font-bold text-emerald-400">+14.2%</p>
         </div>
@@ -327,9 +328,9 @@
 <!-- Fin stats pronos -->
 
             <div id="pronos-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 h-40 animate-pulse"></div>
+                <div class="bg-slate-900 border border-slate-600 rounded-2xl p-5 h-40 animate-pulse"></div>
+                <div class="bg-slate-900 border border-slate-600 rounded-2xl p-5 h-40 animate-pulse"></div>
+                <div class="bg-slate-900 border border-slate-600 rounded-2xl p-5 h-40 animate-pulse"></div>
             </div>
 
             <script>
@@ -388,7 +389,7 @@
                                     <p class="text-lg font-bold text-emerald-400">${row.gain_potentiel != null ? Number(row.gain_potentiel).toFixed(2) + ' €' : '—'}</p>
                                 </div>
                             </div>
-                            <p class="text-[10px] text-slate-500 border-t border-slate-800 pt-3">
+                            <p class="text-[10px] text-slate-500 border-t border-slate-700 pt-3">
                                 <i class="fa-regular fa-clock mr-1"></i>Mis en ligne le ${formaterDateHeure(row.created_at)}
                             </p>
                         </div>`).join('');
@@ -550,28 +551,28 @@
     <!-- Début bandeau stats -->
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8 sm:mb-10">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">57.1%</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Série en cours</p>
             <p class="text-lg sm:text-2xl font-bold text-center text-red-400 truncate">❄️ 3 Perdus</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="Closing Line Value : écart en % entre la cote à laquelle vous avez parié et la cote pré-match (utilisée comme référence du marché juste avant le match). Un CLV positif signifie que vous avez obtenu une meilleure cote que le marché — c'est un indicateur de la qualité de votre timing/valeur, indépendant du résultat du match.">CLV Moyen <i class="fa-solid fa-circle-info text-[9px]"></i></p>
             <p class="text-xl sm:text-2xl font-bold text-center text-emerald-400">+0.2%</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-emerald-400">6.21 €</p>
         </div>
-        <div class="col-span-2 sm:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <div class="col-span-2 sm:col-span-1 bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">1.82</p>
         </div>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
+    <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
         <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-3">Évolution du solde (Nombre de paris : 14)</p>
         
     <div>
@@ -587,7 +588,7 @@
                 <polyline points="8.0,92.0 29.8,72.7 51.7,57.6 73.5,66.9 95.4,90.3 117.2,77.0 139.1,42.7 160.9,27.2 182.8,35.5 204.6,25.7 226.5,8.0 248.3,33.8 270.2,53.9 292.0,68.9" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </div>
-        <div class="flex justify-between text-[8px] text-slate-600 uppercase tracking-wider mt-1 pt-1 border-t border-slate-800/60">
+        <div class="flex justify-between text-[8px] text-slate-600 uppercase tracking-wider mt-1 pt-1 border-t border-slate-700/60">
             <span>15/07/26</span>
             <span>Solde (€)</span>
             <span>17/07/26</span>
@@ -600,7 +601,7 @@
 
     <div class="hidden md:block overflow-x-auto mb-10">
         <table class="w-full text-left border-collapse bg-slate-900 rounded-xl overflow-hidden">
-            <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+            <thead class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-700">
                 <tr>
                     <th class="px-6 py-4 text-center text-xs">Mois</th>
                     <th class="px-6 py-4 text-center text-xs">Nombre paris</th>
@@ -613,7 +614,7 @@
                 </tr>
             </thead>
             <tbody class="text-slate-300 divide-y divide-slate-800">
-        <tr class="border-b border-slate-800 last:border-b-0 text-xs">
+        <tr class="border-b border-slate-700 last:border-b-0 text-xs">
             <td class="px-6 py-3 text-center text-xs text-white">07/2026</td>
             <td class="px-6 py-3 text-center text-xs text-white">14</td>
             <td class="px-6 py-3 text-center text-xs text-white">8</td>
@@ -626,7 +627,7 @@
         </table>
     </div>
     <div class="md:hidden space-y-3 mb-10">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-center mb-3">
                 <span class="text-sm font-bold text-white">07/2026</span>
                 <span class="text-sm font-bold text-emerald-500">6.21 €</span>
@@ -647,7 +648,7 @@
     <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+                <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-700">
                     <th class="px-6 py-4 text-center text-xs">Date</th>
                     <th class="px-6 py-4 text-center text-xs">Match</th>
                     <th class="px-6 py-4 text-center text-xs">Pari</th>
@@ -658,7 +659,7 @@
                 </tr>
             </thead>
             <tbody class="text-slate-300">
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Damir Dzumhur vs Alex Molcan</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Alex Molcan</td>
@@ -667,7 +668,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
             <td class="px-6 py-4 text-center text-xs text-red-500">-3.02 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Roman Andres Burruchaga vs Daniel Merida</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Roman Andres Burruchaga</td>
@@ -676,7 +677,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
             <td class="px-6 py-4 text-center text-xs text-red-500">-4.04 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Stefano Napolitano vs Gonzalo Villanueva</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Stefano Napolitano</td>
@@ -685,7 +686,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
             <td class="px-6 py-4 text-center text-xs text-red-500">-5.18 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Max Alcala Gurri vs Franco Roncadelli</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Max Alcala Gurri</td>
@@ -694,7 +695,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
             <td class="px-6 py-4 text-center text-xs text-emerald-500">1.97 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Sumit Nagal vs Federico Bondioli</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Federico Bondioli</td>
@@ -703,7 +704,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
             <td class="px-6 py-4 text-center text-xs text-emerald-500">3.55 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Nuno Borges vs Luciano Darderi</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Nuno Borges</td>
@@ -712,7 +713,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
             <td class="px-6 py-4 text-center text-xs text-red-500">-1.66 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Raphael Collignon vs Valentin Vacherot</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Raphael Collignon</td>
@@ -721,7 +722,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
             <td class="px-6 py-4 text-center text-xs text-emerald-500">3.11 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">16/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Alex Molcan vs Alejandro Davidovich Fokina</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Alex Molcan</td>
@@ -730,7 +731,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
             <td class="px-6 py-4 text-center text-xs text-emerald-500">6.90 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">16/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Alexander Shevchenko vs Dominic Stricker</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Alexander Shevchenko</td>
@@ -739,7 +740,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
             <td class="px-6 py-4 text-center text-xs text-emerald-500">2.67 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">16/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Juan Manuel Cerundolo vs Miomir Kecmanovic</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Miomir Kecmanovic</td>
@@ -748,7 +749,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
             <td class="px-6 py-4 text-center text-xs text-red-500">-4.70 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Tomas Martin Etcheverry vs Daniel Merida</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Tomas Martin Etcheverry</td>
@@ -757,7 +758,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
             <td class="px-6 py-4 text-center text-xs text-red-500">-1.87 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Stefano Napolitano vs Alex Barrena</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Stefano Napolitano</td>
@@ -766,7 +767,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
             <td class="px-6 py-4 text-center text-xs text-emerald-500">3.04 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Gonzalo Villanueva vs Juan Cruz Martin Manzano</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Gonzalo Villanueva</td>
@@ -775,7 +776,7 @@
             <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
             <td class="px-6 py-4 text-center text-xs text-emerald-500">3.88 €</td>
         </tr>
-        <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
             <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
             <td class="px-6 py-4 text-center text-xs text-white">Raphael Collignon vs Lorenzo Sonego</td>
             <td class="px-6 py-4 text-center text-xs text-yellow-300">Raphael Collignon</td>
@@ -787,7 +788,7 @@
         </table>
     </div>
     <div class="md:hidden space-y-3">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">17/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
@@ -796,7 +797,7 @@
             <p class="text-xs text-yellow-300 mb-3">Alex Molcan <span class="text-slate-500">@ 1.45 (pré-match 1.36)</span></p>
             <p class="text-sm font-bold text-red-500">-3.02 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">17/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
@@ -805,7 +806,7 @@
             <p class="text-xs text-yellow-300 mb-3">Roman Andres Burruchaga <span class="text-slate-500">@ 2.33 (pré-match 2.38)</span></p>
             <p class="text-sm font-bold text-red-500">-4.04 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">17/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
@@ -814,7 +815,7 @@
             <p class="text-xs text-yellow-300 mb-3">Stefano Napolitano <span class="text-slate-500">@ 1.54 (pré-match 1.57)</span></p>
             <p class="text-sm font-bold text-red-500">-5.18 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">17/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
@@ -823,7 +824,7 @@
             <p class="text-xs text-yellow-300 mb-3">Max Alcala Gurri <span class="text-slate-500">@ 1.38 (pré-match 1.33)</span></p>
             <p class="text-sm font-bold text-emerald-500">1.97 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">17/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
@@ -832,7 +833,7 @@
             <p class="text-xs text-yellow-300 mb-3">Federico Bondioli <span class="text-slate-500">@ 2.23 (pré-match 2.10)</span></p>
             <p class="text-sm font-bold text-emerald-500">3.55 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">17/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
@@ -841,7 +842,7 @@
             <p class="text-xs text-yellow-300 mb-3">Nuno Borges <span class="text-slate-500">@ 2.02 (pré-match 2.20)</span></p>
             <p class="text-sm font-bold text-red-500">-1.66 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">17/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
@@ -850,7 +851,7 @@
             <p class="text-xs text-yellow-300 mb-3">Raphael Collignon <span class="text-slate-500">@ 1.60 (pré-match 1.67)</span></p>
             <p class="text-sm font-bold text-emerald-500">3.11 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">16/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
@@ -859,7 +860,7 @@
             <p class="text-xs text-yellow-300 mb-3">Alex Molcan <span class="text-slate-500">@ 2.38 (pré-match 2.30)</span></p>
             <p class="text-sm font-bold text-emerald-500">6.90 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">16/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
@@ -868,7 +869,7 @@
             <p class="text-xs text-yellow-300 mb-3">Alexander Shevchenko <span class="text-slate-500">@ 1.87 (pré-match 2.00)</span></p>
             <p class="text-sm font-bold text-emerald-500">2.67 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">16/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
@@ -877,7 +878,7 @@
             <p class="text-xs text-yellow-300 mb-3">Miomir Kecmanovic <span class="text-slate-500">@ 1.96 (pré-match 2.20)</span></p>
             <p class="text-sm font-bold text-red-500">-4.70 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">15/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
@@ -886,7 +887,7 @@
             <p class="text-xs text-yellow-300 mb-3">Tomas Martin Etcheverry <span class="text-slate-500">@ 1.64 (pré-match 1.50)</span></p>
             <p class="text-sm font-bold text-red-500">-1.87 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">15/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
@@ -895,7 +896,7 @@
             <p class="text-xs text-yellow-300 mb-3">Stefano Napolitano <span class="text-slate-500">@ 1.66 (pré-match 1.73)</span></p>
             <p class="text-sm font-bold text-emerald-500">3.04 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">15/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
@@ -904,7 +905,7 @@
             <p class="text-xs text-yellow-300 mb-3">Gonzalo Villanueva <span class="text-slate-500">@ 1.91 (pré-match 1.80)</span></p>
             <p class="text-sm font-bold text-emerald-500">3.88 €</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
             <div class="flex justify-between items-start mb-2">
                 <span class="text-xs text-slate-500">15/07/2026</span>
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
@@ -926,8 +927,8 @@
             </div>
             <!-- Début du registre -->
 
-    <div class="max-w-6xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
-        <div class="px-4 py-2 bg-slate-950 border-b border-slate-800 rounded-t-2xl text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
+    <div class="max-w-6xl mx-auto bg-slate-900 border border-slate-600 rounded-2xl shadow-xl">
+        <div class="px-4 py-2 bg-slate-950 border-b border-slate-700 rounded-t-2xl text-emerald-400 text-[10px] font-bold uppercase tracking-widest text-center">[Vérification en cours : Système intègre]</div>
 
         <div class="px-4 pt-4 pb-0">
             <p class="text-slate-500 text-[10px] italic text-center">Affichage limité aux 5 derniers certificats clôturés.</p>
@@ -947,7 +948,7 @@
             </table>
         </div>
         <div class="md:hidden p-4 space-y-3">
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+        <div class="bg-slate-950 border border-slate-600 rounded-xl p-4">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs text-white">2026-07-17 06:03:22</span>
                 <span class="text-emerald-500 text-xs">✓ Intègre</span>
@@ -955,7 +956,7 @@
             <p class="text-xs text-white mb-2">Roman Andres Burruchaga @2.33</p>
             <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">5297cf62ad5c8d5f5608600fc5c3307f1bf93705fd3ad3acc6f0e89ad7f9572f</p>
         </div>
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+        <div class="bg-slate-950 border border-slate-600 rounded-xl p-4">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs text-white">2026-07-17 06:03:22</span>
                 <span class="text-emerald-500 text-xs">✓ Intègre</span>
@@ -963,7 +964,7 @@
             <p class="text-xs text-white mb-2">Alex Molcan @1.45</p>
             <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">acbefdb3c03182f541f5a6b9b8e96c44a7949abe88416898d2a48b613051ab2c</p>
         </div>
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+        <div class="bg-slate-950 border border-slate-600 rounded-xl p-4">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs text-white">2026-07-17 06:03:22</span>
                 <span class="text-emerald-500 text-xs">✓ Intègre</span>
@@ -971,7 +972,7 @@
             <p class="text-xs text-white mb-2">Max Alcala Gurri @1.38</p>
             <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">43ca16f0bb0b1511ff7abfc5bec90ab66ad847d48dccafca8dc34b1dbae2cf4d</p>
         </div>
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+        <div class="bg-slate-950 border border-slate-600 rounded-xl p-4">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs text-white">2026-07-17 06:03:22</span>
                 <span class="text-emerald-500 text-xs">✓ Intègre</span>
@@ -979,7 +980,7 @@
             <p class="text-xs text-white mb-2">Federico Bondioli @2.23</p>
             <p class="text-yellow-600 font-mono text-[10px] font-bold break-all">ce969221b84305baa6b80df92ae03741d5375e7d27d04c0e9a9ae08dfef9c2a6</p>
         </div>
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+        <div class="bg-slate-950 border border-slate-600 rounded-xl p-4">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs text-white">2026-07-17 06:03:23</span>
                 <span class="text-emerald-500 text-xs">✓ Intègre</span>
@@ -989,7 +990,7 @@
         </div></div>
     </div>
     <p class="text-slate-600 text-[10px] text-center mt-3">2 pari(s) en cours scellé(s) mais non affiché(s) publiquement tant qu'ils ne sont pas clôturés.</p>
-    <div class="max-w-6xl mx-auto mt-8 p-4 sm:p-6 bg-slate-950 border border-slate-800 rounded-xl">
+    <div class="max-w-6xl mx-auto mt-8 p-4 sm:p-6 bg-slate-950 border border-slate-600 rounded-xl">
         <h3 class="text-emerald-400 font-bold mb-4 text-base sm:text-lg">Comment fonctionne l'audit cryptographique ?</h3>
         <div class="text-slate-400 text-sm space-y-4">
             <p>- <b>Principe</b> : chaque pari est scellé dans une chaîne où le Hash résulte d'un calcul combinant tout l'historique des paris et l'empreinte du pari précédent</p>
