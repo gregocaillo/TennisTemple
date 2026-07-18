@@ -20,14 +20,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Poppins', sans-serif; }
         .title-glow {
-            background-image: linear-gradient(100deg, #7c3aed 0%, #c4b5fd 25%, #f3e8ff 50%, #a78bfa 75%, #7c3aed 100%);
-            background-size: 200% auto; background-position: -20% center;
+            background-image: linear-gradient(100deg, #4c1d95 0%, #7c3aed 16%, #c4b5fd 32%, #f3e8ff 44%, #a78bfa 58%, #7c3aed 74%, #4c1d95 100%);
+            background-size: 250% auto;
             -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
-            animation: title-glow-pulse 4.5s ease-in-out infinite;
+            animation: title-shine 6s linear infinite;
+            filter: drop-shadow(0 0 16px rgba(124,58,237,0.35));
         }
-        @keyframes title-glow-pulse {
-            0%, 100% { filter: drop-shadow(0 0 8px rgba(167,139,250,0.25)); }
-            50%      { filter: drop-shadow(0 0 22px rgba(167,139,250,0.65)) drop-shadow(0 0 40px rgba(124,58,237,0.3)); }
+        @keyframes title-shine {
+            to { background-position: -250% center; }
         }
         .gold-frame {
             border-color: rgba(234, 179, 8, 0.5);
