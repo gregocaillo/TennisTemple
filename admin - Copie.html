@@ -10,52 +10,24 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
-    <meta name="theme-color" content="#04030a">
+    <meta name="theme-color" content="#020617">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Poppins:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Poppins', sans-serif; }
-        .font-oracle { font-family: 'Cormorant Garamond', serif; font-weight: 700; letter-spacing: 0.05em; }
-        .text-shine-gold {
-            background-image: linear-gradient(100deg, #6d28d9 0%, #eab308 18%, #f5e1ff 34%, #fde68a 48%, #a78bfa 64%, #fef3c7 80%, #c4b5fd 100%);
-            background-size: 250% auto; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
-            animation: shine 8s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(167,139,250,0.32));
-        }
-        @keyframes shine { 0% { background-position: 0% center; } 50% { background-position: -200% center; } 100% { background-position: 0% center; } }
-        .bg-court {
-            background-color: #04030a;
-            background-image:
-                radial-gradient(circle at 18% 15%, rgba(124, 58, 237, 0.20) 0%, transparent 45%),
-                radial-gradient(circle at 82% 10%, rgba(234, 179, 8, 0.10) 0%, transparent 40%),
-                radial-gradient(circle at 50% 85%, rgba(79, 70, 229, 0.22) 0%, transparent 50%),
-                radial-gradient(circle at 30% 60%, #0f0b21 0%, #03020a 70%);
-        }
-        .stars-layer {
-            position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.6;
-            background-image:
-                radial-gradient(1.5px 1.5px at 10% 20%, #fff, transparent),
-                radial-gradient(1px 1px at 80% 10%, #fff, transparent),
-                radial-gradient(1.5px 1.5px at 60% 40%, #e9d5ff, transparent),
-                radial-gradient(1px 1px at 30% 70%, #fff, transparent),
-                radial-gradient(1.5px 1.5px at 90% 60%, #fde68a, transparent),
-                radial-gradient(1px 1px at 45% 85%, #fff, transparent);
-            background-repeat: repeat; background-size: 550px 550px;
-            animation: twinkle 6s ease-in-out infinite alternate;
-        }
-        @keyframes twinkle { 0% { opacity: 0.35; } 50% { opacity: 0.8; } 100% { opacity: 0.45; } }
+        .bg-court { background: radial-gradient(circle at 30% 20%, #0f172a 0%, #020617 70%); }
     </style>
 </head>
 <body class="bg-court text-slate-100 min-h-screen">
-    <div class="stars-layer"></div>
     <div id="toast-container" class="fixed top-6 right-4 z-[100] flex flex-col gap-2 w-72 max-w-[90vw]"></div>
 
-    <div class="relative z-10 max-w-4xl mx-auto px-6 py-12">
-        <a href="index.html" class="font-oracle text-shine-gold flex items-center gap-2 w-fit text-xl sm:text-2xl font-black tracking-tight mb-10">
-            THE WINNING <span class="text-shine-gold">ORACLE</span> <span class="text-slate-500 text-sm font-medium ml-2 font-sans">/ Administration</span>
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <a href="index.html" class="block text-2xl font-black tracking-tighter bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300 bg-clip-text text-transparent mb-10 w-fit">
+            THE WINNING <span class="text-yellow-400">ORACLE</span> <span class="text-slate-500 text-sm font-medium ml-2">/ Administration</span>
         </a>
 
         <div id="app">
@@ -106,7 +78,7 @@
                     <div class="bg-slate-900 border border-red-900/50 rounded-2xl p-8 text-center">
                         <p class="text-red-400 text-sm font-bold mb-2">Accès refusé</p>
                         <p class="text-slate-500 text-xs">Ce compte n'a pas les droits administrateur.</p>
-                        <button onclick="logout()" class="mt-4 text-xs text-slate-300 hover:underline">Se déconnecter</button>
+                        <button onclick="logout()" class="mt-4 text-xs text-emerald-400 hover:underline">Se déconnecter</button>
                     </div>`;
                 return;
             }
@@ -114,15 +86,15 @@
             document.getElementById('app').innerHTML = `
                 <div class="flex justify-between items-center mb-6">
                     <p class="text-slate-400 text-xs">Espace administrateur</p>
-                    <button onclick="logout()" class="text-xs text-slate-500 hover:text-yellow-300">Se déconnecter</button>
+                    <button onclick="logout()" class="text-xs text-slate-500 hover:text-emerald-400">Se déconnecter</button>
                 </div>
 
-                <h3 class="font-oracle text-sm font-bold mb-3 text-slate-300"><i class="fa-solid fa-flag-checkered mr-2 text-yellow-400"></i>Paris en cours à clôturer</h3>
+                <h3 class="text-sm font-bold mb-3 text-slate-300"><i class="fa-solid fa-flag-checkered mr-2 text-emerald-400"></i>Paris en cours à clôturer</h3>
                 <div id="app-clotures" class="mb-10">
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>
                 </div>
 
-                <h3 class="font-oracle text-sm font-bold mb-3 text-slate-300"><i class="fa-solid fa-users mr-2 text-yellow-400"></i>Abonnés</h3>
+                <h3 class="text-sm font-bold mb-3 text-slate-300"><i class="fa-solid fa-users mr-2 text-emerald-400"></i>Abonnés</h3>
                 <div id="app-abonnes">
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 h-12 animate-pulse"></div>
                 </div>`;
@@ -137,7 +109,7 @@
                     <h4 class="text-sm font-bold mb-4">Connexion administrateur</h4>
                     <input id="email" type="email" placeholder="email" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') login()">
                     <input id="pass" type="password" placeholder="mot de passe" class="w-full mb-2 bg-black border border-slate-700 text-xs p-2 rounded text-white" onkeydown="if(event.key==='Enter') login()">
-                    <button onclick="login()" class="bg-gradient-to-r from-violet-700 via-fuchsia-500 to-amber-400 hover:brightness-110 text-white text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
+                    <button onclick="login()" class="bg-emerald-600 text-xs px-4 py-2 rounded font-bold w-full mt-2">Se connecter</button>
                     <button onclick="demanderReinitialisation()" class="text-slate-500 text-[11px] mt-2 hover:underline w-full bg-transparent">Mot de passe oublié ?</button>
                     <p id="login-error" class="text-red-400 text-xs mt-3 hidden">Identifiants incorrects.</p>
                 </div>`;
@@ -197,14 +169,14 @@
                 <tr class="border-b border-slate-800">
                     <td class="px-4 py-3 text-xs text-white">${p.email || '—'}</td>
                     <td class="px-4 py-3 text-xs text-center">
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold ${p.is_premium ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-700/50 text-slate-400'}">
+                        <span class="px-2 py-1 rounded-full text-[10px] font-bold ${p.is_premium ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700/50 text-slate-400'}">
                             ${p.is_premium ? 'PREMIUM' : 'GRATUIT'}
                         </span>
                     </td>
                     <td class="px-4 py-3 text-xs text-center text-slate-400">${p.is_admin ? '✓' : ''}</td>
                     <td class="px-4 py-3 text-center">
                         <button onclick="togglePremium('${p.id}', ${!p.is_premium})"
-                                class="text-xs px-3 py-1.5 rounded-lg font-bold transition ${p.is_premium ? 'bg-red-900/50 hover:bg-red-900 text-red-300' : 'bg-gradient-to-r from-violet-700 via-fuchsia-500 to-amber-400 hover:brightness-110 text-white'}">
+                                class="text-xs px-3 py-1.5 rounded-lg font-bold transition ${p.is_premium ? 'bg-red-900/50 hover:bg-red-900 text-red-300' : 'bg-emerald-600 hover:bg-emerald-500 text-slate-950'}">
                             ${p.is_premium ? 'Désactiver' : 'Activer'}
                         </button>
                     </td>
@@ -214,14 +186,14 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
                     <div class="flex justify-between items-start gap-2 mb-3">
                         <p class="text-xs text-white break-all">${p.email || '—'}</p>
-                        <span class="shrink-0 px-2 py-1 rounded-full text-[10px] font-bold ${p.is_premium ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-700/50 text-slate-400'}">
+                        <span class="shrink-0 px-2 py-1 rounded-full text-[10px] font-bold ${p.is_premium ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700/50 text-slate-400'}">
                             ${p.is_premium ? 'PREMIUM' : 'GRATUIT'}
                         </span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-[10px] text-slate-500">${p.is_admin ? '✓ Admin' : ''}</span>
                         <button onclick="togglePremium('${p.id}', ${!p.is_premium})"
-                                class="text-xs px-3 py-1.5 rounded-lg font-bold transition ${p.is_premium ? 'bg-red-900/50 hover:bg-red-900 text-red-300' : 'bg-gradient-to-r from-violet-700 via-fuchsia-500 to-amber-400 hover:brightness-110 text-white'}">
+                                class="text-xs px-3 py-1.5 rounded-lg font-bold transition ${p.is_premium ? 'bg-red-900/50 hover:bg-red-900 text-red-300' : 'bg-emerald-600 hover:bg-emerald-500 text-slate-950'}">
                             ${p.is_premium ? 'Désactiver' : 'Activer'}
                         </button>
                     </div>
@@ -270,7 +242,7 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
                     <div class="flex justify-between items-start mb-3">
                         <div>
-                            <span class="text-violet-300 text-[10px] font-bold uppercase">${p.tournoi}</span>
+                            <span class="text-emerald-400 text-[10px] font-bold uppercase">${p.tournoi}</span>
                             <h4 class="text-sm font-bold">${p.match_intitule}</h4>
                             <p class="text-xs text-slate-400 mt-1">${p.pari} @ ${Number(p.cote).toFixed(2)} — mise ${Number(p.mise).toFixed(2)} €</p>
                         </div>
