@@ -41,3 +41,12 @@ C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py:256: UserW
   df_term['Mois'] = df_term['Date'].dt.to_period('M')
 C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py:257: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
   stats = df_term.groupby('Mois').apply(lambda x: pd.Series({
+warning: in the working copy of 'pipeline_log.txt', LF will be replaced by CRLF the next time Git touches it
+[main bf5e500] Mise à jour auto - 2026-07-18 08:51:43
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+To github.com:gregocaillo/TennisTemple.git
+   f5a8130..bf5e500  main -> main
+Aucune clôture en attente depuis l'espace admin.
+2 prono(s) premium synchronisé(s) avec Supabase (upsert).
+Aucune nouvelle inscription depuis le dernier passage.
+Mise à jour poussée sur GitHub avec succès.
