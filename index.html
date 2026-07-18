@@ -50,43 +50,26 @@
     </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&family=Poppins:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
         body {
             font-family: 'Poppins', sans-serif;
         }
 
-        .font-oracle {
-            font-family: 'Fraunces', serif;
-            font-weight: 700;
-            font-optical-sizing: auto;
-            letter-spacing: 0.01em;
-        }
-
-        /* ---- Aura mystique : halo qui respire (or / argent / améthyste) ---- */
-        .text-shine-gold {
-            background-image: linear-gradient(100deg, #6d28d9 0%, #eab308 18%, #f5e1ff 34%, #fde68a 48%, #a78bfa 64%, #fef3c7 80%, #c4b5fd 100%);
+        /* ---- Lueur pourpre respirante sur les titres ---- */
+        .title-glow {
+            background-image: linear-gradient(100deg, #7c3aed 0%, #c4b5fd 25%, #f3e8ff 50%, #a78bfa 75%, #7c3aed 100%);
             background-size: 200% auto;
-            background-position: -40% center;
+            background-position: -20% center;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             -webkit-text-fill-color: transparent;
-            animation: aura-pulse 4s ease-in-out infinite;
+            animation: title-glow-pulse 4.5s ease-in-out infinite;
         }
-        .text-shine-silver {
-            background-image: linear-gradient(100deg, #6d28d9 0%, #c4b5fd 20%, #f5f3ff 38%, #e9d5ff 52%, #a78bfa 68%, #ffffff 84%, #c4b5fd 100%);
-            background-size: 200% auto;
-            background-position: -40% center;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            -webkit-text-fill-color: transparent;
-            animation: aura-pulse 4.6s ease-in-out infinite;
-        }
-        @keyframes aura-pulse {
-            0%, 100% { filter: drop-shadow(0 0 8px rgba(234, 179, 8, 0.25)) drop-shadow(0 0 18px rgba(167, 139, 250, 0.25)); }
-            50%      { filter: drop-shadow(0 0 20px rgba(234, 179, 8, 0.6)) drop-shadow(0 0 34px rgba(167, 139, 250, 0.5)); }
+        @keyframes title-glow-pulse {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.25)); }
+            50%      { filter: drop-shadow(0 0 22px rgba(167, 139, 250, 0.65)) drop-shadow(0 0 40px rgba(124, 58, 237, 0.3)); }
         }
 
         /* ---- Cadres dorés en relief ---- */
@@ -175,10 +158,6 @@
             border-radius: 9999px;
         }
 
-        .glow-text {
-            text-shadow: 0 0 30px rgba(167, 139, 250, 0.4);
-        }
-
         html { scroll-behavior: smooth; }
     </style>
 </head>
@@ -193,8 +172,8 @@
 
     <nav class="relative z-10 border-b border-violet-900/40 bg-slate-950/90 backdrop-blur-xl sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
-            <a href="index.html" class="font-oracle text-shine-gold flex items-center gap-2 text-xl sm:text-2xl font-black tracking-tight">
-                THE WINNING <span class="text-shine-gold">ORACLE</span>
+            <a href="index.html" class="title-glow flex items-center gap-2 text-xl sm:text-2xl font-black tracking-tight">
+                THE WINNING <span class="text-yellow-400">ORACLE</span>
             </a>
 
             <div class="hidden md:flex items-center space-x-9 text-sm font-medium">
@@ -272,7 +251,7 @@
                 <i class="fa-solid fa-sparkles text-yellow-300"></i> MODÉLISATION MATHÉMATIQUE
             </span>
 
-            <h1 class="font-oracle text-shine-gold uppercase text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6 glow-text">
+            <h1 class="title-glow uppercase text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6">
                 La Data qui bat<br>les Bookmakers
             </h1>
 
@@ -300,7 +279,7 @@
     <section id="philosophie" class="scroll-mt-20 pt-10 sm:pt-16 grid md:grid-cols-2 md:grid-rows-[auto_1fr] gap-x-16 gap-y-8 md:gap-y-0">
             <div class="md:col-start-1 md:row-start-1">
                 <span class="text-yellow-400 text-sm font-bold tracking-widest">// MA DÉMARCHE</span>
-                <h2 class="font-oracle text-shine-gold section-title text-3xl sm:text-4xl font-extrabold mt-3 mb-6">Le tennis, une approche par la donnée</h2>
+                <h2 class="title-glow section-title text-3xl sm:text-4xl font-extrabold mt-3 mb-6">Le tennis, une approche par la donnée</h2>
             </div>
 
             <div class="md:col-start-1 md:row-start-2 space-y-4 text-slate-400 leading-relaxed text-justify text-[0.95rem]">
@@ -322,7 +301,7 @@
 
         <section id="pronos" class="scroll-mt-20">
             <div class="text-center mb-6">
-                <h2 class="font-oracle text-shine-gold section-title text-3xl sm:text-4xl font-extrabold">Pronostics du Jour</h2>
+                <h2 class="title-glow section-title text-3xl sm:text-4xl font-extrabold">Pronostics du Jour</h2>
                 <p class="text-slate-400 mt-4 text-xs">Mises à jour tous les matins ~ 7h</p>
             </div>
 
@@ -561,7 +540,7 @@
 
 <section id="roi" class="scroll-mt-20">
     <div class="text-center mb-8 sm:mb-10">
-        <h2 class="font-oracle text-shine-silver section-title text-3xl sm:text-4xl font-extrabold">Performances</h2>
+        <h2 class="title-glow section-title text-3xl sm:text-4xl font-extrabold">Performances</h2>
         <p class="text-xs text-slate-500 mt-4"><!-- Début date maj -->Dernière mise à jour : 18/07/2026<!-- Fin date maj --></p>
     </div>
 
@@ -937,7 +916,7 @@
 
         <section id="audit" class="scroll-mt-20">
             <div class="text-center max-w-5xl mx-auto mb-10 sm:mb-12">
-                <h2 class="font-oracle text-shine-silver section-title text-3xl sm:text-4xl font-extrabold">Registre d'Audit (Blockchain)</h2>
+                <h2 class="title-glow section-title text-3xl sm:text-4xl font-extrabold">Registre d'Audit (Blockchain)</h2>
                 <p class="text-slate-400 text-xs mt-4 px-4 leading-relaxed">
                     Chaque pari est scellé cryptographiquement pour garantir l'absence de modification à posteriori
                 </p>
@@ -1054,14 +1033,14 @@
 
         <section id="tarifs" class="scroll-mt-20">
             <div class="text-center max-w-xl mx-auto mb-12 sm:mb-16">
-                <h2 class="font-oracle text-shine-gold section-title text-2xl sm:text-3xl font-extrabold">Rejoignez l'Oracle</h2>
+                <h2 class="title-glow section-title text-2xl sm:text-3xl font-extrabold">Rejoignez l'Oracle</h2>
                 <p class="text-slate-400 mt-4 text-xs">Rentabilisez votre abonnement dès les premières value bets</p>
             </div>
             <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
                 <div class="bg-slate-900 border gold-frame rounded-3xl p-6 sm:p-10 card-hover">
-                    <h3 class="font-oracle text-shine-silver text-xl font-semibold inline-block">Accès Mensuel</h3>
+                    <h3 class="text-xl font-semibold">Accès Mensuel</h3>
                     <div class="mt-6 sm:mt-8 mb-8 sm:mb-10">
-                        <span class="text-4xl sm:text-5xl font-bold text-shine-silver">6€</span>
+                        <span class="text-4xl sm:text-5xl font-bold">6€</span>
                         <span class="text-slate-500">/mois</span>
                     </div>
                     <ul class="space-y-4">
@@ -1076,9 +1055,9 @@
 
                 <div class="bg-gradient-to-br from-slate-900 to-slate-950 border-2 gold-frame-strong rounded-3xl p-6 sm:p-10 card-hover relative mt-6 md:mt-0">
                     <div class="absolute -top-4 right-6 bg-gradient-to-r from-violet-600 to-amber-400 text-white text-[10px] sm:text-xs font-black px-4 sm:px-5 py-1.5 rounded-full">MEILLEUR CHOIX</div>
-                    <h3 class="font-oracle text-shine-gold text-xl font-semibold inline-block">Pass Saison</h3>
+                    <h3 class="text-xl font-semibold">Pass Saison</h3>
                     <div class="mt-6 sm:mt-8 mb-8 sm:mb-10">
-                        <span class="font-oracle text-shine-gold text-4xl sm:text-5xl font-bold">48€</span>
+                        <span class="text-4xl sm:text-5xl font-bold text-yellow-300">48€</span>
                         <span class="text-slate-500">/an</span>
                     </div>
                     <ul class="space-y-4">
@@ -1099,7 +1078,7 @@
             Interdit aux mineurs. Jouer comporte des risques. Mise en jeu responsable.<br>
             Contenu à visée informative uniquement.
         </p>
-        <p class="font-oracle text-shine-gold mt-6 tracking-wide inline-block">&copy; 2026 The Winning Oracle — Tous droits réservés</p>
+        <p class="mt-6">&copy; 2026 The Winning Oracle — Tous droits réservés</p>
     </footer>
 
     <script>
