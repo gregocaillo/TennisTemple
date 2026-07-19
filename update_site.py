@@ -181,6 +181,72 @@ def push_pronos_premium(df):
 
     print(f"{len(payloads)} prono(s) premium synchronisé(s) avec Supabase (upsert).")
 
+def push_analyses_generales(db_path):
+    """Met à jour la table analyses_generales sur Supabase avec les analyses du jour
+    (Analyses_Totales), retenues ou non comme value bet. Visible uniquement aux membres
+    connectés — la restriction d'accès (RLS) doit être configurée côté Supabase sur
+    cette table, comme c'est déjà le cas pour pronos_premium."""
+    if not SUPABASE_SERVICE_KEY:
+        print("⚠ SUPABASE_SERVICE_KEY non définie, envoi des analyses générales ignoré.")
+        return
+
+    headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    conn = sqlite3.connect(db_path)
+    date_auj = datetime.now().strftime('%Y-%m-%d')
+    query = """
+        SELECT id, nom_tournoi, joueur_j1, cote_predite_j1, cote_prematch_j1,
+               joueur_j2, cote_predite_j2, cote_prematch_j2
+        FROM Analyses_Totales
+        WHERE date_match LIKE ?
+    """
+    df = pd.read_sql_query(query, conn, params=(date_auj + '%',))
+    conn.close()
+
+    ids_du_jour = df['id'].astype(int).tolist()
+
+    # 1. Supprime tout ce qui n'est plus dans les analyses d'aujourd'hui (jours précédents inclus)
+    if ids_du_jour:
+        ids_str = ",".join(str(i) for i in ids_du_jour)
+        filtre = f"analyse_id=not.in.({ids_str})"
+    else:
+        filtre = "analyse_id=gt.0"  # aucune analyse aujourd'hui -> table à vider entièrement
+    del_resp = requests.delete(f"{SUPABASE_URL}/rest/v1/analyses_generales?{filtre}", headers=headers)
+    if del_resp.status_code >= 300:
+        print(f"⚠ Erreur lors du nettoyage de analyses_generales : {del_resp.status_code} {del_resp.text}")
+
+    # 2. Upsert des analyses du jour
+    upsert_headers = {**headers, "Prefer": "resolution=merge-duplicates"}
+    payloads = []
+    for _, row in df.iterrows():
+        payloads.append({
+            "analyse_id": int(row['id']),
+            "tournoi": row['nom_tournoi'],
+            "joueur_j1": row['joueur_j1'],
+            "cote_predite_j1": float(row['cote_predite_j1']) if pd.notna(row['cote_predite_j1']) else None,
+            "cote_prematch_j1": float(row['cote_prematch_j1']) if pd.notna(row['cote_prematch_j1']) else None,
+            "joueur_j2": row['joueur_j2'],
+            "cote_predite_j2": float(row['cote_predite_j2']) if pd.notna(row['cote_predite_j2']) else None,
+            "cote_prematch_j2": float(row['cote_prematch_j2']) if pd.notna(row['cote_prematch_j2']) else None,
+        })
+
+    if payloads:
+        resp = requests.post(
+            f"{SUPABASE_URL}/rest/v1/analyses_generales?on_conflict=analyse_id",
+            json=payloads,
+            headers=upsert_headers
+        )
+        if resp.status_code >= 300:
+            print(f"⚠ Erreur lors de l'upsert des analyses générales : {resp.status_code} {resp.text}")
+        else:
+            print(f"{len(payloads)} analyse(s) du jour synchronisée(s) avec Supabase.")
+    else:
+        print("Aucune analyse du jour à synchroniser.")
+
 def generate_perf_table(df):
     """Génère le tableau desktop + la vue en cartes mobile, avec pastilles de statut."""
     df_terminees = df[df['Résultat'].isin(['Gagné', 'Perdu', 'Annulé'])].sort_values(by='Date', ascending=False)
@@ -794,6 +860,11 @@ def mettre_a_jour_site():
     # où seuls les comptes premium authentifiés peuvent les lire (voir index.html).
     push_pronos_premium(df)
     pronos_stats_html = generate_pronos_stats_banner(df)
+
+    # Les analyses générales du jour (Analyses_Totales) partent aussi vers Supabase :
+    # visibles uniquement aux membres connectés (voir index.html), jamais écrites en dur
+    # dans le HTML public.
+    push_analyses_generales(DB_PATH)
 
     # Vérifie si de nouveaux visiteurs se sont inscrits depuis le dernier passage,
     # et vous envoie un email si c'est le cas.

@@ -491,6 +491,7 @@
                     if (error) { showToast("Identifiants incorrects."); return; }
                     showToast("Connexion réussie.", 'success');
                     chargerPronos();
+                    if (typeof chargerAnalysesGenerales === 'function') chargerAnalysesGenerales();
                     if (typeof updateNavState === 'function') updateNavState();
                 }
 
@@ -523,6 +524,7 @@
                         authMode = 'login';
                         showToast("Compte créé, bienvenue !", 'success');
                         chargerPronos();
+                        if (typeof chargerAnalysesGenerales === 'function') chargerAnalysesGenerales();
                         if (typeof updateNavState === 'function') updateNavState();
                     } else {
                         authMode = 'login';
@@ -531,6 +533,104 @@
                 }
 
                 chargerPronos();
+            </script>
+        </section>
+
+        <section id="analyses-generales" class="scroll-mt-20">
+            <div class="text-center mb-6 sm:mb-8">
+                <h2 class="title-glow section-title text-3xl sm:text-4xl font-extrabold">Analyses Générales</h2>
+                <p class="text-slate-400 mt-4 text-xs">Tous les matchs analysés aujourd'hui par le modèle, retenus ou non comme value bet</p>
+            </div>
+
+            <div id="analyses-generales-container">
+                <p class="text-slate-500 text-center py-10 text-xs">Chargement...</p>
+            </div>
+
+            <script>
+                function fmtCote(v) {
+                    return (v !== null && v !== undefined) ? Number(v).toFixed(2) : '—';
+                }
+
+                async function chargerAnalysesGenerales() {
+                    const container = document.getElementById('analyses-generales-container');
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+
+                    if (!session) {
+                        container.innerHTML = `
+                            <div class="bg-slate-900 border gold-frame rounded-2xl p-6 sm:p-8 text-center max-w-md mx-auto">
+                                <div class="text-3xl mb-3 opacity-50">🔒</div>
+                                <h4 class="text-sm font-bold mb-4">Analyses réservées aux membres du Club</h4>
+                                <a href="#pronos" class="inline-block bg-gradient-to-r from-violet-700 via-fuchsia-500 to-amber-400 hover:brightness-110 text-white text-xs px-4 py-2 rounded font-bold mt-2">Se connecter / S'inscrire</a>
+                            </div>`;
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('analyses_generales')
+                        .select('*')
+                        .order('tournoi', { ascending: true });
+
+                    if (error || !data || data.length === 0) {
+                        container.innerHTML = `<p class="text-slate-500 text-center py-10 text-xs">Aucun accès premium actif sur ce compte, ou aucune analyse enregistrée aujourd'hui.</p>`;
+                        return;
+                    }
+
+                    const rows = data.map(row => `
+                        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+                            <td class="px-6 py-4 text-center text-xs text-violet-300 font-bold uppercase">${row.tournoi}</td>
+                            <td class="px-6 py-4 text-center text-xs text-white">${row.joueur_j1}</td>
+                            <td class="px-6 py-4 text-center text-xs text-white">${row.joueur_j2}</td>
+                            <td class="px-6 py-4 text-center text-xs text-yellow-300">${fmtCote(row.cote_predite_j1)}</td>
+                            <td class="px-6 py-4 text-center text-xs text-yellow-300">${fmtCote(row.cote_predite_j2)}</td>
+                            <td class="px-6 py-4 text-center text-xs text-slate-400">${fmtCote(row.cote_prematch_j1)}</td>
+                            <td class="px-6 py-4 text-center text-xs text-slate-400">${fmtCote(row.cote_prematch_j2)}</td>
+                        </tr>`).join('');
+
+                    const cards = data.map(row => `
+                        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+                            <span class="text-violet-300 text-[10px] font-bold uppercase">${row.tournoi}</span>
+                            <p class="text-sm font-bold text-white mt-1 mb-3">${row.joueur_j1} vs ${row.joueur_j2}</p>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                    <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Cote calculée J1</p>
+                                    <p class="text-sm font-bold text-yellow-300">${fmtCote(row.cote_predite_j1)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Cote calculée J2</p>
+                                    <p class="text-sm font-bold text-yellow-300">${fmtCote(row.cote_predite_j2)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Cote Unibet J1</p>
+                                    <p class="text-sm font-bold text-slate-300">${fmtCote(row.cote_prematch_j1)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Cote Unibet J2</p>
+                                    <p class="text-sm font-bold text-slate-300">${fmtCote(row.cote_prematch_j2)}</p>
+                                </div>
+                            </div>
+                        </div>`).join('');
+
+                    container.innerHTML = `
+                        <div class="hidden md:block overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-700">
+                                        <th class="px-6 py-4 text-center text-xs">Tournoi</th>
+                                        <th class="px-6 py-4 text-center text-xs">Joueur 1</th>
+                                        <th class="px-6 py-4 text-center text-xs">Joueur 2</th>
+                                        <th class="px-6 py-4 text-center text-xs">Cote calculée J1</th>
+                                        <th class="px-6 py-4 text-center text-xs">Cote calculée J2</th>
+                                        <th class="px-6 py-4 text-center text-xs">Cote Unibet J1</th>
+                                        <th class="px-6 py-4 text-center text-xs">Cote Unibet J2</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-slate-300">${rows}</tbody>
+                            </table>
+                        </div>
+                        <div class="md:hidden space-y-3">${cards}</div>`;
+                }
+
+                chargerAnalysesGenerales();
             </script>
         </section>
 
@@ -1134,6 +1234,7 @@
             renderNavAuthMode(true);
             updateNavState();
             if (typeof chargerPronos === 'function') chargerPronos();
+            if (typeof chargerAnalysesGenerales === 'function') chargerAnalysesGenerales();
         }
 
         function toggleNavLoginPanel() {
@@ -1226,6 +1327,7 @@
             showToast(mode === 'login' ? "Connexion réussie." : "Compte créé, bienvenue !", 'success');
             updateNavState();
             if (typeof chargerPronos === 'function') chargerPronos();
+            if (typeof chargerAnalysesGenerales === 'function') chargerAnalysesGenerales();
         }
 
         // Ajuste l'affichage de la nav selon l'état de connexion (bouton déconnexion, lien admin)
