@@ -200,7 +200,7 @@ def push_analyses_generales(db_path):
     date_auj = datetime.now().strftime('%Y-%m-%d')
     query = """
         SELECT id, nom_tournoi, joueur_j1, cote_predite_j1, cote_prematch_j1,
-               joueur_j2, cote_predite_j2, cote_prematch_j2
+               joueur_j2, cote_predite_j2, cote_prematch_j2, date_match
         FROM Analyses_Totales
         WHERE date_match LIKE ?
     """
@@ -232,6 +232,7 @@ def push_analyses_generales(db_path):
             "joueur_j2": row['joueur_j2'],
             "cote_predite_j2": float(row['cote_predite_j2']) if pd.notna(row['cote_predite_j2']) else None,
             "cote_prematch_j2": float(row['cote_prematch_j2']) if pd.notna(row['cote_prematch_j2']) else None,
+            "date_match": row['date_match'] if pd.notna(row['date_match']) else None,
         })
 
     if payloads:

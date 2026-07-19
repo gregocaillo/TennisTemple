@@ -568,7 +568,7 @@
                     const { data, error } = await supabaseClient
                         .from('analyses_generales')
                         .select('*')
-                        .order('tournoi', { ascending: true });
+                        .order('date_match', { ascending: true });
 
                     if (error || !data || data.length === 0) {
                         container.innerHTML = `<p class="text-slate-500 text-center py-10 text-xs">Aucun accès premium actif sur ce compte, ou aucune analyse enregistrée aujourd'hui.</p>`;
