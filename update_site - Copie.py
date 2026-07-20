@@ -249,38 +249,52 @@ def push_analyses_generales(db_path):
         print("Aucune analyse du jour à synchroniser.")
 
 def generate_perf_table(df):
-    """Génère le tableau desktop + la vue en cartes mobile, avec pastilles de statut.
-
-    Pour éviter un scroll interminable, l'historique complet est embarqué en JSON dans la
-    page (masqué), mais seuls les 5 matchs les plus récents sont affichés au chargement.
-    Un bouton "Plus de matchs" révèle 5 matchs supplémentaires à chaque clic, jusqu'à un
-    maximum de 20 affichés. Au-delà (ou si tout l'historique tient déjà à l'écran), ce
-    bouton est remplacé par un bouton d'export Excel qui télécharge la totalité de
-    l'historique (généré côté navigateur avec SheetJS, aucun fichier serveur nécessaire)."""
+    """Génère le tableau desktop + la vue en cartes mobile, avec pastilles de statut."""
     df_terminees = df[df['Résultat'].isin(['Gagné', 'Perdu', 'Annulé'])].sort_values(by='Date', ascending=False)
 
     if df_terminees.empty:
         return '<p class="text-slate-500 text-center py-10">Aucun historique disponible.</p>'
 
-    matchs = []
-    for _, row in df_terminees.iterrows():
-        matchs.append({
-            "date": row['Date'].strftime('%d/%m/%Y'),
-            "match": row['Match'],
-            "pari": row['Pari'],
-            "cote": f"{row['Cote']:.2f}",
-            "cote_prematch": f"{row['CotePrematch']:.2f}" if pd.notna(row['CotePrematch']) else "—",
-            "statut": row['Résultat'],
-            "gain": f"{row['Gain/Perte']:.2f}",
-        })
+    def badge_statut(resultat):
+        if resultat == 'Gagné':
+            return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>'
+        if resultat == 'Perdu':
+            return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>'
+        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-700/40 text-slate-400"><i class="fa-solid fa-minus text-[9px]"></i>Annulé</span>'
 
-    # ensure_ascii=False pour garder les accents lisibles dans la source ; on échappe les
-    # "</" pour ne jamais risquer de fermer prématurément la balise <script> qui contient ce JSON.
-    matchs_json = json.dumps(matchs, ensure_ascii=False).replace('</', '<\\/')
+    rows = ""
+    cards = ""
+    for _, row in df_terminees.iterrows():
+        color_class = "text-emerald-500" if row['Résultat'] == 'Gagné' else ("text-red-500" if row['Résultat'] == 'Perdu' else "text-slate-400")
+        date_fmt = row['Date'].strftime('%d/%m/%Y')
+        cote_fmt = f"{row['Cote']:.2f}"
+        cote_prematch_fmt = f"{row['CotePrematch']:.2f}" if pd.notna(row['CotePrematch']) else "—"
+        gain_fmt = f"{row['Gain/Perte']:.2f} €"
+        badge = badge_statut(row['Résultat'])
+
+        rows += f'''
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">{date_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs text-white">{row['Match']}</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">{row['Pari']}</td>
+            <td class="px-6 py-4 text-center text-xs text-white">{cote_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">{cote_prematch_fmt}</td>
+            <td class="px-6 py-4 text-center text-xs">{badge}</td>
+            <td class="px-6 py-4 text-center text-xs {color_class}">{gain_fmt}</td>
+        </tr>'''
+
+        cards += f'''
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">{date_fmt}</span>
+                {badge}
+            </div>
+            <p class="text-sm font-bold text-white mb-1">{row['Match']}</p>
+            <p class="text-xs text-yellow-300 mb-3">{row['Pari']} <span class="text-slate-500">@ {cote_fmt} (pré-match {cote_prematch_fmt})</span></p>
+            <p class="text-sm font-bold {color_class}">{gain_fmt}</p>
+        </div>'''
 
     return f'''
-    <script type="application/json" id="perf-data">{matchs_json}</script>
-
     <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
@@ -294,129 +308,10 @@ def generate_perf_table(df):
                     <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
                 </tr>
             </thead>
-            <tbody id="perf-table-body" class="text-slate-300"></tbody>
+            <tbody class="text-slate-300">{rows}</tbody>
         </table>
     </div>
-    <div id="perf-cards" class="md:hidden space-y-3"></div>
-
-    <div class="flex justify-center mt-8">
-        <button id="perf-load-more-btn" onclick="perfChargerPlus()" type="button"
-            class="inline-flex items-center gap-2 bg-slate-900 border gold-frame text-slate-200 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full hover:bg-slate-800 transition">
-            <i class="fa-solid fa-chevron-down"></i>
-            <span>Plus de matchs</span>
-        </button>
-        <button id="perf-export-btn" onclick="perfExporterExcel()" type="button"
-            class="hidden inline-flex items-center gap-2 bg-gradient-to-r from-violet-700 via-fuchsia-500 to-amber-400 text-white text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full hover:opacity-90 transition">
-            <i class="fa-solid fa-file-excel"></i>
-            <span>Exporter tout l'historique (Excel)</span>
-        </button>
-    </div>
-
-    <script>
-    (function() {{
-        const PALIER = 5;
-        const MAX_AFFICHES = 20;
-        const tousLesMatchs = JSON.parse(document.getElementById('perf-data').textContent);
-        let nbAffiches = 0;
-
-        function badgeStatut(statut) {{
-            if (statut === 'Gagné') {{
-                return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>';
-            }}
-            if (statut === 'Perdu') {{
-                return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>';
-            }}
-            return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-700/40 text-slate-400"><i class="fa-solid fa-minus text-[9px]"></i>Annulé</span>';
-        }}
-
-        function classeCouleur(statut) {{
-            if (statut === 'Gagné') return 'text-emerald-500';
-            if (statut === 'Perdu') return 'text-red-500';
-            return 'text-slate-400';
-        }}
-
-        function echapperHtml(texte) {{
-            const div = document.createElement('div');
-            div.textContent = texte;
-            return div.innerHTML;
-        }}
-
-        function perfChargerPlus() {{
-            const tbody = document.getElementById('perf-table-body');
-            const cardsDiv = document.getElementById('perf-cards');
-            const prochain = tousLesMatchs.slice(nbAffiches, nbAffiches + PALIER);
-
-            prochain.forEach(m => {{
-                const badge = badgeStatut(m.statut);
-                const cls = classeCouleur(m.statut);
-                const match = echapperHtml(m.match);
-                const pari = echapperHtml(m.pari);
-
-                tbody.insertAdjacentHTML('beforeend', `
-                <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
-                    <td class="px-6 py-4 text-center text-xs text-white">${{m.date}}</td>
-                    <td class="px-6 py-4 text-center text-xs text-white">${{match}}</td>
-                    <td class="px-6 py-4 text-center text-xs text-yellow-300">${{pari}}</td>
-                    <td class="px-6 py-4 text-center text-xs text-white">${{m.cote}}</td>
-                    <td class="px-6 py-4 text-center text-xs text-slate-400">${{m.cote_prematch}}</td>
-                    <td class="px-6 py-4 text-center text-xs">${{badge}}</td>
-                    <td class="px-6 py-4 text-center text-xs ${{cls}}">${{m.gain}} €</td>
-                </tr>`);
-
-                cardsDiv.insertAdjacentHTML('beforeend', `
-                <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs text-slate-500">${{m.date}}</span>
-                        ${{badge}}
-                    </div>
-                    <p class="text-sm font-bold text-white mb-1">${{match}}</p>
-                    <p class="text-xs text-yellow-300 mb-3">${{pari}} <span class="text-slate-500">@ ${{m.cote}} (pré-match ${{m.cote_prematch}})</span></p>
-                    <p class="text-sm font-bold ${{cls}}">${{m.gain}} €</p>
-                </div>`);
-            }});
-
-            nbAffiches += prochain.length;
-            mettreAJourBoutons();
-        }}
-
-        function mettreAJourBoutons() {{
-            const btnPlus = document.getElementById('perf-load-more-btn');
-            const btnExport = document.getElementById('perf-export-btn');
-            const resteDesMatchs = nbAffiches < tousLesMatchs.length;
-            const palierMaxAtteint = nbAffiches >= MAX_AFFICHES;
-
-            if (resteDesMatchs && !palierMaxAtteint) {{
-                btnPlus.classList.remove('hidden');
-                btnExport.classList.add('hidden');
-            }} else {{
-                btnPlus.classList.add('hidden');
-                btnExport.classList.remove('hidden');
-            }}
-        }}
-
-        function perfExporterExcel() {{
-            if (typeof XLSX === 'undefined') {{
-                showToast("Impossible de générer le fichier Excel pour le moment, réessayez dans un instant.");
-                return;
-            }}
-            const entetes = ["Date", "Match", "Pari", "Cote jouée", "Cote pré-match", "Statut", "Gain/Perte (€)"];
-            const donnees = [entetes].concat(tousLesMatchs.map(m => [
-                m.date, m.match, m.pari, m.cote, m.cote_prematch, m.statut, m.gain
-            ]));
-            const feuille = XLSX.utils.aoa_to_sheet(donnees);
-            feuille['!cols'] = [{{wch: 12}}, {{wch: 42}}, {{wch: 22}}, {{wch: 12}}, {{wch: 14}}, {{wch: 10}}, {{wch: 14}}];
-            const classeur = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(classeur, feuille, "Historique");
-            const horodatage = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(classeur, `the-winning-oracle-historique-${{horodatage}}.xlsx`);
-        }}
-
-        window.perfChargerPlus = perfChargerPlus;
-        window.perfExporterExcel = perfExporterExcel;
-
-        perfChargerPlus();
-    }})();
-    </script>'''
+    <div class="md:hidden space-y-3">{cards}</div>'''
 
 def generate_stats_mensuelles(df):
     """Génère le tableau statistique mensuel (desktop) + les cartes équivalentes (mobile)."""

@@ -15,7 +15,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         // Client Supabase unique, partagé par toute la page (nav + section pronos)
         const SUPABASE_URL = 'https://eldkwsoucmfgvofsvshc.supabase.co';
@@ -738,8 +737,6 @@
 
             <!-- Début des performances -->
 
-    <script type="application/json" id="perf-data">[{"date": "18/07/2026", "match": "Aleksandar Vukic vs August Holmgren", "pari": "August Holmgren", "cote": "1.83", "cote_prematch": "1.73", "statut": "Perdu", "gain": "-5.31"}, {"date": "18/07/2026", "match": "Taro Daniel vs Juan Carlos Prado Angelo", "pari": "Taro Daniel", "cote": "1.61", "cote_prematch": "1.60", "statut": "Gagné", "gain": "2.27"}, {"date": "17/07/2026", "match": "Damir Dzumhur vs Alex Molcan", "pari": "Alex Molcan", "cote": "1.45", "cote_prematch": "1.36", "statut": "Perdu", "gain": "-3.02"}, {"date": "17/07/2026", "match": "Roman Andres Burruchaga vs Daniel Merida", "pari": "Roman Andres Burruchaga", "cote": "2.33", "cote_prematch": "2.38", "statut": "Perdu", "gain": "-4.04"}, {"date": "17/07/2026", "match": "Stefano Napolitano vs Gonzalo Villanueva", "pari": "Stefano Napolitano", "cote": "1.54", "cote_prematch": "1.57", "statut": "Perdu", "gain": "-5.18"}, {"date": "17/07/2026", "match": "Max Alcala Gurri vs Franco Roncadelli", "pari": "Max Alcala Gurri", "cote": "1.38", "cote_prematch": "1.33", "statut": "Gagné", "gain": "1.97"}, {"date": "17/07/2026", "match": "Sumit Nagal vs Federico Bondioli", "pari": "Federico Bondioli", "cote": "2.23", "cote_prematch": "2.10", "statut": "Gagné", "gain": "3.55"}, {"date": "17/07/2026", "match": "Nuno Borges vs Luciano Darderi", "pari": "Nuno Borges", "cote": "2.02", "cote_prematch": "2.20", "statut": "Perdu", "gain": "-1.66"}, {"date": "17/07/2026", "match": "Raphael Collignon vs Valentin Vacherot", "pari": "Raphael Collignon", "cote": "1.60", "cote_prematch": "1.67", "statut": "Gagné", "gain": "3.11"}, {"date": "16/07/2026", "match": "Alex Molcan vs Alejandro Davidovich Fokina", "pari": "Alex Molcan", "cote": "2.38", "cote_prematch": "2.30", "statut": "Gagné", "gain": "6.90"}, {"date": "16/07/2026", "match": "Alexander Shevchenko vs Dominic Stricker", "pari": "Alexander Shevchenko", "cote": "1.87", "cote_prematch": "2.00", "statut": "Gagné", "gain": "2.67"}, {"date": "16/07/2026", "match": "Juan Manuel Cerundolo vs Miomir Kecmanovic", "pari": "Miomir Kecmanovic", "cote": "1.96", "cote_prematch": "2.20", "statut": "Perdu", "gain": "-4.70"}, {"date": "15/07/2026", "match": "Tomas Martin Etcheverry vs Daniel Merida", "pari": "Tomas Martin Etcheverry", "cote": "1.64", "cote_prematch": "1.50", "statut": "Perdu", "gain": "-1.87"}, {"date": "15/07/2026", "match": "Stefano Napolitano vs Alex Barrena", "pari": "Stefano Napolitano", "cote": "1.66", "cote_prematch": "1.73", "statut": "Gagné", "gain": "3.04"}, {"date": "15/07/2026", "match": "Gonzalo Villanueva vs Juan Cruz Martin Manzano", "pari": "Gonzalo Villanueva", "cote": "1.91", "cote_prematch": "1.80", "statut": "Gagné", "gain": "3.88"}, {"date": "15/07/2026", "match": "Raphael Collignon vs Lorenzo Sonego", "pari": "Raphael Collignon", "cote": "1.47", "cote_prematch": "1.40", "statut": "Gagné", "gain": "1.56"}]</script>
-
     <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
@@ -753,129 +750,298 @@
                     <th class="px-6 py-4 text-center text-xs">Gains/Pertes</th>
                 </tr>
             </thead>
-            <tbody id="perf-table-body" class="text-slate-300"></tbody>
+            <tbody class="text-slate-300">
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">18/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Aleksandar Vukic vs August Holmgren</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">August Holmgren</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.83</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.73</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-5.31 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">18/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Taro Daniel vs Juan Carlos Prado Angelo</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Taro Daniel</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.61</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.60</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">2.27 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Damir Dzumhur vs Alex Molcan</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Alex Molcan</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.45</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.36</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-3.02 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Roman Andres Burruchaga vs Daniel Merida</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Roman Andres Burruchaga</td>
+            <td class="px-6 py-4 text-center text-xs text-white">2.33</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">2.38</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-4.04 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Stefano Napolitano vs Gonzalo Villanueva</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Stefano Napolitano</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.54</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.57</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-5.18 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Max Alcala Gurri vs Franco Roncadelli</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Max Alcala Gurri</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.38</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.33</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">1.97 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Sumit Nagal vs Federico Bondioli</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Federico Bondioli</td>
+            <td class="px-6 py-4 text-center text-xs text-white">2.23</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">2.10</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">3.55 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Nuno Borges vs Luciano Darderi</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Nuno Borges</td>
+            <td class="px-6 py-4 text-center text-xs text-white">2.02</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">2.20</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-1.66 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">17/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Raphael Collignon vs Valentin Vacherot</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Raphael Collignon</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.60</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.67</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">3.11 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">16/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Alex Molcan vs Alejandro Davidovich Fokina</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Alex Molcan</td>
+            <td class="px-6 py-4 text-center text-xs text-white">2.38</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">2.30</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">6.90 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">16/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Alexander Shevchenko vs Dominic Stricker</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Alexander Shevchenko</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.87</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">2.00</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">2.67 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">16/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Juan Manuel Cerundolo vs Miomir Kecmanovic</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Miomir Kecmanovic</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.96</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">2.20</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-4.70 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Tomas Martin Etcheverry vs Daniel Merida</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Tomas Martin Etcheverry</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.64</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.50</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span></td>
+            <td class="px-6 py-4 text-center text-xs text-red-500">-1.87 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Stefano Napolitano vs Alex Barrena</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Stefano Napolitano</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.66</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.73</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">3.04 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Gonzalo Villanueva vs Juan Cruz Martin Manzano</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Gonzalo Villanueva</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.91</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.80</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">3.88 €</td>
+        </tr>
+        <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
+            <td class="px-6 py-4 text-center text-xs text-white">15/07/2026</td>
+            <td class="px-6 py-4 text-center text-xs text-white">Raphael Collignon vs Lorenzo Sonego</td>
+            <td class="px-6 py-4 text-center text-xs text-yellow-300">Raphael Collignon</td>
+            <td class="px-6 py-4 text-center text-xs text-white">1.47</td>
+            <td class="px-6 py-4 text-center text-xs text-slate-400">1.40</td>
+            <td class="px-6 py-4 text-center text-xs"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span></td>
+            <td class="px-6 py-4 text-center text-xs text-emerald-500">1.56 €</td>
+        </tr></tbody>
         </table>
     </div>
-    <div id="perf-cards" class="md:hidden space-y-3"></div>
-
-    <div class="flex justify-center mt-8">
-        <button id="perf-load-more-btn" onclick="perfChargerPlus()" type="button"
-            class="inline-flex items-center gap-2 bg-slate-900 border gold-frame text-slate-200 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full hover:bg-slate-800 transition">
-            <i class="fa-solid fa-chevron-down"></i>
-            <span>Plus de matchs</span>
-        </button>
-        <button id="perf-export-btn" onclick="perfExporterExcel()" type="button"
-            class="hidden inline-flex items-center gap-2 bg-gradient-to-r from-violet-700 via-fuchsia-500 to-amber-400 text-white text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full hover:opacity-90 transition">
-            <i class="fa-solid fa-file-excel"></i>
-            <span>Exporter tout l'historique (Excel)</span>
-        </button>
-    </div>
-
-    <script>
-    (function() {
-        const PALIER = 5;
-        const MAX_AFFICHES = 20;
-        const tousLesMatchs = JSON.parse(document.getElementById('perf-data').textContent);
-        let nbAffiches = 0;
-
-        function badgeStatut(statut) {
-            if (statut === 'Gagné') {
-                return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>';
-            }
-            if (statut === 'Perdu') {
-                return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>';
-            }
-            return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-700/40 text-slate-400"><i class="fa-solid fa-minus text-[9px]"></i>Annulé</span>';
-        }
-
-        function classeCouleur(statut) {
-            if (statut === 'Gagné') return 'text-emerald-500';
-            if (statut === 'Perdu') return 'text-red-500';
-            return 'text-slate-400';
-        }
-
-        function echapperHtml(texte) {
-            const div = document.createElement('div');
-            div.textContent = texte;
-            return div.innerHTML;
-        }
-
-        function perfChargerPlus() {
-            const tbody = document.getElementById('perf-table-body');
-            const cardsDiv = document.getElementById('perf-cards');
-            const prochain = tousLesMatchs.slice(nbAffiches, nbAffiches + PALIER);
-
-            prochain.forEach(m => {
-                const badge = badgeStatut(m.statut);
-                const cls = classeCouleur(m.statut);
-                const match = echapperHtml(m.match);
-                const pari = echapperHtml(m.pari);
-
-                tbody.insertAdjacentHTML('beforeend', `
-                <tr class="border-b border-slate-700 hover:bg-slate-800/30 transition">
-                    <td class="px-6 py-4 text-center text-xs text-white">${m.date}</td>
-                    <td class="px-6 py-4 text-center text-xs text-white">${match}</td>
-                    <td class="px-6 py-4 text-center text-xs text-yellow-300">${pari}</td>
-                    <td class="px-6 py-4 text-center text-xs text-white">${m.cote}</td>
-                    <td class="px-6 py-4 text-center text-xs text-slate-400">${m.cote_prematch}</td>
-                    <td class="px-6 py-4 text-center text-xs">${badge}</td>
-                    <td class="px-6 py-4 text-center text-xs ${cls}">${m.gain} €</td>
-                </tr>`);
-
-                cardsDiv.insertAdjacentHTML('beforeend', `
-                <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs text-slate-500">${m.date}</span>
-                        ${badge}
-                    </div>
-                    <p class="text-sm font-bold text-white mb-1">${match}</p>
-                    <p class="text-xs text-yellow-300 mb-3">${pari} <span class="text-slate-500">@ ${m.cote} (pré-match ${m.cote_prematch})</span></p>
-                    <p class="text-sm font-bold ${cls}">${m.gain} €</p>
-                </div>`);
-            });
-
-            nbAffiches += prochain.length;
-            mettreAJourBoutons();
-        }
-
-        function mettreAJourBoutons() {
-            const btnPlus = document.getElementById('perf-load-more-btn');
-            const btnExport = document.getElementById('perf-export-btn');
-            const resteDesMatchs = nbAffiches < tousLesMatchs.length;
-            const palierMaxAtteint = nbAffiches >= MAX_AFFICHES;
-
-            if (resteDesMatchs && !palierMaxAtteint) {
-                btnPlus.classList.remove('hidden');
-                btnExport.classList.add('hidden');
-            } else {
-                btnPlus.classList.add('hidden');
-                btnExport.classList.remove('hidden');
-            }
-        }
-
-        function perfExporterExcel() {
-            if (typeof XLSX === 'undefined') {
-                showToast("Impossible de générer le fichier Excel pour le moment, réessayez dans un instant.");
-                return;
-            }
-            const entetes = ["Date", "Match", "Pari", "Cote jouée", "Cote pré-match", "Statut", "Gain/Perte (€)"];
-            const donnees = [entetes].concat(tousLesMatchs.map(m => [
-                m.date, m.match, m.pari, m.cote, m.cote_prematch, m.statut, m.gain
-            ]));
-            const feuille = XLSX.utils.aoa_to_sheet(donnees);
-            feuille['!cols'] = [{wch: 12}, {wch: 42}, {wch: 22}, {wch: 12}, {wch: 14}, {wch: 10}, {wch: 14}];
-            const classeur = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(classeur, feuille, "Historique");
-            const horodatage = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(classeur, `the-winning-oracle-historique-${horodatage}.xlsx`);
-        }
-
-        window.perfChargerPlus = perfChargerPlus;
-        window.perfExporterExcel = perfExporterExcel;
-
-        perfChargerPlus();
-    })();
-    </script>
+    <div class="md:hidden space-y-3">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">18/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Aleksandar Vukic vs August Holmgren</p>
+            <p class="text-xs text-yellow-300 mb-3">August Holmgren <span class="text-slate-500">@ 1.83 (pré-match 1.73)</span></p>
+            <p class="text-sm font-bold text-red-500">-5.31 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">18/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Taro Daniel vs Juan Carlos Prado Angelo</p>
+            <p class="text-xs text-yellow-300 mb-3">Taro Daniel <span class="text-slate-500">@ 1.61 (pré-match 1.60)</span></p>
+            <p class="text-sm font-bold text-emerald-500">2.27 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">17/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Damir Dzumhur vs Alex Molcan</p>
+            <p class="text-xs text-yellow-300 mb-3">Alex Molcan <span class="text-slate-500">@ 1.45 (pré-match 1.36)</span></p>
+            <p class="text-sm font-bold text-red-500">-3.02 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">17/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Roman Andres Burruchaga vs Daniel Merida</p>
+            <p class="text-xs text-yellow-300 mb-3">Roman Andres Burruchaga <span class="text-slate-500">@ 2.33 (pré-match 2.38)</span></p>
+            <p class="text-sm font-bold text-red-500">-4.04 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">17/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Stefano Napolitano vs Gonzalo Villanueva</p>
+            <p class="text-xs text-yellow-300 mb-3">Stefano Napolitano <span class="text-slate-500">@ 1.54 (pré-match 1.57)</span></p>
+            <p class="text-sm font-bold text-red-500">-5.18 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">17/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Max Alcala Gurri vs Franco Roncadelli</p>
+            <p class="text-xs text-yellow-300 mb-3">Max Alcala Gurri <span class="text-slate-500">@ 1.38 (pré-match 1.33)</span></p>
+            <p class="text-sm font-bold text-emerald-500">1.97 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">17/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Sumit Nagal vs Federico Bondioli</p>
+            <p class="text-xs text-yellow-300 mb-3">Federico Bondioli <span class="text-slate-500">@ 2.23 (pré-match 2.10)</span></p>
+            <p class="text-sm font-bold text-emerald-500">3.55 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">17/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Nuno Borges vs Luciano Darderi</p>
+            <p class="text-xs text-yellow-300 mb-3">Nuno Borges <span class="text-slate-500">@ 2.02 (pré-match 2.20)</span></p>
+            <p class="text-sm font-bold text-red-500">-1.66 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">17/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Raphael Collignon vs Valentin Vacherot</p>
+            <p class="text-xs text-yellow-300 mb-3">Raphael Collignon <span class="text-slate-500">@ 1.60 (pré-match 1.67)</span></p>
+            <p class="text-sm font-bold text-emerald-500">3.11 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">16/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Alex Molcan vs Alejandro Davidovich Fokina</p>
+            <p class="text-xs text-yellow-300 mb-3">Alex Molcan <span class="text-slate-500">@ 2.38 (pré-match 2.30)</span></p>
+            <p class="text-sm font-bold text-emerald-500">6.90 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">16/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Alexander Shevchenko vs Dominic Stricker</p>
+            <p class="text-xs text-yellow-300 mb-3">Alexander Shevchenko <span class="text-slate-500">@ 1.87 (pré-match 2.00)</span></p>
+            <p class="text-sm font-bold text-emerald-500">2.67 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">16/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Juan Manuel Cerundolo vs Miomir Kecmanovic</p>
+            <p class="text-xs text-yellow-300 mb-3">Miomir Kecmanovic <span class="text-slate-500">@ 1.96 (pré-match 2.20)</span></p>
+            <p class="text-sm font-bold text-red-500">-4.70 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">15/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400"><i class="fa-solid fa-xmark text-[9px]"></i>Perdu</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Tomas Martin Etcheverry vs Daniel Merida</p>
+            <p class="text-xs text-yellow-300 mb-3">Tomas Martin Etcheverry <span class="text-slate-500">@ 1.64 (pré-match 1.50)</span></p>
+            <p class="text-sm font-bold text-red-500">-1.87 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">15/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Stefano Napolitano vs Alex Barrena</p>
+            <p class="text-xs text-yellow-300 mb-3">Stefano Napolitano <span class="text-slate-500">@ 1.66 (pré-match 1.73)</span></p>
+            <p class="text-sm font-bold text-emerald-500">3.04 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">15/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Gonzalo Villanueva vs Juan Cruz Martin Manzano</p>
+            <p class="text-xs text-yellow-300 mb-3">Gonzalo Villanueva <span class="text-slate-500">@ 1.91 (pré-match 1.80)</span></p>
+            <p class="text-sm font-bold text-emerald-500">3.88 €</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-slate-500">15/07/2026</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-check text-[9px]"></i>Gagné</span>
+            </div>
+            <p class="text-sm font-bold text-white mb-1">Raphael Collignon vs Lorenzo Sonego</p>
+            <p class="text-xs text-yellow-300 mb-3">Raphael Collignon <span class="text-slate-500">@ 1.47 (pré-match 1.40)</span></p>
+            <p class="text-sm font-bold text-emerald-500">1.56 €</p>
+        </div></div>
 <!-- Fin des performances -->
 
         </section>
