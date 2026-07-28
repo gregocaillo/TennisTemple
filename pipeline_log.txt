@@ -168,3 +168,17 @@ Clôture admin appliquée : pari #104 → Gagné (+8.79 €)
 4 analyse(s) du jour synchronisée(s) avec Supabase.
 Aucune nouvelle inscription depuis le dernier passage.
 Mise à jour poussée sur GitHub avec succès.
+C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py:428: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_term['Mois'] = df_term['Date'].dt.to_period('M')
+C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py:429: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  stats = df_term.groupby('Mois').apply(lambda x: pd.Series({
+warning: in the working copy of 'pipeline_log.txt', LF will be replaced by CRLF the next time Git touches it
+[main f49415a] Mise à jour auto - 2026-07-27 06:09:37
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+To github.com:gregocaillo/TennisTemple.git
+   fa897a9..f49415a  main -> main
+Aucune clôture en attente depuis l'espace admin.
+0 prono(s) premium synchronisé(s) avec Supabase (upsert).
+Aucune analyse du jour à synchroniser.
+Aucune nouvelle inscription depuis le dernier passage.
+Mise à jour poussée sur GitHub avec succès.
