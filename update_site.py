@@ -614,33 +614,6 @@ def generate_stats_banner(df):
     roi_txt = f"+{roi_global:.1f}%" if roi_global >= 0 else f"{roi_global:.1f}%"
     roi_couleur = "text-emerald-400" if roi_global >= 0 else "text-red-400"
 
-    # Drawdown max : plus forte baisse (en €) entre un sommet du solde cumulé et le creux
-    # qui suit, avant un nouveau sommet. Calculé sur la même série que la sparkline.
-    cumul_pour_dd = df_pnl['Gain/Perte'].cumsum().tolist()
-    if cumul_pour_dd:
-        pic = cumul_pour_dd[0]
-        drawdown_max_eur = 0.0
-        for valeur in cumul_pour_dd:
-            pic = max(pic, valeur)
-            drawdown_max_eur = max(drawdown_max_eur, pic - valeur)
-        # En %, relatif au pic de bankroll atteint au moment du creux (0 si le pic est nul/négatif)
-        drawdown_max_pct = None
-        if drawdown_max_eur > 0:
-            pic_au_creux = None
-            pic_courant = cumul_pour_dd[0]
-            plus_grand_ratio = 0.0
-            for valeur in cumul_pour_dd:
-                pic_courant = max(pic_courant, valeur)
-                if pic_courant > 0:
-                    ratio = (pic_courant - valeur) / pic_courant
-                    plus_grand_ratio = max(plus_grand_ratio, ratio)
-            drawdown_max_pct = plus_grand_ratio * 100
-        drawdown_txt = f"-{drawdown_max_eur:.2f} €"
-        if drawdown_max_pct is not None:
-            drawdown_txt += f" ({drawdown_max_pct:.1f}%)"
-    else:
-        drawdown_txt = "—"
-
     # Série en cours : on part du pari le plus récent et on compte tant que le résultat est identique
     df_recent_first = df_term.sort_values(by='Date', ascending=False)
     serie_resultat = df_recent_first.iloc[0]['Résultat']
@@ -691,13 +664,9 @@ def generate_stats_banner(df):
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
         </div>
-        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
+        <div class="col-span-2 sm:col-span-1 bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="Retour sur investissement global : gains/pertes cumulés rapportés au total des mises engagées.">ROI <i class="fa-solid fa-circle-info text-[9px]"></i></p>
             <p class="text-xl sm:text-2xl font-bold text-center {roi_couleur}">{roi_txt}</p>
-        </div>
-        <div class="col-span-2 sm:col-span-1 bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
-            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="Plus forte baisse du solde cumulé entre un sommet et le creux qui suit : mesure du pire passage à traverser jusqu'ici.">Drawdown Max <i class="fa-solid fa-circle-info text-[9px]"></i></p>
-            <p class="text-lg sm:text-2xl font-bold text-center text-red-400 truncate">{drawdown_txt}</p>
         </div>
     </div>
     <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
