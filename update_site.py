@@ -74,11 +74,11 @@ def generate_pronos_stats_banner(df):
         </div>
         <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Paris proposés</p>
-            <p class="text-xl sm:text-2xl font-bold text-white">{nb_paris_proposes}</p>
+            <p id="stat-paris-proposes" class="text-xl sm:text-2xl font-bold text-white">{nb_paris_proposes}</p>
         </div>
         <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5 text-center">
             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-2">Value Bet moyen</p>
-            <p class="text-xl sm:text-2xl font-bold {value_couleur}">{value_txt}</p>
+            <p id="stat-value-bet" class="text-xl sm:text-2xl font-bold {value_couleur}">{value_txt}</p>
         </div>
     </div>'''
 
@@ -167,7 +167,12 @@ def push_pronos_premium(df):
             "pari": row['Pari'],
             "cote": float(row['Cote']),
             "mise": float(row['Mise']),
-            "gain_potentiel": float(row['GainPotentiel']) if pd.notna(row['GainPotentiel']) else None
+            "gain_potentiel": float(row['GainPotentiel']) if pd.notna(row['GainPotentiel']) else None,
+            # Nécessaire pour que le site recalcule "Value Bet moyen" en direct côté client,
+            # à partir des mêmes lignes que celles affichées en cartes (voir index.html /
+            # chargerPronos), et non depuis un bandeau HTML figé qui peut devenir périmé
+            # entre deux exécutions de ce script.
+            "prob_predite": float(row['ProbPredite']) if pd.notna(row['ProbPredite']) else None
         })
 
     if payloads:
@@ -602,6 +607,40 @@ def generate_stats_banner(df):
     df_pnl = df[df['Résultat'].isin(['Gagné', 'Perdu', 'Annulé'])].sort_values(by='Date', ascending=True)
     pnl_total = df_pnl['Gain/Perte'].sum()
 
+    # ROI global : gains/pertes cumulés rapportés au total des mises engagées (même
+    # périmètre que le PNL cumulé ci-dessus : Gagné / Perdu / Annulé).
+    mises_total = df_pnl['Mise'].sum()
+    roi_global = (pnl_total / mises_total) * 100 if mises_total else 0
+    roi_txt = f"+{roi_global:.1f}%" if roi_global >= 0 else f"{roi_global:.1f}%"
+    roi_couleur = "text-emerald-400" if roi_global >= 0 else "text-red-400"
+
+    # Drawdown max : plus forte baisse (en €) entre un sommet du solde cumulé et le creux
+    # qui suit, avant un nouveau sommet. Calculé sur la même série que la sparkline.
+    cumul_pour_dd = df_pnl['Gain/Perte'].cumsum().tolist()
+    if cumul_pour_dd:
+        pic = cumul_pour_dd[0]
+        drawdown_max_eur = 0.0
+        for valeur in cumul_pour_dd:
+            pic = max(pic, valeur)
+            drawdown_max_eur = max(drawdown_max_eur, pic - valeur)
+        # En %, relatif au pic de bankroll atteint au moment du creux (0 si le pic est nul/négatif)
+        drawdown_max_pct = None
+        if drawdown_max_eur > 0:
+            pic_au_creux = None
+            pic_courant = cumul_pour_dd[0]
+            plus_grand_ratio = 0.0
+            for valeur in cumul_pour_dd:
+                pic_courant = max(pic_courant, valeur)
+                if pic_courant > 0:
+                    ratio = (pic_courant - valeur) / pic_courant
+                    plus_grand_ratio = max(plus_grand_ratio, ratio)
+            drawdown_max_pct = plus_grand_ratio * 100
+        drawdown_txt = f"-{drawdown_max_eur:.2f} €"
+        if drawdown_max_pct is not None:
+            drawdown_txt += f" ({drawdown_max_pct:.1f}%)"
+    else:
+        drawdown_txt = "—"
+
     # Série en cours : on part du pari le plus récent et on compte tant que le résultat est identique
     df_recent_first = df_term.sort_values(by='Date', ascending=False)
     serie_resultat = df_recent_first.iloc[0]['Résultat']
@@ -631,7 +670,7 @@ def generate_stats_banner(df):
     )
 
     return f'''
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8 sm:mb-10">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-10">
         <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Taux de réussite</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">{taux_reussite:.1f}%</p>
@@ -648,9 +687,17 @@ def generate_stats_banner(df):
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Gains/Pertes cumulés</p>
             <p class="text-xl sm:text-2xl font-bold text-center {pnl_couleur}">{pnl_total:.2f} €</p>
         </div>
-        <div class="col-span-2 sm:col-span-1 bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
             <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2">Cote Jouée Moyenne</p>
             <p class="text-xl sm:text-2xl font-bold text-center text-white">{cote_moyenne:.2f}</p>
+        </div>
+        <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="Retour sur investissement global : gains/pertes cumulés rapportés au total des mises engagées.">ROI <i class="fa-solid fa-circle-info text-[9px]"></i></p>
+            <p class="text-xl sm:text-2xl font-bold text-center {roi_couleur}">{roi_txt}</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5">
+            <p class="text-slate-500 text-[10px] text-center uppercase tracking-wider mb-2 cursor-help inline-flex items-center gap-1 justify-center w-full" title="Plus forte baisse du solde cumulé entre un sommet et le creux qui suit : mesure du pire passage à traverser jusqu'ici.">Drawdown Max <i class="fa-solid fa-circle-info text-[9px]"></i></p>
+            <p class="text-lg sm:text-2xl font-bold text-center text-red-400 truncate">{drawdown_txt}</p>
         </div>
     </div>
     <div class="bg-slate-900 border gold-frame rounded-2xl p-4 sm:p-5 mb-8 sm:mb-10">
