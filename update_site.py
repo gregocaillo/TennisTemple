@@ -203,9 +203,11 @@ def push_analyses_generales(db_path):
 
     conn = sqlite3.connect(db_path)
     date_auj = datetime.now().strftime('%Y-%m-%d')
+    # Analyses_Totales : une ligne = un candidat retenu (joueur_choisi/cote_jouee/
+    # prob_predite), plus statut_analyse (VB_valide / VB_suspect / Pas_de_value).
     query = """
-        SELECT id, nom_tournoi, joueur_j1, cote_predite_j1, cote_prematch_j1,
-               joueur_j2, cote_predite_j2, cote_prematch_j2, date_match
+        SELECT id, nom_tournoi, match_intitule, joueur_choisi, cote_jouee,
+               prob_predite, statut_analyse, date_match
         FROM Analyses_Totales
         WHERE date_match LIKE ?
     """
@@ -228,15 +230,15 @@ def push_analyses_generales(db_path):
     upsert_headers = {**headers, "Prefer": "resolution=merge-duplicates"}
     payloads = []
     for _, row in df.iterrows():
+        cote_calculee = (1 / row['prob_predite']) if pd.notna(row['prob_predite']) and row['prob_predite'] else None
         payloads.append({
             "analyse_id": int(row['id']),
             "tournoi": row['nom_tournoi'],
-            "joueur_j1": row['joueur_j1'],
-            "cote_predite_j1": float(row['cote_predite_j1']) if pd.notna(row['cote_predite_j1']) else None,
-            "cote_prematch_j1": float(row['cote_prematch_j1']) if pd.notna(row['cote_prematch_j1']) else None,
-            "joueur_j2": row['joueur_j2'],
-            "cote_predite_j2": float(row['cote_predite_j2']) if pd.notna(row['cote_predite_j2']) else None,
-            "cote_prematch_j2": float(row['cote_prematch_j2']) if pd.notna(row['cote_prematch_j2']) else None,
+            "match_intitule": row['match_intitule'],
+            "joueur_choisi": row['joueur_choisi'],
+            "cote_calculee": cote_calculee,
+            "cote_marche": float(row['cote_jouee']) if pd.notna(row['cote_jouee']) else None,
+            "statut_analyse": row['statut_analyse'] if pd.notna(row['statut_analyse']) else None,
             "date_match": row['date_match'] if pd.notna(row['date_match']) else None,
         })
 

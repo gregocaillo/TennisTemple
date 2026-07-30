@@ -205,3 +205,58 @@ Aucune clôture en attente depuis l'espace admin.
 Aucune analyse du jour à synchroniser.
 Aucune nouvelle inscription depuis le dernier passage.
 Aucun changement à pousser.
+C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py:433: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_term['Mois'] = df_term['Date'].dt.to_period('M')
+C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py:434: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  stats = df_term.groupby('Mois').apply(lambda x: pd.Series({
+warning: in the working copy of 'pipeline_log.txt', LF will be replaced by CRLF the next time Git touches it
+[main c1cd5c3] Mise à jour auto - 2026-07-29 13:57:20
+ 2 files changed, 39 insertions(+), 30 deletions(-)
+To github.com:gregocaillo/TennisTemple.git
+   c38951f..c1cd5c3  main -> main
+Aucune clôture en attente depuis l'espace admin.
+⚠ Erreur lors de l'upsert des pronos premium : 400 {"code":"PGRST204","details":null,"hint":null,"message":"Could not find the 'prob_predite' column of 'pronos_premium' in the schema cache"}
+2 prono(s) premium synchronisé(s) avec Supabase (upsert).
+Aucune analyse du jour à synchroniser.
+Aucune nouvelle inscription depuis le dernier passage.
+Mise à jour poussée sur GitHub avec succès.
+Aucune clôture en attente depuis l'espace admin.
+⚠ Erreur lors de l'upsert des pronos premium : 400 {"code":"PGRST204","details":null,"hint":null,"message":"Could not find the 'prob_predite' column of 'pronos_premium' in the schema cache"}
+2 prono(s) premium synchronisé(s) avec Supabase (upsert).
+Traceback (most recent call last):
+  File "C:\Users\grego\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\sql.py", line 2664, in execute
+    cur.execute(sql, *args)
+    ~~~~~~~~~~~^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: joueur_j1
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py", line 1025, in <module>
+    mettre_a_jour_site()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py", line 989, in mettre_a_jour_site
+    push_analyses_generales(DB_PATH)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\grego\PycharmProjects\ORACLE2026\TennisTemple\update_site.py", line 212, in push_analyses_generales
+    df = pd.read_sql_query(query, conn, params=(date_auj + '%',))
+  File "C:\Users\grego\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\sql.py", line 528, in read_sql_query
+    return pandas_sql.read_query(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        sql,
+        ^^^^
+    ...<6 lines>...
+        dtype_backend=dtype_backend,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\grego\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\sql.py", line 2728, in read_query
+    cursor = self.execute(sql, params)
+  File "C:\Users\grego\AppData\Local\Programs\Python\Python313\Lib\site-packages\pandas\io\sql.py", line 2676, in execute
+    raise ex from exc
+pandas.errors.DatabaseError: Execution failed on sql '
+        SELECT id, nom_tournoi, joueur_j1, cote_predite_j1, cote_prematch_j1,
+               joueur_j2, cote_predite_j2, cote_prematch_j2, date_match
+        FROM Analyses_Totales
+        WHERE date_match LIKE ?
+    ': no such column: joueur_j1
